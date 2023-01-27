@@ -1,4 +1,4 @@
-namespace Chinook.Domain.Entities;
+namespace compiled_query.Chinook;
 
 public class BaseEntity
 {

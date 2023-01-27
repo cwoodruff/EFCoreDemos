@@ -1,7 +1,6 @@
-﻿using Chinook.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace compiled_query.Model;
+namespace compiled_query.Chinook;
 
 public partial class ChinookContext : DbContext
 {

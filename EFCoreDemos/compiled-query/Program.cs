@@ -1,9 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Diagnostics;
-using System.Linq;
-using Chinook.Domain.Entities;
-using compiled_query.Model;
+using compiled_query.Chinook;
 using Microsoft.EntityFrameworkCore;
 
 public class Program

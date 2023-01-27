@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-namespace Chinook.Domain.Entities;
+namespace compiled_query.Chinook;
 
 public abstract class AlbumWithArtistName : BaseEntity
 {
