@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace query_tags.Model;
+
+public class SalesReason
+{
+    public SalesReason()
+    {
+        SalesOrderHeaderSalesReason = new HashSet<SalesOrderHeaderSalesReason>();
+    }
+
+    public int SalesReasonID { get; set; }
+    public string Name { get; set; }
+    public string ReasonType { get; set; }
+    public DateTime ModifiedDate { get; set; }
+
+    public virtual ICollection<SalesOrderHeaderSalesReason> SalesOrderHeaderSalesReason { get; set; }
+}
