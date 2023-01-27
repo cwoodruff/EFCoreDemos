@@ -31,7 +31,7 @@ public class Program
                     var artist = _context.Albums.FirstOrDefault(a => a.Id == id);
                 }
             },
-            name: "Regular");
+            name: "Run-time EF Core Query");
 
         RunTest(
             albumIDs =>
@@ -46,7 +46,7 @@ public class Program
                     var artist = query(_context, id);
                 }
             },
-            name: "Compiled");
+            name: "Compiled EF Core Query");
 
         RunTest(
             albumIDs =>
@@ -61,7 +61,7 @@ public class Program
                     var artist = query(_context, id);
                 }
             },
-            name: "Async Compiled");
+            name: "Async Compiled EF Core Query");
         
         RunTest(
             albumIDs =>
@@ -72,7 +72,7 @@ public class Program
                     var artist = _context.GetAlbum(id);
                 }
             },
-            name: "DBContext Compiled");
+            name: "DBContext Compiled EF Core Query");
         
         RunTest(
             albumIDs =>
@@ -83,7 +83,7 @@ public class Program
                     var artist = _context.GetAlbumAsync(id);
                 }
             },
-            name: "DBContext Async Compiled");
+            name: "DBContext Async Compiled EF Core Query");
     }
 
     private static void RunTest(Action<int[]> test, string name)
