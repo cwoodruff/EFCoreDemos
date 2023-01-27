@@ -1,31 +1,29 @@
 ﻿using System;
 using System.Linq;
-using linq_groupby.Model;
+using linq_groupby.Chinook;
 
-namespace Demos;
+namespace linq_groupby;
 
 public class Program
 {
     private static void Main()
     {
-        using (var db = new AdventureWorksContext())
+        using (var db = new ChinookContext())
         {
-            var workorders = db.WorkOrder
-                .GroupBy(o => new {o.ProductID, o.ScrapReasonID})
+            var invoices = db.Invoices
+                .GroupBy(o => new {o.InvoiceDate})
                 .Select(g => new
                 {
-                    g.Key.ProductID,
-                    g.Key.ScrapReasonID,
-                    Sum = g.Sum(o => o.ScrappedQty),
-                    Min = g.Min(o => o.ScrappedQty),
-                    Max = g.Max(o => o.ScrappedQty),
-                    Avg = g.Average(o => o.ScrappedQty)
+                    g.Key.InvoiceDate,
+                    Sum = g.Sum(o => o.Total),
+                    Min = g.Min(o => o.Total),
+                    Max = g.Max(o => o.Total),
+                    Avg = g.Average(o => o.Total)
                 });
 
-            foreach (var workorder in workorders)
+            foreach (var invoice in invoices)
             {
-                Console.WriteLine("Product " + workorder.ProductID + ", Scrapped Sum " + workorder.Sum +
-                                  " Scrapped Reason " + workorder.ScrapReasonID);
+                Console.WriteLine("Sum " + invoice.Sum + " Invoice Date " + invoice.InvoiceDate);
             }
         }
 

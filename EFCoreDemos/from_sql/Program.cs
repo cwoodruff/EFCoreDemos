@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using from_sql.Model;
+using from_sql.Chinook;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,20 +10,20 @@ class Program
 {
     static void Main()
     {
-        using var db = new AdventureWorksContext();
+        using var db = new ChinookContext();
 
-        string description = "Smith";
-        SqlParameter parameter = new SqlParameter("LastName", SqlDbType.NVarChar);
+        string country = "Canada";
+        SqlParameter parameter = new SqlParameter("Country", SqlDbType.NVarChar);
         parameter.Direction = ParameterDirection.InputOutput;
-        parameter.Size = description.Length;
-        parameter.Value = description;
+        parameter.Size = country.Length;
+        parameter.Value = country;
 
-        var people =
-            db.Person.FromSqlInterpolated($"SELECT * FROM [Person].[Person] WHERE LastName = {parameter}");
+        var customers =
+            db.Customers.FromSqlInterpolated($"SELECT * FROM [Customer] WHERE Country = {parameter}");
             
-        foreach (var person in people)
+        foreach (var customer in customers)
         {
-            Console.WriteLine($"Found Person: {person.FirstName} {person.LastName}");
+            Console.WriteLine($"Found Person: {customer.FirstName} {customer.LastName}");
         }
     }
 }

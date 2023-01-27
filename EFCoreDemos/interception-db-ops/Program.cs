@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using interception_db_ops.Model;
+using interception_db_ops.Chinook;
 using Microsoft.EntityFrameworkCore;
 
 namespace interception_db_ops;
@@ -10,16 +10,13 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        using (var db = new AdventureWorksContext())
+        using (var db = new ChinookContext())
         {
-            var vendors =
-                from v in db.Vendor
-                where v.CreditRating > 1
-                select v;
+            var tracks = db.Tracks.Where(t => t.GenreId == 1);
 
-            await foreach (var v in vendors.AsAsyncEnumerable())
+            await foreach (var track in tracks.AsAsyncEnumerable())
             {
-                Console.WriteLine($"Found Vendor: {v.Name} {v.AccountNumber}");
+                Console.WriteLine($"Found Tracks: {track.Name} {track.UnitPrice}");
             }
         }
     }

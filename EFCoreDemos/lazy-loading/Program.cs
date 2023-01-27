@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Linq;
-using Performance.EFCore;
+using lazy_loading.Chinook;
 
-namespace Demos;
+namespace lazy_loading;
 
 static class Program
 {
     static void Main(string[] args)
     {
-        using (var db = new AdventureWorksContext())
+        using (var db = new ChinookContext())
         {
-            var customers = db.Customers.ToList();
+            var albums = db.Albums.ToList();
 
-            foreach (var customer in customers)
+            foreach (var album in albums)
             {
-                if (customer.Store != null && customer.Territory != null)
-                    Console.WriteLine(customer.Store.Name + " located at " + customer.Territory.Name);
+                if (album.Artist != null)
+                    Console.WriteLine(album.Title + " from " + album.Artist.Name);
             }
         }
 
