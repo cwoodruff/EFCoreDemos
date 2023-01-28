@@ -3,46 +3,29 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Demos.Chinook;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Demos;
 
-public class Blog
+public class GenreController
 {
-    public int BlogId { get; set; }
-    public string Name { get; set; }
-    public string Url { get; set; }
-}
+    private readonly ChinookContext _context;
 
-public class BloggingContext : DbContext
-{
-    public static long InstanceCount;
+    public GenreController(ChinookContext context) => _context = context;
 
-    public BloggingContext(DbContextOptions options)
-        : base(options)
-        => Interlocked.Increment(ref InstanceCount);
-
-    public DbSet<Blog> Blogs { get; set; }
-}
-
-public class BlogController
-{
-    private readonly BloggingContext _context;
-
-    public BlogController(BloggingContext context) => _context = context;
-
-    public async Task ActionAsync() => await _context.Blogs.FirstAsync();
+    public async Task ActionAsync() => await _context.Genres.FirstAsync();
 }
 
 public class Startup
 {
     private const string ConnectionString
-        = @"Server=(localdb)\mssqllocaldb;Database=Demo.ContextPooling;Integrated Security=True;ConnectRetryCount=0";
+        = @"Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;";
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<BloggingContext>(c => c.UseSqlServer(ConnectionString));
+        services.AddDbContextPool<ChinookContext>(c => c.UseSqlServer(ConnectionString));
     }
 }
 
@@ -55,13 +38,9 @@ public class Program
 
     private static async Task Main()
     {
-        Console.ReadKey();
-            
         var serviceCollection = new ServiceCollection();
         new Startup().ConfigureServices(serviceCollection);
         var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        SetupDatabase(serviceProvider);
 
         var stopwatch = new Stopwatch();
 
@@ -75,28 +54,13 @@ public class Program
         Console.ReadKey();
     }
 
-    private static void SetupDatabase(IServiceProvider serviceProvider)
-    {
-        using (var serviceScope = serviceProvider.CreateScope())
-        {
-            var context = serviceScope.ServiceProvider.GetService<BloggingContext>();
-
-            if (context.Database.EnsureCreated())
-            {
-                context.Blogs.Add(new Blog {Name = "The Dog Blog", Url = "http://sample.com/dogs"});
-                context.Blogs.Add(new Blog {Name = "The Cat Blog", Url = "http://sample.com/cats"});
-                context.SaveChanges();
-            }
-        }
-    }
-
     private static async Task SimulateRequestsAsync(IServiceProvider serviceProvider, Stopwatch stopwatch)
     {
         while (stopwatch.IsRunning)
         {
             using (var serviceScope = serviceProvider.CreateScope())
             {
-                await new BlogController(serviceScope.ServiceProvider.GetService<BloggingContext>()).ActionAsync();
+                await new GenreController(serviceScope.ServiceProvider.GetService<ChinookContext>()).ActionAsync();
             }
 
             Interlocked.Increment(ref _requestsProcessed);
@@ -115,7 +79,7 @@ public class Program
         {
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            var instanceCount = BloggingContext.InstanceCount;
+            var instanceCount = ChinookContext.InstanceCount;
             var requestCount = _requestsProcessed;
             var elapsed = stopwatch.Elapsed;
             var currentElapsed = elapsed - lastElapsed;
@@ -132,7 +96,7 @@ public class Program
         }
 
         Console.WriteLine();
-        Console.WriteLine($"Total context creations: {BloggingContext.InstanceCount}");
+        Console.WriteLine($"Total context creations: {ChinookContext.InstanceCount}");
         Console.WriteLine(
             $"Requests per second:     {Math.Round(_requestsProcessed / stopwatch.Elapsed.TotalSeconds)}");
 
