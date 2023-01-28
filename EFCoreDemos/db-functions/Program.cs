@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Demos.Chinook;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -10,91 +11,17 @@ public class Program
 {
     private static void Main()
     {
-        SetupDatabase();
-
-        using (var db = new BloggingContext())
+        using (var db = new ChinookContext())
         {
             // Query with a DbFunction
-            var counts = db.Blogs.Select(b => BloggingContext.ComputePostCount(b.BlogId));
+            var counts = db.Invoices.Select(b => ChinookContext.ComputeInvoiceCount(b.CustomerId));
 
             foreach (var count in counts)
             {
-                Console.WriteLine("Number of Post for Blog is " + count);
+                Console.WriteLine("Number of Invoices for Customer is " + count);
             }
         }
 
         Console.ReadLine();
     }
-
-    private static void SetupDatabase()
-    {
-        using (var db = new BloggingContext())
-        {
-            if (db.Database.EnsureCreated())
-            {
-                db.Database.ExecuteSqlRaw(
-                    @"CREATE FUNCTION [dbo].[ComputePostCount] (@blogId INT) RETURNS INT 
-                          AS
-                          BEGIN
-                            DECLARE @ret AS INT
-                            SELECT @ret = COUNT(*) FROM dbo.Posts WHERE BlogId = @blogId
-                            RETURN @ret
-                          END");
-
-                var fishBlog = new Blog {Url = "http://sample.com/blogs/fish"};
-                fishBlog.Posts.Add(new Post {Title = "First Post!"});
-                db.Blogs.Add(fishBlog);
-
-                db.Blogs.Add(new Blog {Url = "http://sample.com/blogs/catfish"});
-                db.Blogs.Add(new Blog {Url = "http://sample.com/blogs/cats"});
-
-                db.SaveChanges();
-            }
-        }
-    }
-}
-
-public class BloggingContext : DbContext
-{
-    public DbSet<Blog> Blogs { get; set; }
-    public DbSet<Post> Posts { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder
-            .UseSqlServer(
-                @"Server=(localdb)\mssqllocaldb;Database=Demo.DbFunctions;Trusted_Connection=True;ConnectRetryCount=0")
-            .UseLoggerFactory(loggerFactory);
-    }
-
-    static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-    {
-        builder
-            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
-            .AddConsole();
-    });
-
-    [DbFunction(Schema = "dbo")]
-    public static int ComputePostCount(int blogId)
-    {
-        return 0;
-    }
-}
-
-public class Blog
-{
-    public int BlogId { get; set; }
-    public string Url { get; set; }
-
-    public List<Post> Posts { get; set; } = new List<Post>();
-}
-
-public class Post
-{
-    public int PostId { get; set; }
-    public string Title { get; set; }
-    public string Content { get; set; }
-
-    public int BlogId { get; set; }
-    public Blog Blog { get; set; }
 }
