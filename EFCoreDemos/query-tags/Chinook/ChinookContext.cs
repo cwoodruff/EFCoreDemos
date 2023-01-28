@@ -11,18 +11,18 @@ public partial class ChinookContext : DbContext
         : base(options)
     {
     }
-    
+
     public ChinookContext()
     {
     }
-    
-    static  readonly ILoggerFactory loggerFactory = LoggerFactory.Create (builder =>
+
+    static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
     {
         builder
             .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
             .AddConsole();
     });
-    
+
     public virtual DbSet<Album> Albums { get; set; } = null!;
     public virtual DbSet<Artist> Artists { get; set; } = null!;
     public virtual DbSet<Customer> Customers { get; set; } = null!;
@@ -39,12 +39,13 @@ public partial class ChinookContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
-                .UseSqlServer("Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;")
+                .UseSqlServer(
+                    "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;")
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
         }
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Album>(entity =>
@@ -57,7 +58,8 @@ public partial class ChinookContext : DbContext
 
             entity.Property(e => e.Title).HasMaxLength(160);
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.Artist)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.Artist)
                 .WithMany(p => p.Albums)
                 .HasForeignKey(d => d.ArtistId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__Album__ArtistId__276EDEB3");
@@ -102,7 +104,8 @@ public partial class ChinookContext : DbContext
 
             entity.Property(e => e.State).HasMaxLength(40);
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.SupportRep)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.SupportRep)
                 .WithMany(p => p.Customers)
                 .HasForeignKey(d => d.SupportRepId), "FK__Customer__Suppor__2C3393D0");
         });
@@ -141,7 +144,8 @@ public partial class ChinookContext : DbContext
 
             entity.Property(e => e.Title).HasMaxLength(30);
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.ReportsToNavigation)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.ReportsToNavigation)
                 .WithMany(p => p.InverseReportsToNavigation)
                 .HasForeignKey(d => d.ReportsTo), "FK__Employee__Report__2B3F6F97");
         });
@@ -177,7 +181,8 @@ public partial class ChinookContext : DbContext
 
             entity.Property(e => e.Total).HasColumnType("numeric(10, 2)");
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.Customer)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.Customer)
                 .WithMany(p => p.Invoices)
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__Invoice__Custome__2D27B809");
@@ -195,12 +200,14 @@ public partial class ChinookContext : DbContext
 
             entity.Property(e => e.UnitPrice).HasColumnType("numeric(10, 2)");
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.Invoice)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.Invoice)
                 .WithMany(p => p.InvoiceLines)
                 .HasForeignKey(d => d.InvoiceId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__InvoiceLi__Invoi__2F10007B");
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.Track)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.Track)
                 .WithMany(p => p.InvoiceLines)
                 .HasForeignKey(d => d.TrackId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__InvoiceLi__Track__2E1BDC42");
@@ -227,8 +234,10 @@ public partial class ChinookContext : DbContext
                 .WithMany(p => p.Playlists)
                 .UsingEntity<Dictionary<string, object>>(
                     "PlaylistTrack",
-                    l => l.HasOne<Track>().WithMany().HasForeignKey("TrackId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__PlaylistT__Track__300424B4"),
-                    r => r.HasOne<Playlist>().WithMany().HasForeignKey("PlaylistId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__PlaylistT__Playl__30F848ED"),
+                    l => l.HasOne<Track>().WithMany().HasForeignKey("TrackId").OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__PlaylistT__Track__300424B4"),
+                    r => r.HasOne<Playlist>().WithMany().HasForeignKey("PlaylistId")
+                        .OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__PlaylistT__Playl__30F848ED"),
                     j =>
                     {
                         j.HasKey("PlaylistId", "TrackId").HasName("PK__Playlist__A4A6282E25869641");
@@ -261,15 +270,18 @@ public partial class ChinookContext : DbContext
 
             entity.Property(e => e.UnitPrice).HasColumnType("numeric(10, 2)");
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.Album)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.Album)
                 .WithMany(p => p.Tracks)
                 .HasForeignKey(d => d.AlbumId), "FK__Track__AlbumId__286302EC");
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.Genre)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.Genre)
                 .WithMany(p => p.Tracks)
                 .HasForeignKey(d => d.GenreId), "FK__Track__GenreId__2A4B4B5E");
 
-            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity.HasOne(d => d.MediaType)
+            RelationalForeignKeyBuilderExtensions.HasConstraintName((ReferenceCollectionBuilder)entity
+                .HasOne(d => d.MediaType)
                 .WithMany(p => p.Tracks)
                 .HasForeignKey(d => d.MediaTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__Track__MediaType__29572725");

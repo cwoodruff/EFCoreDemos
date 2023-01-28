@@ -25,7 +25,7 @@ public class Employee : BaseEntity
     public string? Phone { get; set; }
     public string? Fax { get; set; }
     public string? Email { get; set; }
-    
+
     public virtual Employee? ReportsToNavigation { get; set; }
 
     public virtual ICollection<Customer> Customers { get; set; }

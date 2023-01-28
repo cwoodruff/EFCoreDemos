@@ -33,24 +33,24 @@ public class Program
         using (var db = new BloggingContext())
         {
             db.Database.EnsureDeleted();
-                    
+
             if (db.Database.EnsureCreated())
             {
-                var fishBlog = new Blog {Url = "http://sample.com/blogs/fish"};
-                var fishPost = new Post {Title = "First Post!"};
-                fishPost.Tags.Add(new Tag {Name = "Big Fish"});
-                fishPost.Tags.Add(new Tag {Name = "Salt Water Fish"});
-                    
-                var anotherFishPost = new Post {Title = "Second Post!"};
-                anotherFishPost.Tags.Add(new Tag {Name = "Small Fish"});
-                anotherFishPost.Tags.Add(new Tag {Name = "Fresh Water Fish"});
-                    
+                var fishBlog = new Blog { Url = "http://sample.com/blogs/fish" };
+                var fishPost = new Post { Title = "First Post!" };
+                fishPost.Tags.Add(new Tag { Name = "Big Fish" });
+                fishPost.Tags.Add(new Tag { Name = "Salt Water Fish" });
+
+                var anotherFishPost = new Post { Title = "Second Post!" };
+                anotherFishPost.Tags.Add(new Tag { Name = "Small Fish" });
+                anotherFishPost.Tags.Add(new Tag { Name = "Fresh Water Fish" });
+
                 fishBlog.Posts.Add(fishPost);
                 fishBlog.Posts.Add(anotherFishPost);
                 db.Blogs.Add(fishBlog);
 
-                db.Blogs.Add(new Blog {Url = "http://sample.com/blogs/catfish"});
-                db.Blogs.Add(new Blog {Url = "http://sample.com/blogs/cats"});
+                db.Blogs.Add(new Blog { Url = "http://sample.com/blogs/catfish" });
+                db.Blogs.Add(new Blog { Url = "http://sample.com/blogs/cats" });
 
                 db.SaveChanges();
             }
@@ -78,25 +78,24 @@ public class BloggingContext : DbContext
             .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
             .AddConsole();
     });
-        
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
             .Entity<Blog>()
             .HasMany(t => t.Posts);
-                
+
         modelBuilder
             .Entity<Post>()
             .HasMany(p => p.Tags)
             .WithMany(t => t.Posts)
             .UsingEntity(j => j.ToTable("PostTag"));
-            
+
         modelBuilder
             .Entity<Tag>()
             .HasMany(t => t.Posts)
             .WithMany(p => p.Tags)
             .UsingEntity(j => j.ToTable("PostTag"));
-            
     }
 
     [DbFunction(Schema = "dbo")]
@@ -111,6 +110,7 @@ public class Blog
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int BlogId { get; set; }
+
     public string Url { get; set; }
 
     public List<Post> Posts { get; set; } = new List<Post>();
@@ -121,21 +121,23 @@ public class Post
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int PostId { get; set; }
+
     public string Title { get; set; }
     public string Content { get; set; }
 
     public int BlogId { get; set; }
     public Blog Blog { get; set; }
-        
+
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 }
-    
+
 public class Tag
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string TagId { get; set; }
+
     public string Name { get; set; }
-        
+
     public ICollection<Post> Posts { get; set; } = new List<Post>();
 }

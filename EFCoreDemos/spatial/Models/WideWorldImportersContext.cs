@@ -345,7 +345,7 @@ public partial class WideWorldImportersContext : DbContext
             entity.HasIndex(e => e.PrimaryContactPersonId)
                 .HasDatabaseName("FK_Sales_Customers_PrimaryContactPersonID");
 
-            entity.HasIndex(e => new {e.PrimaryContactPersonId, e.IsOnCreditHold, e.CustomerId, e.BillToCustomerId})
+            entity.HasIndex(e => new { e.PrimaryContactPersonId, e.IsOnCreditHold, e.CustomerId, e.BillToCustomerId })
                 .HasDatabaseName("IX_Sales_Customers_Perf_20160301_06");
 
             entity.Property(e => e.CustomerId)
@@ -592,7 +592,7 @@ public partial class WideWorldImportersContext : DbContext
             entity.HasIndex(e => e.SalespersonPersonId)
                 .HasDatabaseName("FK_Sales_Invoices_SalespersonPersonID");
 
-            entity.HasIndex(e => new {e.ConfirmedReceivedBy, e.ConfirmedDeliveryTime})
+            entity.HasIndex(e => new { e.ConfirmedReceivedBy, e.ConfirmedDeliveryTime })
                 .HasDatabaseName("IX_Sales_Invoices_ConfirmedDeliveryTime");
 
             entity.Property(e => e.InvoiceId)
@@ -699,13 +699,13 @@ public partial class WideWorldImportersContext : DbContext
             entity.HasIndex(e => e.PackageTypeId)
                 .HasDatabaseName("FK_Sales_OrderLines_PackageTypeID");
 
-            entity.HasIndex(e => new {e.PickedQuantity, e.StockItemId})
+            entity.HasIndex(e => new { e.PickedQuantity, e.StockItemId })
                 .HasDatabaseName("IX_Sales_OrderLines_AllocatedStockItems");
 
-            entity.HasIndex(e => new {e.OrderId, e.PickedQuantity, e.StockItemId, e.PickingCompletedWhen})
+            entity.HasIndex(e => new { e.OrderId, e.PickedQuantity, e.StockItemId, e.PickingCompletedWhen })
                 .HasDatabaseName("IX_Sales_OrderLines_Perf_20160301_02");
 
-            entity.HasIndex(e => new {e.Quantity, e.StockItemId, e.PickingCompletedWhen, e.OrderId, e.OrderLineId})
+            entity.HasIndex(e => new { e.Quantity, e.StockItemId, e.PickingCompletedWhen, e.OrderId, e.OrderLineId })
                 .HasDatabaseName("IX_Sales_OrderLines_Perf_20160301_01");
 
             entity.Property(e => e.OrderLineId)
@@ -897,7 +897,7 @@ public partial class WideWorldImportersContext : DbContext
             entity.HasIndex(e => e.IsSalesperson)
                 .HasDatabaseName("IX_Application_People_IsSalesperson");
 
-            entity.HasIndex(e => new {e.FullName, e.EmailAddress, e.IsPermittedToLogon, e.PersonId})
+            entity.HasIndex(e => new { e.FullName, e.EmailAddress, e.IsPermittedToLogon, e.PersonId })
                 .HasDatabaseName("IX_Application_People_Perf_20160301_05");
 
             entity.Property(e => e.PersonId)
@@ -951,7 +951,7 @@ public partial class WideWorldImportersContext : DbContext
             entity.HasIndex(e => e.StockItemId)
                 .HasDatabaseName("FK_Purchasing_PurchaseOrderLines_StockItemID");
 
-            entity.HasIndex(e => new {e.OrderedOuters, e.ReceivedOuters, e.IsOrderLineFinalized, e.StockItemId})
+            entity.HasIndex(e => new { e.OrderedOuters, e.ReceivedOuters, e.IsOrderLineFinalized, e.StockItemId })
                 .HasDatabaseName("IX_Purchasing_PurchaseOrderLines_Perf_20160301_4");
 
             entity.Property(e => e.PurchaseOrderLineId)
@@ -1255,11 +1255,11 @@ public partial class WideWorldImportersContext : DbContext
 
             entity.ToTable("StockItemStockGroups", "Warehouse");
 
-            entity.HasIndex(e => new {e.StockGroupId, e.StockItemId})
+            entity.HasIndex(e => new { e.StockGroupId, e.StockItemId })
                 .HasDatabaseName("UQ_StockItemStockGroups_StockGroupID_Lookup")
                 .IsUnique();
 
-            entity.HasIndex(e => new {e.StockItemId, e.StockGroupId})
+            entity.HasIndex(e => new { e.StockItemId, e.StockGroupId })
                 .HasDatabaseName("UQ_StockItemStockGroups_StockItemID_Lookup")
                 .IsUnique();
 

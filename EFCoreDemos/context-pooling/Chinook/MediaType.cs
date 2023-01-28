@@ -8,6 +8,6 @@ public sealed class MediaType : BaseEntity
     }
 
     public string? Name { get; set; }
-    
+
     public ICollection<Track>? Tracks { get; set; }
 }

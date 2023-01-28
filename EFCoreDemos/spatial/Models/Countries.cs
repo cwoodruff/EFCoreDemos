@@ -22,6 +22,7 @@ public partial class Countries
     public string Subregion { get; set; }
     public int LastEditedBy { get; set; }
     public DateTime ValidFrom { get; set; }
+
     public DateTime ValidTo { get; set; }
     //public IGeometry Border { get; set; }
 

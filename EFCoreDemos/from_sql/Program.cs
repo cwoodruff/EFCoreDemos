@@ -20,7 +20,7 @@ class Program
 
         var customers =
             db.Customers.FromSqlInterpolated($"SELECT * FROM [Customer] WHERE Country = {parameter}");
-            
+
         foreach (var customer in customers)
         {
             Console.WriteLine($"Found Person: {customer.FirstName} {customer.LastName}");

@@ -22,7 +22,7 @@ public sealed class Employee : BaseEntity
     public string? Phone { get; set; }
     public string? Fax { get; set; }
     public string? Email { get; set; }
-    
+
     public Employee? ReportsToNavigation { get; set; }
 
     public ICollection<Customer> Customers { get; set; }

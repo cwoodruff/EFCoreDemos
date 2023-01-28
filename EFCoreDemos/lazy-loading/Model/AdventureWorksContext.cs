@@ -14,8 +14,8 @@ public class AdventureWorksContext : DbContext
             .EnableSensitiveDataLogging()
             .UseLoggerFactory(loggerFactory);
     }
-        
-    static  readonly ILoggerFactory loggerFactory = LoggerFactory.Create (builder =>
+
+    static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
     {
         builder
             .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
@@ -62,7 +62,7 @@ public class AdventureWorksContext : DbContext
                     .HasDatabaseName("AK_Address_rowguid")
                     .IsUnique();
 
-                entity.HasIndex(e => new {e.AddressLine1, e.AddressLine2, e.City, e.StateProvinceID, e.PostalCode})
+                entity.HasIndex(e => new { e.AddressLine1, e.AddressLine2, e.City, e.StateProvinceID, e.PostalCode })
                     .HasDatabaseName("IX_Address_AddressLine1_AddressLine2_City_StateProvinceID_PostalCode")
                     .IsUnique();
 
@@ -126,7 +126,7 @@ public class AdventureWorksContext : DbContext
                 entity.HasIndex(e => e.UnitMeasureCode)
                     .HasDatabaseName("IX_BillOfMaterials_UnitMeasureCode");
 
-                entity.HasIndex(e => new {e.ProductAssemblyID, e.ComponentID, e.StartDate})
+                entity.HasIndex(e => new { e.ProductAssemblyID, e.ComponentID, e.StartDate })
                     .HasDatabaseName("AK_BillOfMaterials_ProductAssemblyID_ComponentID_StartDate")
                     .IsUnique();
 
@@ -185,7 +185,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<BusinessEntityAddress>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.AddressID, e.AddressTypeID})
+                entity.HasKey(e => new { e.BusinessEntityID, e.AddressID, e.AddressTypeID })
                     .HasName("PK_BusinessEntityAddress_BusinessEntityID_AddressID_AddressTypeID");
 
                 entity.ToTable("BusinessEntityAddress", "Person");
@@ -225,7 +225,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<BusinessEntityContact>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.PersonID, e.ContactTypeID})
+                entity.HasKey(e => new { e.BusinessEntityID, e.PersonID, e.ContactTypeID })
                     .HasName("PK_BusinessEntityContact_BusinessEntityID_PersonID_ContactTypeID");
 
                 entity.ToTable("BusinessEntityContact", "Person");
@@ -306,7 +306,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<CountryRegionCurrency>(
             entity =>
             {
-                entity.HasKey(e => new {e.CountryRegionCode, e.CurrencyCode})
+                entity.HasKey(e => new { e.CountryRegionCode, e.CurrencyCode })
                     .HasName("PK_CountryRegionCurrency_CountryRegionCode_CurrencyCode");
 
                 entity.ToTable("CountryRegionCurrency", "Sales");
@@ -403,7 +403,7 @@ public class AdventureWorksContext : DbContext
             {
                 entity.ToTable("CurrencyRate", "Sales");
 
-                entity.HasIndex(e => new {e.CurrencyRateDate, e.FromCurrencyCode, e.ToCurrencyCode})
+                entity.HasIndex(e => new { e.CurrencyRateDate, e.FromCurrencyCode, e.ToCurrencyCode })
                     .HasDatabaseName("AK_CurrencyRate_CurrencyRateDate_FromCurrencyCode_ToCurrencyCode")
                     .IsUnique();
 
@@ -525,7 +525,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<EmailAddress>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.EmailAddressID})
+                entity.HasKey(e => new { e.BusinessEntityID, e.EmailAddressID })
                     .HasName("PK_EmailAddress_BusinessEntityID_EmailAddressID");
 
                 entity.ToTable("EmailAddress", "Person");
@@ -626,7 +626,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<EmployeeDepartmentHistory>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.StartDate, e.DepartmentID, e.ShiftID})
+                entity.HasKey(e => new { e.BusinessEntityID, e.StartDate, e.DepartmentID, e.ShiftID })
                     .HasName("PK_EmployeeDepartmentHistory_BusinessEntityID_StartDate_DepartmentID");
 
                 entity.ToTable("EmployeeDepartmentHistory", "HumanResources");
@@ -664,7 +664,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<EmployeePayHistory>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.RateChangeDate})
+                entity.HasKey(e => new { e.BusinessEntityID, e.RateChangeDate })
                     .HasName("PK_EmployeePayHistory_BusinessEntityID_RateChangeDate");
 
                 entity.ToTable("EmployeePayHistory", "HumanResources");
@@ -804,7 +804,7 @@ public class AdventureWorksContext : DbContext
                     .HasDatabaseName("AK_Person_rowguid")
                     .IsUnique();
 
-                entity.HasIndex(e => new {e.LastName, e.FirstName, e.MiddleName})
+                entity.HasIndex(e => new { e.LastName, e.FirstName, e.MiddleName })
                     .HasDatabaseName("IX_Person_LastName_FirstName_MiddleName");
 
                 entity.Property(e => e.BusinessEntityID).ValueGeneratedNever();
@@ -852,7 +852,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<PersonCreditCard>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.CreditCardID})
+                entity.HasKey(e => new { e.BusinessEntityID, e.CreditCardID })
                     .HasName("PK_PersonCreditCard_BusinessEntityID_CreditCardID");
 
                 entity.ToTable("PersonCreditCard", "Sales");
@@ -875,7 +875,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<PersonPhone>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.PhoneNumber, e.PhoneNumberTypeID})
+                entity.HasKey(e => new { e.BusinessEntityID, e.PhoneNumber, e.PhoneNumberTypeID })
                     .HasName("PK_PersonPhone_BusinessEntityID_PhoneNumber_PhoneNumberTypeID");
 
                 entity.ToTable("PersonPhone", "Person");
@@ -1023,7 +1023,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<ProductCostHistory>(
             entity =>
             {
-                entity.HasKey(e => new {e.ProductID, e.StartDate})
+                entity.HasKey(e => new { e.ProductID, e.StartDate })
                     .HasName("PK_ProductCostHistory_ProductID_StartDate");
 
                 entity.ToTable("ProductCostHistory", "Production");
@@ -1067,7 +1067,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<ProductInventory>(
             entity =>
             {
-                entity.HasKey(e => new {e.ProductID, e.LocationID})
+                entity.HasKey(e => new { e.ProductID, e.LocationID })
                     .HasName("PK_ProductInventory_ProductID_LocationID");
 
                 entity.ToTable("ProductInventory", "Production");
@@ -1098,7 +1098,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<ProductListPriceHistory>(
             entity =>
             {
-                entity.HasKey(e => new {e.ProductID, e.StartDate})
+                entity.HasKey(e => new { e.ProductID, e.StartDate })
                     .HasName("PK_ProductListPriceHistory_ProductID_StartDate");
 
                 entity.ToTable("ProductListPriceHistory", "Production");
@@ -1156,7 +1156,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<ProductModelIllustration>(
             entity =>
             {
-                entity.HasKey(e => new {e.ProductModelID, e.IllustrationID})
+                entity.HasKey(e => new { e.ProductModelID, e.IllustrationID })
                     .HasName("PK_ProductModelIllustration_ProductModelID_IllustrationID");
 
                 entity.ToTable("ProductModelIllustration", "Production");
@@ -1179,7 +1179,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<ProductModelProductDescriptionCulture>(
             entity =>
             {
-                entity.HasKey(e => new {e.ProductModelID, e.ProductDescriptionID, e.CultureID})
+                entity.HasKey(e => new { e.ProductModelID, e.ProductDescriptionID, e.CultureID })
                     .HasName(
                         "PK_ProductModelProductDescriptionCulture_ProductModelID_ProductDescriptionID_CultureID");
 
@@ -1224,7 +1224,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<ProductProductPhoto>(
             entity =>
             {
-                entity.HasKey(e => new {e.ProductID, e.ProductPhotoID})
+                entity.HasKey(e => new { e.ProductID, e.ProductPhotoID })
                     .HasName("PK_ProductProductPhoto_ProductID_ProductPhotoID");
 
                 entity.ToTable("ProductProductPhoto", "Production");
@@ -1253,7 +1253,7 @@ public class AdventureWorksContext : DbContext
             {
                 entity.ToTable("ProductReview", "Production");
 
-                entity.HasIndex(e => new {e.Comments, e.ProductID, e.ReviewerName})
+                entity.HasIndex(e => new { e.Comments, e.ProductID, e.ReviewerName })
                     .HasDatabaseName("IX_ProductReview_ProductID_Name");
 
                 entity.Property(e => e.Comments).HasMaxLength(3850);
@@ -1312,7 +1312,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<ProductVendor>(
             entity =>
             {
-                entity.HasKey(e => new {e.ProductID, e.BusinessEntityID})
+                entity.HasKey(e => new { e.ProductID, e.BusinessEntityID })
                     .HasName("PK_ProductVendor_ProductID_BusinessEntityID");
 
                 entity.ToTable("ProductVendor", "Purchasing");
@@ -1356,7 +1356,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<PurchaseOrderDetail>(
             entity =>
             {
-                entity.HasKey(e => new {e.PurchaseOrderID, e.PurchaseOrderDetailID})
+                entity.HasKey(e => new { e.PurchaseOrderID, e.PurchaseOrderDetailID })
                     .HasName("PK_PurchaseOrderDetail_PurchaseOrderID_PurchaseOrderDetailID");
 
                 entity.ToTable("PurchaseOrderDetail", "Purchasing");
@@ -1460,7 +1460,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<SalesOrderDetail>(
             entity =>
             {
-                entity.HasKey(e => new {e.SalesOrderID, e.SalesOrderDetailID})
+                entity.HasKey(e => new { e.SalesOrderID, e.SalesOrderDetailID })
                     .HasName("PK_SalesOrderDetail_SalesOrderID_SalesOrderDetailID");
 
                 entity.ToTable("SalesOrderDetail", "Sales");
@@ -1498,7 +1498,7 @@ public class AdventureWorksContext : DbContext
 
                 entity.HasOne(d => d.SpecialOfferProduct)
                     .WithMany(p => p.SalesOrderDetail)
-                    .HasForeignKey(d => new {d.SpecialOfferID, d.ProductID})
+                    .HasForeignKey(d => new { d.SpecialOfferID, d.ProductID })
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_SalesOrderDetail_SpecialOfferProduct_SpecialOfferIDProductID");
             });
@@ -1616,7 +1616,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<SalesOrderHeaderSalesReason>(
             entity =>
             {
-                entity.HasKey(e => new {e.SalesOrderID, e.SalesReasonID})
+                entity.HasKey(e => new { e.SalesOrderID, e.SalesReasonID })
                     .HasName("PK_SalesOrderHeaderSalesReason_SalesOrderID_SalesReasonID");
 
                 entity.ToTable("SalesOrderHeaderSalesReason", "Sales");
@@ -1686,7 +1686,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<SalesPersonQuotaHistory>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.QuotaDate})
+                entity.HasKey(e => new { e.BusinessEntityID, e.QuotaDate })
                     .HasName("PK_SalesPersonQuotaHistory_BusinessEntityID_QuotaDate");
 
                 entity.ToTable("SalesPersonQuotaHistory", "Sales");
@@ -1738,7 +1738,7 @@ public class AdventureWorksContext : DbContext
                     .HasDatabaseName("AK_SalesTaxRate_rowguid")
                     .IsUnique();
 
-                entity.HasIndex(e => new {e.StateProvinceID, e.TaxType})
+                entity.HasIndex(e => new { e.StateProvinceID, e.TaxType })
                     .HasDatabaseName("AK_SalesTaxRate_StateProvinceID_TaxType")
                     .IsUnique();
 
@@ -1821,7 +1821,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<SalesTerritoryHistory>(
             entity =>
             {
-                entity.HasKey(e => new {e.BusinessEntityID, e.StartDate, e.TerritoryID})
+                entity.HasKey(e => new { e.BusinessEntityID, e.StartDate, e.TerritoryID })
                     .HasName("PK_SalesTerritoryHistory_BusinessEntityID_StartDate_TerritoryID");
 
                 entity.ToTable("SalesTerritoryHistory", "Sales");
@@ -1878,7 +1878,7 @@ public class AdventureWorksContext : DbContext
                     .HasDatabaseName("AK_Shift_Name")
                     .IsUnique();
 
-                entity.HasIndex(e => new {e.StartTime, e.EndTime})
+                entity.HasIndex(e => new { e.StartTime, e.EndTime })
                     .HasDatabaseName("AK_Shift_StartTime_EndTime")
                     .IsUnique();
 
@@ -1928,7 +1928,7 @@ public class AdventureWorksContext : DbContext
             {
                 entity.ToTable("ShoppingCartItem", "Sales");
 
-                entity.HasIndex(e => new {e.ShoppingCartID, e.ProductID})
+                entity.HasIndex(e => new { e.ShoppingCartID, e.ProductID })
                     .HasDatabaseName("IX_ShoppingCartItem_ShoppingCartID_ProductID");
 
                 entity.Property(e => e.DateCreated)
@@ -1992,7 +1992,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<SpecialOfferProduct>(
             entity =>
             {
-                entity.HasKey(e => new {e.SpecialOfferID, e.ProductID})
+                entity.HasKey(e => new { e.SpecialOfferID, e.ProductID })
                     .HasName("PK_SpecialOfferProduct_SpecialOfferID_ProductID");
 
                 entity.ToTable("SpecialOfferProduct", "Sales");
@@ -2034,7 +2034,7 @@ public class AdventureWorksContext : DbContext
                     .HasDatabaseName("AK_StateProvince_rowguid")
                     .IsUnique();
 
-                entity.HasIndex(e => new {e.StateProvinceCode, e.CountryRegionCode})
+                entity.HasIndex(e => new { e.StateProvinceCode, e.CountryRegionCode })
                     .HasDatabaseName("AK_StateProvince_StateProvinceCode_CountryRegionCode")
                     .IsUnique();
 
@@ -2124,7 +2124,7 @@ public class AdventureWorksContext : DbContext
                 entity.HasIndex(e => e.ProductID)
                     .HasDatabaseName("IX_TransactionHistory_ProductID");
 
-                entity.HasIndex(e => new {e.ReferenceOrderID, e.ReferenceOrderLineID})
+                entity.HasIndex(e => new { e.ReferenceOrderID, e.ReferenceOrderLineID })
                     .HasDatabaseName("IX_TransactionHistory_ReferenceOrderID_ReferenceOrderLineID");
 
                 entity.Property(e => e.ActualCost).HasColumnType("money");
@@ -2160,7 +2160,7 @@ public class AdventureWorksContext : DbContext
                 entity.HasIndex(e => e.ProductID)
                     .HasDatabaseName("IX_TransactionHistoryArchive_ProductID");
 
-                entity.HasIndex(e => new {e.ReferenceOrderID, e.ReferenceOrderLineID})
+                entity.HasIndex(e => new { e.ReferenceOrderID, e.ReferenceOrderLineID })
                     .HasDatabaseName("IX_TransactionHistoryArchive_ReferenceOrderID_ReferenceOrderLineID");
 
                 entity.Property(e => e.TransactionID).ValueGeneratedNever();
@@ -2283,7 +2283,7 @@ public class AdventureWorksContext : DbContext
         modelBuilder.Entity<WorkOrderRouting>(
             entity =>
             {
-                entity.HasKey(e => new {e.WorkOrderID, e.ProductID, e.OperationSequence})
+                entity.HasKey(e => new { e.WorkOrderID, e.ProductID, e.OperationSequence })
                     .HasName("PK_WorkOrderRouting_WorkOrderID_ProductID_OperationSequence");
 
                 entity.ToTable("WorkOrderRouting", "Production");

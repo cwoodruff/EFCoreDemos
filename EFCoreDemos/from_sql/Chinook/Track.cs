@@ -21,6 +21,6 @@ public class Track : BaseEntity
     public virtual Genre? Genre { get; set; }
     public virtual MediaType? MediaType { get; set; }
     public virtual ICollection<InvoiceLine> InvoiceLines { get; set; }
-    
+
     public virtual ICollection<Playlist>? Playlists { get; set; }
 }

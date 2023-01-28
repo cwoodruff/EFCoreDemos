@@ -112,7 +112,7 @@ public class AuditingInterceptor : ISaveChangesInterceptor
     {
         context.ChangeTracker.DetectChanges();
 
-        var audit = new SaveChangesAudit {AuditId = Guid.NewGuid(), StartTime = DateTime.UtcNow};
+        var audit = new SaveChangesAudit { AuditId = Guid.NewGuid(), StartTime = DateTime.UtcNow };
 
         foreach (var entry in context.ChangeTracker.Entries())
         {
@@ -126,7 +126,7 @@ public class AuditingInterceptor : ISaveChangesInterceptor
 
             if (auditMessage != null)
             {
-                audit.Entities.Add(new EntityAudit {State = entry.State, AuditMessage = auditMessage});
+                audit.Entities.Add(new EntityAudit { State = entry.State, AuditMessage = auditMessage });
             }
         }
 

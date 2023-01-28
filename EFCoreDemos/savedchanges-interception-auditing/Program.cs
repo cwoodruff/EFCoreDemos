@@ -10,13 +10,17 @@ public class Program
     public static async Task Main()
     {
         await CreateDatabases();
-        
+
         // Insert, update, and delete some entities
 
         using (var context = new BlogsContext())
         {
             context.Add(
-                new Blog { Name = "EF Blog", Posts = { new Post { Title = "EF Core 3.1!" }, new Post { Title = "EF Core 5.0!" } } });
+                new Blog
+                {
+                    Name = "EF Blog",
+                    Posts = { new Post { Title = "EF Core 3.1!" }, new Post { Title = "EF Core 5.0!" } }
+                });
 
             await context.SaveChangesAsync();
         }
@@ -48,7 +52,8 @@ public class Program
         }
 
         using (var context =
-               new AuditContext(@"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0"))
+               new AuditContext(
+                   @"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0"))
         {
             foreach (var audit in context.SaveChangesAudits.Include(e => e.Entities).ToList())
             {
@@ -71,7 +76,8 @@ public class Program
     private static async Task CreateDatabases()
     {
         using (var context =
-               new AuditContext(@"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0"))
+               new AuditContext(
+                   @"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0"))
         {
             await context.Database.EnsureDeletedAsync();
             await context.Database.EnsureCreatedAsync();

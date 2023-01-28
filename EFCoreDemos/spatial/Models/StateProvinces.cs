@@ -18,6 +18,7 @@ public partial class StateProvinces
     public long? LatestRecordedPopulation { get; set; }
     public int LastEditedBy { get; set; }
     public DateTime ValidFrom { get; set; }
+
     public DateTime ValidTo { get; set; }
     //public IGeometry Border { get; set; }
 

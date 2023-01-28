@@ -11,7 +11,7 @@ public class Program
         using (var db = new ChinookContext())
         {
             var invoices = db.Invoices
-                .GroupBy(o => new {o.InvoiceDate})
+                .GroupBy(o => new { o.InvoiceDate })
                 .Select(g => new
                 {
                     g.Key.InvoiceDate,

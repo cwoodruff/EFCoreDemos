@@ -6,7 +6,8 @@ namespace savedchanges_interception_auditing;
 public class BlogsContext : DbContext
 {
     private readonly AuditingInterceptor _auditingInterceptor =
-        new AuditingInterceptor(@"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0");
+        new AuditingInterceptor(
+            @"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0");
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder

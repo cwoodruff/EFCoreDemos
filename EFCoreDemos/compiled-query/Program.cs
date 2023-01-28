@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using compiled_query.Chinook;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,7 +58,7 @@ public class Program
                 }
             },
             name: "Async Compiled EF Core Query");
-        
+
         RunTest(
             albumIDs =>
             {
@@ -71,7 +69,7 @@ public class Program
                 }
             },
             name: "DBContext Compiled EF Core Query");
-        
+
         RunTest(
             albumIDs =>
             {

@@ -10,6 +10,6 @@ public class MediaType : BaseEntity
     }
 
     public string? Name { get; set; }
-    
+
     public virtual ICollection<Track>? Tracks { get; set; }
 }
