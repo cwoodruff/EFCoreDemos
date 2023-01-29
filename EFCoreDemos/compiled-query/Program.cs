@@ -54,7 +54,7 @@ public class Program
                 foreach (var id in albumIDs)
                 {
                     // Invoke the async compiled query
-                    var artist = query(_context, id);
+                    var artist = query(_context, id).Result;
                 }
             },
             name: "Async Compiled EF Core Query");
@@ -76,7 +76,7 @@ public class Program
                 foreach (var id in albumIDs)
                 {
                     // Invoke the compiled async query from DBContext
-                    var artist = _context.GetAlbumAsync(id);
+                    var artist = _context.GetAlbumAsync(id).Result;
                 }
             },
             name: "DBContext Async Compiled EF Core Query");
