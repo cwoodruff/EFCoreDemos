@@ -1,6 +1,7 @@
 # EFCoreDemos
 
-* [Compiled Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-query)
+* [Compiled Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-query) (run with "dotnet run -c Release
+")
 * [DBContext Pooling](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/context-pooling)
 * [DB Functions](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/db-functions)
 * [Entity Counters](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/demo-4-entity-counters)
