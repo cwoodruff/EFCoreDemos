@@ -1,13 +1,10 @@
 ﻿namespace context_pooling.Chinook;
 
-public sealed class Artist : BaseEntity
+public partial class Artist
 {
-    public Artist()
-    {
-        Albums = new HashSet<Album>();
-    }
+    public int Id { get; set; }
 
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    public ICollection<Album> Albums { get; set; }
+    public virtual ICollection<Album> Albums { get; } = new List<Album>();
 }

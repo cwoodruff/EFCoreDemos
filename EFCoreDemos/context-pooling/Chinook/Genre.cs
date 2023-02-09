@@ -1,12 +1,10 @@
 ﻿namespace context_pooling.Chinook;
 
-public sealed class Genre : BaseEntity
+public partial class Genre
 {
-    public Genre()
-    {
-        Tracks = new HashSet<Track>();
-    }
+    public int Id { get; set; }
 
     public string? Name { get; set; }
-    public ICollection<Track>? Tracks { get; set; }
+
+    public virtual ICollection<Track> Tracks { get; } = new List<Track>();
 }
