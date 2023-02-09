@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
 namespace executeupdate_executedelete.Chinook;
 
