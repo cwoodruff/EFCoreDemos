@@ -1,17 +1,14 @@
-﻿#nullable disable
+﻿namespace json_columns.Chinook;
 
-namespace json_columns.Chinook;
-
-public sealed class Album : BaseEntity
+public partial class Album
 {
-    public Album()
-    {
-        Tracks = new HashSet<Track>();
-    }
+    public int Id { get; set; }
 
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
+
     public int ArtistId { get; set; }
 
-    public Artist Artist { get; set; }
-    public ICollection<Track> Tracks { get; set; }
+    public virtual Artist Artist { get; set; } = null!;
+
+    public virtual ICollection<Track> Tracks { get; } = new List<Track>();
 }

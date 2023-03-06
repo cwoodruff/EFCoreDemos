@@ -1,8 +1,10 @@
 ﻿namespace json_columns.Chinook;
 
-public sealed class Playlist : BaseEntity
+public partial class Playlist
 {
+    public int Id { get; set; }
+
     public string? Name { get; set; }
 
-    public ICollection<Track>? Tracks { get; set; }
+    public virtual ICollection<Track> Tracks { get; } = new List<Track>();
 }
