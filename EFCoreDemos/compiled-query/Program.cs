@@ -23,10 +23,11 @@ public class Program
         RunTest(
             albumIDs =>
             {
+                List<Album?> l = new List<Album?>();
                 foreach (var id in albumIDs)
                 {
                     // Use a regular auto-compiled query
-                    var artist = _context.Albums.FirstOrDefault(a => a.Id == id);
+                    l.Add(_context.Albums.FirstOrDefault(a => a.Id == id));
                 }
             },
             name: "Run-time EF Core Query");
@@ -38,10 +39,11 @@ public class Program
                 var explicitQuery = EF.CompileQuery((ChinookContext context, int id)
                     => _context.Albums.FirstOrDefault(a => a.Id == id));
 
+                List<Album?> l = new List<Album?>();
                 foreach (var id in albumIDs)
                 {
                     // Invoke the compiled query
-                    var artist = explicitQuery(_context, id);
+                    l.Add(explicitQuery(_context, id));
                 }
             },
             name: "Compiled EF Core Query");
@@ -66,10 +68,11 @@ public class Program
         RunTest(
             albumIDs =>
             {
+                List<Album?> l = new List<Album?>();
                 foreach (var id in albumIDs)
                 {
                     // Invoke the compiled query from DBContext
-                    var artist = _context.GetAlbum(id);
+                    l.Add(_context.GetAlbum(id));
                 }
             },
             name: "DBContext Compiled EF Core Query");
@@ -87,7 +90,8 @@ public class Program
             },
             name: "DBContext Async Compiled EF Core Query");
         
-        var summary = BenchmarkRunner.Run<CmpldQryBenchmark>();
+        // dotnet run --project YourFSharpProject -c Release
+        //var summary = BenchmarkRunner.Run<CmpldQryBenchmark>();
     }
     
     private static void RunTest(Action<int[]> test, string name)
@@ -142,10 +146,11 @@ public class CmpldQryBenchmark
     [Benchmark]
     public void RunTimeEFCoreQuery()
     {
+        List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
             // Use a regular auto-compiled query
-            var artist = _context.Albums.FirstOrDefault(a => a.Id == id);
+            l.Add(_context.Albums.FirstOrDefault(a => a.Id == id));
         }
     }
     
@@ -156,10 +161,11 @@ public class CmpldQryBenchmark
         var explicitQuery = EF.CompileQuery((ChinookContext context, int id)
             => _context.Albums.FirstOrDefault(a => a.Id == id));
 
+        List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
             // Invoke the compiled query
-            var artist = explicitQuery(_context, id);
+            l.Add(explicitQuery(_context, id));
         }
     }
     
@@ -182,10 +188,11 @@ public class CmpldQryBenchmark
     [Benchmark]
     public void DBContextCompiledEFCoreQuery()
     {
+        List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
             // Invoke the compiled query from DBContext
-            var artist = _context.GetAlbum(id);
+            l.Add(_context.GetAlbum(id));
         }
     }
     
