@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using compiled_query.Chinook;
 using Microsoft.EntityFrameworkCore;
@@ -90,7 +91,7 @@ public class Program
             },
             name: "DBContext Async Compiled EF Core Query");
         
-        // dotnet run --project YourFSharpProject -c Release
+        // dotnet run --project .\compiled-query.csproj -c Release
         //var summary = BenchmarkRunner.Run<CmpldQryBenchmark>();
     }
     
@@ -116,12 +117,17 @@ public class Program
     }
 }
 
+[SimpleJob(RuntimeMoniker.Net70)]
 public class CmpldQryBenchmark
 {
     private int[] _albumIDs;
     private static ChinookContext? _context;
+
+    [Params(500)]
+    public int N;
     
-    public CmpldQryBenchmark()
+    [GlobalSetup]
+    public void Setup()
     {
         var builder = new DbContextOptionsBuilder<ChinookContext>();
         builder.UseSqlServer(
@@ -133,7 +139,7 @@ public class CmpldQryBenchmark
         // Warm up
         _context.Artists.First();
 
-        _albumIDs = GetAlbumIDs(500);
+        _albumIDs = GetAlbumIDs(N);
     }
 
     private static int[] GetAlbumIDs(int count)
