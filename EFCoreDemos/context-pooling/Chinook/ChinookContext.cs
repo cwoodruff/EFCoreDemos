@@ -5,10 +5,6 @@ namespace context_pooling.Chinook;
 
 public partial class ChinookContext : DbContext
 {
-    public ChinookContext()
-    {
-    }
-
     public ChinookContext(DbContextOptions<ChinookContext> options)
         : base(options) => Interlocked.Increment(ref InstanceCount);
     
@@ -41,10 +37,6 @@ public partial class ChinookContext : DbContext
         builder
             .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information);
     });
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;")
-            .UseLoggerFactory(loggerFactory);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
