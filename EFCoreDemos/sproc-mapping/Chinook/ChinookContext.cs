@@ -290,6 +290,331 @@ public partial class ChinookContext : DbContext
                 .HasForeignKey(d => d.MediaTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__Track__MediaType__29572725");
         });
+        
+        modelBuilder.Entity<Album>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.Title);
+                    storedProcedureBuilder.HasParameter(e => e.ArtistId);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(person => person.Title);
+                    storedProcedureBuilder.HasParameter(person => person.ArtistId);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(artist => artist.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<Artist>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<Customer>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.FirstName);
+                    storedProcedureBuilder.HasParameter(e => e.LastName);
+                    storedProcedureBuilder.HasParameter(e => e.Company);
+                    storedProcedureBuilder.HasParameter(e => e.Address);
+                    storedProcedureBuilder.HasParameter(e => e.City);
+                    storedProcedureBuilder.HasParameter(e => e.State);
+                    storedProcedureBuilder.HasParameter(e => e.Country);
+                    storedProcedureBuilder.HasParameter(e => e.PostalCode);
+                    storedProcedureBuilder.HasParameter(e => e.Phone);
+                    storedProcedureBuilder.HasParameter(e => e.Fax);
+                    storedProcedureBuilder.HasParameter(e => e.Email);
+                    storedProcedureBuilder.HasParameter(e => e.SupportRepId);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.FirstName);
+                    storedProcedureBuilder.HasParameter(e => e.LastName);
+                    storedProcedureBuilder.HasParameter(e => e.Company);
+                    storedProcedureBuilder.HasParameter(e => e.Address);
+                    storedProcedureBuilder.HasParameter(e => e.City);
+                    storedProcedureBuilder.HasParameter(e => e.State);
+                    storedProcedureBuilder.HasParameter(e => e.Country);
+                    storedProcedureBuilder.HasParameter(e => e.PostalCode);
+                    storedProcedureBuilder.HasParameter(e => e.Phone);
+                    storedProcedureBuilder.HasParameter(e => e.Fax);
+                    storedProcedureBuilder.HasParameter(e => e.Email);
+                    storedProcedureBuilder.HasParameter(e => e.SupportRepId);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<Employee>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.FirstName);
+                    storedProcedureBuilder.HasParameter(e => e.LastName);
+                    storedProcedureBuilder.HasParameter(e => e.Title);
+                    storedProcedureBuilder.HasParameter(e => e.ReportsTo);
+                    storedProcedureBuilder.HasParameter(e => e.BirthDate);
+                    storedProcedureBuilder.HasParameter(e => e.HireDate);
+                    storedProcedureBuilder.HasParameter(e => e.Address);
+                    storedProcedureBuilder.HasParameter(e => e.City);
+                    storedProcedureBuilder.HasParameter(e => e.State);
+                    storedProcedureBuilder.HasParameter(e => e.Country);
+                    storedProcedureBuilder.HasParameter(e => e.PostalCode);
+                    storedProcedureBuilder.HasParameter(e => e.Phone);
+                    storedProcedureBuilder.HasParameter(e => e.Fax);
+                    storedProcedureBuilder.HasParameter(e => e.Email);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.FirstName);
+                    storedProcedureBuilder.HasParameter(e => e.LastName);
+                    storedProcedureBuilder.HasParameter(e => e.Title);
+                    storedProcedureBuilder.HasParameter(e => e.ReportsTo);
+                    storedProcedureBuilder.HasParameter(e => e.BirthDate);
+                    storedProcedureBuilder.HasParameter(e => e.HireDate);
+                    storedProcedureBuilder.HasParameter(e => e.Address);
+                    storedProcedureBuilder.HasParameter(e => e.City);
+                    storedProcedureBuilder.HasParameter(e => e.State);
+                    storedProcedureBuilder.HasParameter(e => e.Country);
+                    storedProcedureBuilder.HasParameter(e => e.PostalCode);
+                    storedProcedureBuilder.HasParameter(e => e.Phone);
+                    storedProcedureBuilder.HasParameter(e => e.Fax);
+                    storedProcedureBuilder.HasParameter(e => e.Email);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<Genre>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<Invoice>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.CustomerId);
+                    storedProcedureBuilder.HasParameter(e => e.InvoiceDate);
+                    storedProcedureBuilder.HasParameter(e => e.BillingAddress);
+                    storedProcedureBuilder.HasParameter(e => e.BillingCity);
+                    storedProcedureBuilder.HasParameter(e => e.BillingState);
+                    storedProcedureBuilder.HasParameter(e => e.BillingCountry);
+                    storedProcedureBuilder.HasParameter(e => e.BillingPostalCode);
+                    storedProcedureBuilder.HasParameter(e => e.Total);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.CustomerId);
+                    storedProcedureBuilder.HasParameter(e => e.InvoiceDate);
+                    storedProcedureBuilder.HasParameter(e => e.BillingAddress);
+                    storedProcedureBuilder.HasParameter(e => e.BillingCity);
+                    storedProcedureBuilder.HasParameter(e => e.BillingState);
+                    storedProcedureBuilder.HasParameter(e => e.BillingCountry);
+                    storedProcedureBuilder.HasParameter(e => e.BillingPostalCode);
+                    storedProcedureBuilder.HasParameter(e => e.Total);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<InvoiceLine>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.InvoiceId);
+                    storedProcedureBuilder.HasParameter(e => e.TrackId);
+                    storedProcedureBuilder.HasParameter(e => e.UnitPrice);
+                    storedProcedureBuilder.HasParameter(e => e.Quantity);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.InvoiceId);
+                    storedProcedureBuilder.HasParameter(e => e.TrackId);
+                    storedProcedureBuilder.HasParameter(e => e.UnitPrice);
+                    storedProcedureBuilder.HasParameter(e => e.Quantity);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<MediaType>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<Playlist>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+        
+        modelBuilder.Entity<Track>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasParameter(e => e.AlbumId);
+                    storedProcedureBuilder.HasParameter(e => e.MediaTypeId);
+                    storedProcedureBuilder.HasParameter(e => e.GenreId);
+                    storedProcedureBuilder.HasParameter(e => e.Composer);
+                    storedProcedureBuilder.HasParameter(e => e.Milliseconds);
+                    storedProcedureBuilder.HasParameter(e => e.Bytes);
+                    storedProcedureBuilder.HasParameter(e => e.UnitPrice);
+                    storedProcedureBuilder.HasResultColumn(e => e.Id);
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdateAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasParameter(e => e.Name);
+                    storedProcedureBuilder.HasParameter(e => e.AlbumId);
+                    storedProcedureBuilder.HasParameter(e => e.MediaTypeId);
+                    storedProcedureBuilder.HasParameter(e => e.GenreId);
+                    storedProcedureBuilder.HasParameter(e => e.Composer);
+                    storedProcedureBuilder.HasParameter(e => e.Milliseconds);
+                    storedProcedureBuilder.HasParameter(e => e.Bytes);
+                    storedProcedureBuilder.HasParameter(e => e.UnitPrice);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeleteAlbum",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+
 
         OnModelCreatingPartial(modelBuilder);
     }
