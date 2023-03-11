@@ -238,21 +238,26 @@ public partial class ChinookContext : DbContext
                 .WithMany(p => p.Playlists)
                 .UsingEntity<Dictionary<string, object>>(
                     "PlaylistTrack",
-                    l => l.HasOne<Track>().WithMany().HasForeignKey("TrackId").OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__PlaylistT__Track__300424B4"),
-                    r => r.HasOne<Playlist>().WithMany().HasForeignKey("PlaylistId")
-                        .OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__PlaylistT__Playl__30F848ED"),
-                    j =>
+                    builder => builder.HasOne<Track>().WithMany().OnDelete(DeleteBehavior.Cascade),
+                    builder => builder.HasOne<Playlist>().WithMany().OnDelete(DeleteBehavior.ClientCascade),
+                    joinTypeBuilder =>
                     {
-                        j.HasKey("PlaylistId", "TrackId").HasName("PK__Playlist__A4A6282E25869641");
-
-                        j.ToTable("PlaylistTrack");
-
-                        j.HasIndex(new[] { "PlaylistId" }, "IFK_Playlist_PlaylistTrack");
-
-                        j.HasIndex(new[] { "TrackId" }, "IFK_Track_PlaylistTrack");
-
-                        j.HasIndex(new[] { "PlaylistId" }, "IPK_PlaylistTrack");
+                        joinTypeBuilder
+                            .InsertUsingStoredProcedure(
+                                "sproc_InsertPlaylistTrack",
+                                storedProcedureBuilder =>
+                                {
+                                    storedProcedureBuilder.HasParameter("PlaylistId");
+                                    storedProcedureBuilder.HasParameter("TrackId");
+                                })
+                            .DeleteUsingStoredProcedure(
+                                "sproc_DeletePlaylistTrack",
+                                storedProcedureBuilder =>
+                                {
+                                    storedProcedureBuilder.HasOriginalValueParameter("PlaylistId");
+                                    storedProcedureBuilder.HasOriginalValueParameter("TrackId");
+                                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                                });
                     });
         });
 
@@ -290,7 +295,7 @@ public partial class ChinookContext : DbContext
                 .HasForeignKey(d => d.MediaTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__Track__MediaType__29572725");
         });
-        
+
         modelBuilder.Entity<Album>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -316,7 +321,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(artist => artist.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
         modelBuilder.Entity<Artist>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -340,7 +345,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
         modelBuilder.Entity<Customer>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -386,7 +391,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
         modelBuilder.Entity<Employee>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -436,7 +441,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
         modelBuilder.Entity<Genre>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -460,7 +465,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
         modelBuilder.Entity<Invoice>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -498,7 +503,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
         modelBuilder.Entity<InvoiceLine>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -528,7 +533,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
         modelBuilder.Entity<MediaType>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -552,7 +557,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
         modelBuilder.Entity<Playlist>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",
@@ -576,7 +581,33 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
-        
+
+        modelBuilder.Entity<PlaylistTrack>()
+            .InsertUsingStoredProcedure(
+                "sproc_InsertPlaylistTrack",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.PlaylistId);
+                    storedProcedureBuilder.HasParameter(e => e.TrackId);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .UpdateUsingStoredProcedure(
+                "sproc_UpdatePlaylistTrack",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasParameter(e => e.PlaylistId);
+                    storedProcedureBuilder.HasParameter(e => e.TrackId);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                })
+            .DeleteUsingStoredProcedure(
+                "sproc_DeletePlaylistTrack",
+                storedProcedureBuilder =>
+                {
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.PlaylistId);
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.TrackId);
+                    storedProcedureBuilder.HasRowsAffectedResultColumn();
+                });
+
         modelBuilder.Entity<Track>()
             .InsertUsingStoredProcedure(
                 "sproc_InsertAlbum",

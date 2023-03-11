@@ -1,3 +1,21 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using sproc_mapping.Chinook;
 
-Console.WriteLine("Hello, World!");
+#pragma warning disable 169
+
+namespace Demos;
+
+public class Program
+{
+    private static void Main()
+    {
+        using (var db = new ChinookContext())
+        {
+            
+        }
+
+        Console.ReadLine();
+    }
+}
