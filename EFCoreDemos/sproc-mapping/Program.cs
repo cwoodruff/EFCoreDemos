@@ -13,6 +13,18 @@ public class Program
     {
         using (var db = new ChinookContext())
         {
+            // Get all the tracks in the database
+            var tracks = db.Tracks
+                .FromSql($"dbo.sproc_GetTrack")
+                .ToList();
+            
+            Console.WriteLine(tracks.FirstOrDefault().Name);
+
+            // Insert a new track
+            
+            // Update the track
+            
+            // Delete the track
             
         }
 

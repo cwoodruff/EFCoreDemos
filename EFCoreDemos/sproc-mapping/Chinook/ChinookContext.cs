@@ -238,26 +238,21 @@ public partial class ChinookContext : DbContext
                 .WithMany(p => p.Playlists)
                 .UsingEntity<Dictionary<string, object>>(
                     "PlaylistTrack",
-                    builder => builder.HasOne<Track>().WithMany().OnDelete(DeleteBehavior.Cascade),
-                    builder => builder.HasOne<Playlist>().WithMany().OnDelete(DeleteBehavior.ClientCascade),
-                    joinTypeBuilder =>
+                    l => l.HasOne<Track>().WithMany().HasForeignKey("TrackId").OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__PlaylistT__Track__300424B4"),
+                    r => r.HasOne<Playlist>().WithMany().HasForeignKey("PlaylistId")
+                        .OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__PlaylistT__Playl__30F848ED"),
+                    j =>
                     {
-                        joinTypeBuilder
-                            .InsertUsingStoredProcedure(
-                                "sproc_InsertPlaylistTrack",
-                                storedProcedureBuilder =>
-                                {
-                                    storedProcedureBuilder.HasParameter("PlaylistId");
-                                    storedProcedureBuilder.HasParameter("TrackId");
-                                })
-                            .DeleteUsingStoredProcedure(
-                                "sproc_DeletePlaylistTrack",
-                                storedProcedureBuilder =>
-                                {
-                                    storedProcedureBuilder.HasOriginalValueParameter("PlaylistId");
-                                    storedProcedureBuilder.HasOriginalValueParameter("TrackId");
-                                    storedProcedureBuilder.HasRowsAffectedResultColumn();
-                                });
+                        j.HasKey("PlaylistId", "TrackId").HasName("PK__Playlist__A4A6282E25869641");
+
+                        j.ToTable("PlaylistTrack");
+
+                        j.HasIndex(new[] { "PlaylistId" }, "IFK_Playlist_PlaylistTrack");
+
+                        j.HasIndex(new[] { "TrackId" }, "IFK_Track_PlaylistTrack");
+
+                        j.HasIndex(new[] { "PlaylistId" }, "IPK_PlaylistTrack");
                     });
         });
 
@@ -310,28 +305,28 @@ public partial class ChinookContext : DbContext
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
-                    storedProcedureBuilder.HasParameter(person => person.Title);
-                    storedProcedureBuilder.HasParameter(person => person.ArtistId);
+                    storedProcedureBuilder.HasParameter(e => e.Title);
+                    storedProcedureBuilder.HasParameter(e => e.ArtistId);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
                 "sproc_DeleteAlbum",
                 storedProcedureBuilder =>
                 {
-                    storedProcedureBuilder.HasOriginalValueParameter(artist => artist.Id);
+                    storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
 
         modelBuilder.Entity<Artist>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertArtist",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.Name);
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdateArtist",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -339,7 +334,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeleteArtist",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -348,7 +343,7 @@ public partial class ChinookContext : DbContext
 
         modelBuilder.Entity<Customer>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertCustomer",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.FirstName);
@@ -366,7 +361,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdateCustomer",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -385,7 +380,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeleteCustomer",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -394,7 +389,7 @@ public partial class ChinookContext : DbContext
 
         modelBuilder.Entity<Employee>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertEmployee",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.FirstName);
@@ -414,7 +409,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdateEmployee",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -435,7 +430,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeleteEmployee",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -444,14 +439,14 @@ public partial class ChinookContext : DbContext
 
         modelBuilder.Entity<Genre>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertGenre",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.Name);
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdateGenre",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -459,7 +454,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeleteGenre",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -468,7 +463,7 @@ public partial class ChinookContext : DbContext
 
         modelBuilder.Entity<Invoice>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertInvoice",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.CustomerId);
@@ -482,7 +477,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdateInvoice",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -497,7 +492,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeleteInvoice",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -506,7 +501,7 @@ public partial class ChinookContext : DbContext
 
         modelBuilder.Entity<InvoiceLine>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertInvoiceLine",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.InvoiceId);
@@ -516,7 +511,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdateInvoiceLine",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -527,7 +522,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeleteInvoiceLine",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -536,14 +531,14 @@ public partial class ChinookContext : DbContext
 
         modelBuilder.Entity<MediaType>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertMediaType",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.Name);
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdateMediaType",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -551,7 +546,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeleteMediaType",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -560,14 +555,14 @@ public partial class ChinookContext : DbContext
 
         modelBuilder.Entity<Playlist>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertPlaylist",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.Name);
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdatePlaylist",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -575,42 +570,42 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeletePlaylist",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 });
 
-        modelBuilder.Entity<PlaylistTrack>()
-            .InsertUsingStoredProcedure(
-                "sproc_InsertPlaylistTrack",
-                storedProcedureBuilder =>
-                {
-                    storedProcedureBuilder.HasParameter(e => e.PlaylistId);
-                    storedProcedureBuilder.HasParameter(e => e.TrackId);
-                    storedProcedureBuilder.HasRowsAffectedResultColumn();
-                })
-            .UpdateUsingStoredProcedure(
-                "sproc_UpdatePlaylistTrack",
-                storedProcedureBuilder =>
-                {
-                    storedProcedureBuilder.HasParameter(e => e.PlaylistId);
-                    storedProcedureBuilder.HasParameter(e => e.TrackId);
-                    storedProcedureBuilder.HasRowsAffectedResultColumn();
-                })
-            .DeleteUsingStoredProcedure(
-                "sproc_DeletePlaylistTrack",
-                storedProcedureBuilder =>
-                {
-                    storedProcedureBuilder.HasOriginalValueParameter(e => e.PlaylistId);
-                    storedProcedureBuilder.HasOriginalValueParameter(e => e.TrackId);
-                    storedProcedureBuilder.HasRowsAffectedResultColumn();
-                });
+        // modelBuilder.Entity<PlaylistTrack>()
+        //     .InsertUsingStoredProcedure(
+        //         "sproc_InsertPlaylistTrack",
+        //         storedProcedureBuilder =>
+        //         {
+        //             storedProcedureBuilder.HasParameter(e => e.PlaylistId);
+        //             storedProcedureBuilder.HasParameter(e => e.TrackId);
+        //             storedProcedureBuilder.HasRowsAffectedResultColumn();
+        //         })
+        //     .UpdateUsingStoredProcedure(
+        //         "sproc_UpdatePlaylistTrack",
+        //         storedProcedureBuilder =>
+        //         {
+        //             storedProcedureBuilder.HasParameter(e => e.PlaylistId);
+        //             storedProcedureBuilder.HasParameter(e => e.TrackId);
+        //             storedProcedureBuilder.HasRowsAffectedResultColumn();
+        //         })
+        //     .DeleteUsingStoredProcedure(
+        //         "sproc_DeletePlaylistTrack",
+        //         storedProcedureBuilder =>
+        //         {
+        //             storedProcedureBuilder.HasOriginalValueParameter(e => e.PlaylistId);
+        //             storedProcedureBuilder.HasOriginalValueParameter(e => e.TrackId);
+        //             storedProcedureBuilder.HasRowsAffectedResultColumn();
+        //         });
 
         modelBuilder.Entity<Track>()
             .InsertUsingStoredProcedure(
-                "sproc_InsertAlbum",
+                "sproc_InsertTrack",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasParameter(e => e.Name);
@@ -624,7 +619,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasResultColumn(e => e.Id);
                 })
             .UpdateUsingStoredProcedure(
-                "sproc_UpdateAlbum",
+                "sproc_UpdateTrack",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
@@ -639,7 +634,7 @@ public partial class ChinookContext : DbContext
                     storedProcedureBuilder.HasRowsAffectedResultColumn();
                 })
             .DeleteUsingStoredProcedure(
-                "sproc_DeleteAlbum",
+                "sproc_DeleteTrack",
                 storedProcedureBuilder =>
                 {
                     storedProcedureBuilder.HasOriginalValueParameter(e => e.Id);
