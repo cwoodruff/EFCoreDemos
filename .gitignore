@@ -674,3 +674,4 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/rider,csharp,visualstudio,visualstudiocode
 /EFCoreDemos/.idea
+EFCoreDemos/.idea/.idea.EFCoreDemos/.idea/aws.xml
