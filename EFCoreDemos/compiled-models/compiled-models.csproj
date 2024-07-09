@@ -16,8 +16,4 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Chinook" />
-    </ItemGroup>
-
 </Project>
