@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using filtered_include.Chinook;
 using Microsoft.EntityFrameworkCore;
+using simple_logging_improved_diagnostics.Chinook;
 
 namespace simple_logging_improved_diagnostics;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Performance.EFCore;
+namespace lazy_loading.Model;
 
 public class BusinessEntityAddress
 {

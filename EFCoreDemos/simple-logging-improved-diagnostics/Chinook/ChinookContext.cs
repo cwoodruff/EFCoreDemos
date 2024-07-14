@@ -1,17 +1,22 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using simple_logging_improved_diagnostics.Chinook;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
-namespace filtered_include.Chinook;
+namespace simple_logging_improved_diagnostics.Chinook;
 
 public partial class ChinookContext : DbContext
 {
-    public ChinookContext(DbContextOptions<ChinookContext> options)
+    private readonly ILoggerFactory _loggerFactory;
+    
+    public ChinookContext(DbContextOptions<ChinookContext> options, ILoggerFactory loggerFactory)
         : base(options)
     {
+        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        _loggerFactory = loggerFactory;
     }
-
+    
     public ChinookContext()
     {
     }
@@ -31,8 +36,10 @@ public partial class ChinookContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer(
-                "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;");
+            optionsBuilder.UseLoggerFactory(_loggerFactory)  //tie-up DbContext with LoggerFactory object
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors()  
+                .UseSqlServer(@"Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;");
         }
     }
 

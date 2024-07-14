@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Performance.EFCore;
+namespace lazy_loading.Model;
 
 public class Currency
 {

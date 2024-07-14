@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Performance.EFCore;
+namespace lazy_loading.Model;
 
 public class AdventureWorksContext : DbContext
 {

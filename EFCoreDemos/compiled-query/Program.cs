@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Running;
 using compiled_query.Chinook;
 using Microsoft.EntityFrameworkCore;
+
+namespace compiled_query;
 
 public class Program
 {

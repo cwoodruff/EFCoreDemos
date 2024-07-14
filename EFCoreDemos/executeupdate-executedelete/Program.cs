@@ -3,6 +3,8 @@
 using executeupdate_executedelete.Chinook;
 using Microsoft.EntityFrameworkCore;
 
+namespace executeupdate_executedelete;
+
 internal class Program
 {
     public static async Task Main(string[] args)

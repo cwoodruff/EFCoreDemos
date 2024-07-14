@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using sproc_mapping.Chinook;
 
 #pragma warning disable 169
 
-namespace Demos;
+namespace sproc_mapping;
 
 public class Program
 {
