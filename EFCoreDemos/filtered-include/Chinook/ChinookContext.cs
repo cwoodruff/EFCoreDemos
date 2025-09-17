@@ -30,8 +30,7 @@ public partial class ChinookContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer(
-                "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;");
+            optionsBuilder.UseSqlServer("Server=localhost,1433;Database=Chinook;User=sa;Password=8Riwudeg!!;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=true;Application Name=EFCoreDemos");
         }
     }
 

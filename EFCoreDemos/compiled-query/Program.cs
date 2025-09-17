@@ -13,8 +13,7 @@ public class Program
     private static void Main()
     {
         var builder = new DbContextOptionsBuilder<ChinookContext>();
-        builder.UseSqlServer(
-            "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos");
+        builder.UseSqlite("Data Source=chinook.db");
 
         var dbContextOptions = builder.Options;
         _context = new ChinookContext(dbContextOptions);
@@ -131,7 +130,7 @@ public class CmpldQryBenchmark
     public void Setup()
     {
         var builder = new DbContextOptionsBuilder<ChinookContext>();
-        builder.UseSqlServer(
+        builder.UseSqlite(
             "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos");
 
         var dbContextOptions = builder.Options;

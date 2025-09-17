@@ -1,27 +1,27 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using context_pooling.Chinook;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace context_pooling;
 
-public class GenreController
+public class GenreController(ChinookContext? context)
 {
-    private readonly ChinookContext _context;
-
-    public GenreController(ChinookContext context) => _context = context;
-
-    public async Task ActionAsync() => await _context.Genres.FirstAsync();
+    public async Task ActionAsync() => await context.Genres.FirstAsync();
 }
 
 public class Startup
 {
     private const string ConnectionString
-        = @"Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;ConnectRetryCount=0";
+        = @"Data Source=chinook.db";
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContextPool<ChinookContext>(c => c.UseSqlServer(ConnectionString));
+        services.AddDbContextPool<ChinookContext>(c => c.UseSqlite(ConnectionString));
         //services.AddDbContext<ChinookContext>(c => c.UseSqlServer(ConnectionString));
     }
 }

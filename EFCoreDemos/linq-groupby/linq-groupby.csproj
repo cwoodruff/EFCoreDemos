@@ -16,4 +16,9 @@
         <ProjectReference Include="..\like\like.csproj" />
     </ItemGroup>
 
+  <ItemGroup>
+    <None Update="chinook.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

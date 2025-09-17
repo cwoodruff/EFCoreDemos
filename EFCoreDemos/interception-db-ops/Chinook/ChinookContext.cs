@@ -33,7 +33,7 @@ public partial class ChinookContext : DbContext
         {
             optionsBuilder
                 .UseSqlServer(
-                    "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;")
+                    "Server=localhost,1433;Database=Chinook;User=sa;Password=8Riwudeg!!;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=true;Application Name=EFCoreDemos")
                 .AddInterceptors(new HintCommandInterceptor());
         }
     }
