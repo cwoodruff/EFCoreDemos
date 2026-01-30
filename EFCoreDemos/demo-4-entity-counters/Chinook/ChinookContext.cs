@@ -1,12 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Demos.Chinook;
 
 public partial class ChinookContext : DbContext
 {
+    private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+    {
+        builder
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
+            .AddConsole();
+    });
+
     public ChinookContext(DbContextOptions<ChinookContext> options)
         : base(options) => Interlocked.Increment(ref InstanceCount);
 
@@ -31,8 +39,10 @@ public partial class ChinookContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer(
-                "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;");
+            optionsBuilder
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(loggerFactory);
         }
     }
 

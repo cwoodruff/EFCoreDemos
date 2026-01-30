@@ -259,15 +259,24 @@ public partial class ChinookContext : DbContext
 
     public virtual DbSet<Track> Tracks { get; set; }
 
+
     private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
     {
         builder
             .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information);
     });
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseLoggerFactory(loggerFactory);
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(loggerFactory);
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Album>(entity =>

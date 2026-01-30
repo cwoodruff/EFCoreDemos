@@ -54,6 +54,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "compiled-models", "compiled
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpatialDemo.Api", "SpatialDemo.Api\SpatialDemo.Api.csproj", "{57DBACA0-80E2-4789-898E-EAD850FBFB0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCoreDemos.Tests", "EFCoreDemos.Tests\EFCoreDemos.Tests.csproj", "{8DFBD6E7-A41F-4A0C-A3A3-25B658F7E295}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7155F196-B8C5-49E2-82E3-8656197E4585}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,5 +172,12 @@ Global
 		{57DBACA0-80E2-4789-898E-EAD850FBFB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57DBACA0-80E2-4789-898E-EAD850FBFB0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57DBACA0-80E2-4789-898E-EAD850FBFB0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DFBD6E7-A41F-4A0C-A3A3-25B658F7E295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DFBD6E7-A41F-4A0C-A3A3-25B658F7E295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DFBD6E7-A41F-4A0C-A3A3-25B658F7E295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DFBD6E7-A41F-4A0C-A3A3-25B658F7E295}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8DFBD6E7-A41F-4A0C-A3A3-25B658F7E295} = {7155F196-B8C5-49E2-82E3-8656197E4585}
 	EndGlobalSection
 EndGlobal

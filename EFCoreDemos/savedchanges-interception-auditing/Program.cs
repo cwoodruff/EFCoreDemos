@@ -53,7 +53,7 @@ public class Program
 
         using (var context =
                new AuditContext(
-                   @"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0"))
+                   @"Data Source=chinook.db"))
         {
             foreach (var audit in context.SaveChangesAudits.Include(e => e.Entities).ToList())
             {
@@ -77,7 +77,7 @@ public class Program
     {
         using (var context =
                new AuditContext(
-                   @"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0"))
+                   @"Data Source=chinook.db"))
         {
             await context.Database.EnsureDeletedAsync();
             await context.Database.EnsureCreatedAsync();

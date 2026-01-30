@@ -33,18 +33,18 @@ public partial class ChinookContext : DbContext
     public virtual DbSet<Playlist> Playlists { get; set; } = null!;
     public virtual DbSet<Track> Tracks { get; set; } = null!;
 
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
-                .UseSqlServer(
-                    "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;")
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
         }
     }
-
-    [DbFunction(Schema = "dbo")]
+    [DbFunction]
     public static int ComputeInvoiceCount(int customerId)
     {
         return 0;

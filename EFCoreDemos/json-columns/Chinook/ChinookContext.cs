@@ -1,17 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace json_columns.Chinook;
 
 public partial class ChinookContext : DbContext
 {
-    public ChinookContext()
-    {
-    }
 
-    public ChinookContext(DbContextOptions<ChinookContext> options)
-        : base(options)
+    private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
     {
-    }
+        builder
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
+            .AddConsole();
+    });
 
     public virtual DbSet<Album> Albums { get; set; }
 
@@ -35,9 +35,17 @@ public partial class ChinookContext : DbContext
 
     public virtual DbSet<Track> Tracks { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;");
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(loggerFactory);
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Album>(entity =>

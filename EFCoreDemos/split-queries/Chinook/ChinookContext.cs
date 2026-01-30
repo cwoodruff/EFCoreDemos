@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Logging;
 
 namespace split_queries.Chinook;
 
@@ -26,12 +27,21 @@ public partial class ChinookContext : DbContext
     public virtual DbSet<Playlist> Playlists { get; set; } = null!;
     public virtual DbSet<Track> Tracks { get; set; } = null!;
 
+    private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+    {
+        builder
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
+            .AddConsole();
+    });
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer(
-                "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;");
+            optionsBuilder
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(loggerFactory);
         }
     }
 

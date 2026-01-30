@@ -36,17 +36,17 @@ public partial class ChinookContext : DbContext
 
     public virtual DbSet<AlbumWithArtistName> AlbumWithArtistName { get; set; } = null!;
 
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
-                .UseSqlServer(
-                    "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;")
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
         }
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Album>(entity =>

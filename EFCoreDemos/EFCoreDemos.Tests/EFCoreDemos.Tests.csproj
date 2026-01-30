@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpatialDemo.Api\SpatialDemo.Api.csproj" />
+    <ProjectReference Include="..\compiled-models\compiled-models.csproj" Aliases="compiled_models" />
+    <ProjectReference Include="..\compiled-query\compiled-query.csproj" Aliases="compiled_query" />
+    <ProjectReference Include="..\context-pooling\context-pooling.csproj" Aliases="context_pooling" />
+    <ProjectReference Include="..\db-functions\db-functions.csproj" Aliases="db_functions" />
+    <ProjectReference Include="..\demo-4-entity-counters\demo-4-entity-counters.csproj" Aliases="demo_4_entity_counters" />
+    <ProjectReference Include="..\executeupdate-executedelete\executeupdate-executedelete.csproj" Aliases="executeupdate_executedelete" />
+    <ProjectReference Include="..\filtered-include\filtered-include.csproj" Aliases="filtered_include" />
+    <ProjectReference Include="..\flexible-entity-mapping\flexible-entity-mapping.csproj" Aliases="flexible_entity_mapping" />
+    <ProjectReference Include="..\from_sql\from_sql.csproj" Aliases="from_sql" />
+    <ProjectReference Include="..\identity-resolution\identity-resolution.csproj" Aliases="identity_resolution" />
+    <ProjectReference Include="..\interception-db-ops\interception-db-ops.csproj" Aliases="interception_db_ops" />
+    <ProjectReference Include="..\json-columns\json-columns.csproj" Aliases="json_columns" />
+    <ProjectReference Include="..\keyless-entity-types\keyless-entity-types.csproj" Aliases="keyless_entity_types" />
+    <ProjectReference Include="..\lazy-loading\lazy-loading.csproj" Aliases="lazy_loading" />
+    <ProjectReference Include="..\like\like.csproj" Aliases="like" />
+    <ProjectReference Include="..\linq-groupby\linq-groupby.csproj" Aliases="linq_groupby" />
+    <ProjectReference Include="..\many-to-many\many-to-many.csproj" Aliases="many_to_many" />
+    <ProjectReference Include="..\query-filters\query-filters.csproj" Aliases="query_filters" />
+    <ProjectReference Include="..\query-tags\query-tags.csproj" Aliases="query_tags" />
+    <ProjectReference Include="..\required-1-on-1-dependants\required-1-on-1-dependants.csproj" Aliases="required_1_on_1_dependants" />
+    <ProjectReference Include="..\savedchanges-interception-auditing\savedchanges-interception-auditing.csproj" Aliases="savedchanges_interception_auditing" />
+    <ProjectReference Include="..\simple-logging-improved-diagnostics\simple-logging-improved-diagnostics.csproj" Aliases="simple_logging_improved_diagnostics" />
+    <ProjectReference Include="..\spatial\spatial.csproj" Aliases="spatial" />
+    <ProjectReference Include="..\split-queries\split-queries.csproj" Aliases="split_queries" />
+    <ProjectReference Include="..\sproc-mapping\sproc-mapping.csproj" Aliases="sproc_mapping" />
+    <ProjectReference Include="..\temporal-tables\temporal-tables.csproj" Aliases="temporal_tables" />
+  </ItemGroup>
+
+</Project>

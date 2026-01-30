@@ -1,19 +1,32 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace savedchanges_interception_auditing;
 
 public class BlogsContext : DbContext
 {
+    private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+    {
+        builder
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
+            .AddConsole();
+    });
+
     private readonly AuditingInterceptor _auditingInterceptor =
         new AuditingInterceptor(
-            @"Server=(localdb)\mssqllocaldb;Database=Demo5.Audit;Trusted_Connection=True;ConnectRetryCount=0");
+            @"Data Source=chinook.db");
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder
-            .AddInterceptors(_auditingInterceptor)
-            .UseSqlServer(
-                @"Server=(localdb)\mssqllocaldb;Database=Demo5.Interceptor;Trusted_Connection=True;ConnectRetryCount=0");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(loggerFactory);
+        }
+    }
 
     public DbSet<Blog> Blogs { get; set; }
 }

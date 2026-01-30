@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace compiled_models.Chinook;
 
 public partial class ChinookContext : DbContext
 {
-    public ChinookContext()
-    {
-    }
-
     public ChinookContext(DbContextOptions<ChinookContext> options)
-        : base(options)
-    {
-    }
+        : base(options) => Interlocked.Increment(ref InstanceCount);
+    
+    public static long InstanceCount;
 
     public virtual DbSet<Album> Albums { get; set; }
 
@@ -34,11 +31,21 @@ public partial class ChinookContext : DbContext
     public virtual DbSet<Playlist> Playlists { get; set; }
 
     public virtual DbSet<Track> Tracks { get; set; }
+    
+    private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+    {
+        builder
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information);
+    });
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost,1433;Database=Chinook;User=sa;Password=8Riwudeg!!;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=true;Application Name=EFCoreDemos");
-
+    {
+        optionsBuilder
+            .UseSqlite("Data Source=chinook.db")
+            .EnableSensitiveDataLogging()
+            .UseLoggerFactory(loggerFactory);
+    }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Album>(entity =>

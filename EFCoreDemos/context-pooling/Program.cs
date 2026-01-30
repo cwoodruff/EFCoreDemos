@@ -21,8 +21,9 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContextPool<ChinookContext>(c => c.UseSqlite(ConnectionString));
-        //services.AddDbContext<ChinookContext>(c => c.UseSqlServer(ConnectionString));
+        services.AddDbContextPool<ChinookContext>(c => c
+            .UseSqlite(ConnectionString)
+            .EnableSensitiveDataLogging());
     }
 }
 

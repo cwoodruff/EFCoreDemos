@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace flexible_entity_mapping.Chinook;
 
 public partial class ChinookContext : DbContext
 {
-    public ChinookContext(DbContextOptions<ChinookContext> options)
-        : base(options)
-    {
-    }
 
-    public ChinookContext()
+    private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
     {
-    }
+        builder
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
+            .AddConsole();
+    });
 
     public virtual DbSet<Album> Albums { get; set; } = null!;
     public virtual DbSet<Artist> Artists { get; set; } = null!;
@@ -26,15 +26,17 @@ public partial class ChinookContext : DbContext
     public virtual DbSet<Playlist> Playlists { get; set; } = null!;
     public virtual DbSet<Track> Tracks { get; set; } = null!;
 
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer(
-                "Server=localhost,1433;Database=Chinook;User=sa;Password=8Riwudeg!!;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=true;Application Name=EFCoreDemos");
+            optionsBuilder
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(loggerFactory);
         }
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Album>(entity =>

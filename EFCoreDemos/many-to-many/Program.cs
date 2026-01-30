@@ -66,10 +66,13 @@ public class BloggingContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder
-            .UseSqlServer(
-                @"Server=(localdb)\mssqllocaldb;Database=ManyToMany;Trusted_Connection=True;ConnectRetryCount=0")
-            .UseLoggerFactory(loggerFactory);
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder
+                .UseSqlite("Data Source=chinook.db")
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(loggerFactory);
+        }
     }
 
     static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
@@ -98,7 +101,7 @@ public class BloggingContext : DbContext
             .UsingEntity(j => j.ToTable("PostTag"));
     }
 
-    [DbFunction(Schema = "dbo")]
+    [DbFunction]
     public static int ComputePostCount(int blogId)
     {
         return 0;

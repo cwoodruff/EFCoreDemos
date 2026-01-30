@@ -8,18 +8,13 @@ namespace simple_logging_improved_diagnostics.Chinook;
 
 public partial class ChinookContext : DbContext
 {
-    private readonly ILoggerFactory _loggerFactory;
-    
-    public ChinookContext(DbContextOptions<ChinookContext> options, ILoggerFactory loggerFactory)
-        : base(options)
+
+    private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
     {
-        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-        _loggerFactory = loggerFactory;
-    }
-    
-    public ChinookContext()
-    {
-    }
+        builder
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information)
+            .AddConsole();
+    });
 
     public virtual DbSet<Album> Albums { get; set; } = null!;
     public virtual DbSet<Artist> Artists { get; set; } = null!;
@@ -32,17 +27,17 @@ public partial class ChinookContext : DbContext
     public virtual DbSet<Playlist> Playlists { get; set; } = null!;
     public virtual DbSet<Track> Tracks { get; set; } = null!;
 
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseLoggerFactory(_loggerFactory)  //tie-up DbContext with LoggerFactory object
+            optionsBuilder
+                .UseSqlite("Data Source=chinook.db")
                 .EnableSensitiveDataLogging()
-                .EnableDetailedErrors()  
-                .UseSqlServer(@"Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;");
+                .UseLoggerFactory(loggerFactory);
         }
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Album>(entity =>

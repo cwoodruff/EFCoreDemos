@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Demos.Chinook;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Demos;
 
@@ -21,11 +22,13 @@ public class GenreController
 public class Startup
 {
     private const string ConnectionString
-        = @"Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;";
+        = @"Data Source=chinook.db";
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContextPool<ChinookContext>(c => c.UseSqlServer(ConnectionString));
+        services.AddDbContextPool<ChinookContext>(c => c
+            .UseSqlite(ConnectionString)
+            .EnableSensitiveDataLogging());
     }
 }
 

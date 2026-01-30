@@ -15,7 +15,7 @@ public class AuditContext : DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(_connectionString);
+        => optionsBuilder.UseSqlite(_connectionString);
 
     public DbSet<SaveChangesAudit> SaveChangesAudits { get; set; }
 }
