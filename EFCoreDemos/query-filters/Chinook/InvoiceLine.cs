@@ -7,7 +7,7 @@ public sealed class InvoiceLine : BaseEntity
     public decimal UnitPrice { get; set; }
     public int Quantity { get; set; }
 
-    public Invoice? Invoice { get; set; }
+    public Invoice Invoice { get; set; }
 
-    public Track? Track { get; set; }
+    public Track Track { get; set; }
 }

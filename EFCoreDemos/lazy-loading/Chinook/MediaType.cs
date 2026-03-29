@@ -9,7 +9,7 @@ public class MediaType : BaseEntity
         Tracks = new HashSet<Track>();
     }
 
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
-    public virtual ICollection<Track>? Tracks { get; set; }
+    public virtual ICollection<Track> Tracks { get; set; }
 }
