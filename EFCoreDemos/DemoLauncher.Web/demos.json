@@ -1,0 +1,178 @@
+{
+  "demos": [
+    {
+      "id": "identity-resolution",
+      "insight": 1,
+      "block": "Tracking",
+      "title": "Identity Resolution",
+      "blurb": "Duplicate-key on Update + identity-resolution dedupe across a graph.",
+      "projectPath": "identity-resolution/identity-resolution.csproj",
+      "supportsBenchmark": true
+    },
+    {
+      "id": "as-no-tracking-perf",
+      "insight": 1,
+      "block": "Tracking",
+      "title": "AsNoTracking Perf + Silent Bug",
+      "blurb": "Tracked vs NoTracking throughput; the AsNoTracking-on-write silent-bug demo.",
+      "projectPath": "as-no-tracking-perf/as-no-tracking-perf.csproj",
+      "supportsBenchmark": true
+    },
+    {
+      "id": "lazy-loading",
+      "insight": 2,
+      "block": "Tracking",
+      "title": "Lazy Loading + Change Tracker",
+      "blurb": "Lazy-loading N+1 in action plus a change-tracker state walk.",
+      "projectPath": "lazy-loading/lazy-loading.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "change-tracker-explorer",
+      "insight": 2,
+      "block": "Tracking",
+      "title": "Change Tracker Explorer",
+      "blurb": "Walk an Album+Tracks graph: Unchanged -> Modified -> Added -> Unchanged.",
+      "projectPath": "change-tracker-explorer/change-tracker-explorer.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "filtered-include",
+      "insight": 3,
+      "block": "QueryShape",
+      "title": "Filtered Include",
+      "blurb": "Filter and order at the SQL layer, not after materialization.",
+      "projectPath": "filtered-include/filtered-include.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "split-queries",
+      "insight": 3,
+      "block": "QueryShape",
+      "title": "Split Queries",
+      "blurb": "Trade one big query for N small ones - escape hatch for cartesian explosions.",
+      "projectPath": "split-queries/split-queries.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "projections-perf",
+      "insight": 4,
+      "block": "QueryShape",
+      "title": "Projections Perf",
+      "blurb": "Full hydration vs anonymous vs DTO projection - the highest-leverage technique.",
+      "projectPath": "projections-perf/projections-perf.csproj",
+      "supportsBenchmark": true
+    },
+    {
+      "id": "n-plus-one-problem",
+      "insight": 5,
+      "block": "QueryShape",
+      "title": "N+1 Problem (3 Fixes)",
+      "blurb": "Reproduce the N+1 with logs, then kill it three ways: Include, Project, Batched IN.",
+      "projectPath": "n-plus-one-problem/n-plus-one-problem.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "compiled-query",
+      "insight": 6,
+      "block": "PowerTools",
+      "title": "Compiled Queries",
+      "blurb": "EF.CompileAsyncQuery for hot paths - microseconds when they matter.",
+      "projectPath": "compiled-query/compiled-query.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "from_sql",
+      "insight": 7,
+      "block": "PowerTools",
+      "title": "FromSql (Parameterized)",
+      "blurb": "Interpolated FromSql -> parameterized SQL. String concat is injection.",
+      "projectPath": "from_sql/from_sql.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "executeupdate-executedelete",
+      "insight": 7,
+      "block": "PowerTools",
+      "title": "ExecuteUpdate / ExecuteDelete",
+      "blurb": "Set-based writes - one UPDATE/DELETE, zero entities materialized.",
+      "projectPath": "executeupdate-executedelete/executeupdate-executedelete.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "interception-db-ops",
+      "insight": 8,
+      "block": "PowerTools",
+      "title": "DbCommand Interceptor",
+      "blurb": "Rewrite SQL, log slow queries, add multi-tenant filters - all cross-cutting.",
+      "projectPath": "interception-db-ops/interception-db-ops.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "savedchanges-interception-auditing",
+      "insight": 8,
+      "block": "PowerTools",
+      "title": "SaveChanges Auditing Interceptor",
+      "blurb": "30 lines of audit code, applied to every IAuditable entity automatically.",
+      "projectPath": "savedchanges-interception-auditing/savedchanges-interception-auditing.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "dbcontext-lifetimes-di",
+      "insight": 9,
+      "block": "Architecture",
+      "title": "DbContext Lifetimes (Scoped / Factory / Pooled / Captive)",
+      "blurb": "Four endpoints. Captive blows up on the SECOND call - that's the lesson.",
+      "projectPath": "dbcontext-lifetimes-di/dbcontext-lifetimes-di.csproj",
+      "supportsBenchmark": false,
+      "specialCase": "webserver-curl",
+      "webServerPort": 5193,
+      "webServerEndpoints": ["/scoped", "/factory", "/pooled", "/captive", "/captive"]
+    },
+    {
+      "id": "context-pooling",
+      "insight": 9,
+      "block": "Architecture",
+      "title": "Context Pooling Throughput",
+      "blurb": "Lifetimes side-by-side, transaction across SaveChanges, then a pooling load test.",
+      "projectPath": "context-pooling/context-pooling.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "transactions-and-savechanges",
+      "insight": 9,
+      "block": "Architecture",
+      "title": "Transactions + Savepoints",
+      "blurb": "Multi-SaveChanges transaction, savepoint rollback, TransactionScope async footgun.",
+      "projectPath": "transactions-and-savechanges/transactions-and-savechanges.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "simple-logging-improved-diagnostics",
+      "insight": 10,
+      "block": "Ops",
+      "title": "Logging + Diagnostics",
+      "blurb": "TagWith + LogTo for traceable SQL, then EF vs Dapper vs ADO.NET head-to-head.",
+      "projectPath": "simple-logging-improved-diagnostics/simple-logging-improved-diagnostics.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "query-tags",
+      "insight": 10,
+      "block": "Ops",
+      "title": "Query Tags",
+      "blurb": "TagWith adds SQL comments that trace prod queries back to a line of code.",
+      "projectPath": "query-tags/query-tags.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "ef-vs-dapper-vs-ado",
+      "insight": 10,
+      "block": "Ops",
+      "title": "EF Core vs Dapper vs ADO.NET",
+      "blurb": "Optional closer: same hot-path read, three approaches. Numbers usually surprise.",
+      "projectPath": "ef-vs-dapper-vs-ado/ef-vs-dapper-vs-ado.csproj",
+      "supportsBenchmark": true
+    }
+  ]
+}

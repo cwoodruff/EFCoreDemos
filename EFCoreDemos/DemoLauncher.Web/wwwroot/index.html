@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EF Core Secrets - DemoStage</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="logo">EF</span>
+            <div class="brand-text">
+                <div class="brand-title">EF Core Secrets</div>
+                <div class="brand-sub">DemoStage launcher</div>
+            </div>
+        </div>
+        <div class="status">
+            <span id="status-pill" class="pill idle">idle</span>
+            <span id="elapsed" class="elapsed">00:00</span>
+            <button id="btn-stop" class="btn btn-stop" disabled>Stop (Esc)</button>
+            <button id="btn-deck" class="btn btn-deck" title="Toggle deck mode (full-screen terminal)">Deck</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="grid" class="grid" aria-label="Demos"></section>
+
+        <section class="terminal-wrap">
+            <div class="terminal-bar">
+                <div class="terminal-bar-left">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span id="terminal-title" class="terminal-title">no demo running</span>
+                </div>
+                <div class="terminal-bar-right">
+                    <button id="btn-clear" class="btn btn-mini">Clear</button>
+                    <button id="btn-font-down" class="btn btn-mini">A-</button>
+                    <button id="btn-font-up" class="btn btn-mini">A+</button>
+                </div>
+            </div>
+            <pre id="terminal" class="terminal" tabindex="0"></pre>
+        </section>
+    </main>
+
+    <footer class="shortcuts">
+        <span><kbd>1</kbd>-<kbd>9</kbd> select demo</span>
+        <span><kbd>Enter</kbd> Run</span>
+        <span><kbd>B</kbd> Benchmark</span>
+        <span><kbd>Esc</kbd> Stop</span>
+        <span><kbd>F</kbd> Deck mode</span>
+        <span><kbd>C</kbd> Clear</span>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

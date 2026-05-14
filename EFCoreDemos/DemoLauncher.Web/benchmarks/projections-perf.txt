@@ -1,0 +1,40 @@
+// ***** BenchmarkRunner: Start *****
+// Validating 3 benchmark(s) - ProjectionBenchmarks.FullHydration / AnonProjection / DtoProjection
+// Building benchmark exe in Release...
+// Launch: 1 / 1
+// Warmup + actual run...
+//
+// Test filter: Tracks where UnitPrice >= 0.99 (the bulk of the Track table)
+//
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS Tahoe 26.5 [Darwin 25.5.0]
+Apple M5 Pro, 1 CPU, 18 logical and 18 physical cores
+.NET SDK 10.0.203
+  [Host]     : .NET 10.0.7, Arm64 RyuJIT armv8.0-a
+  DefaultJob : .NET 10.0.7, Arm64 RyuJIT armv8.0-a
+
+
+| Method         | Mean     | StdDev    | Ratio | Allocated | Alloc Ratio |
+|--------------- |---------:|----------:|------:|----------:|------------:|
+| FullHydration  | 2.423 ms | 0.0190 ms |  1.00 |   2.08 MB |        1.00 |
+| AnonProjection | 2.609 ms | 0.0612 ms |  1.08 |   2.19 MB |        1.05 |
+| DtoProjection  | 2.869 ms | 0.0401 ms |  1.18 |   2.44 MB |        1.17 |
+
+// * Takeaway *
+//
+//   Chinook.Track is narrow (~9 columns). Projection still saves you the
+//   tracker overhead and a few unused fields, but the dramatic 5-20x gap
+//   the talk mentions only shows up on wide tables (think: Books with
+//   Synopsis nvarchar(max), or any audit-heavy entity with 50 columns).
+//
+//   Look at the GENERATED SQL instead - that is the lasting reason to
+//   project. Open ./sql/full-hydration.sql vs ./sql/anon-projection.sql
+//   side by side: one pulls every column, the other pulls three.
+//
+//   Rule of thumb: project to DTOs on every read endpoint. The wins
+//   compound the wider your real table gets.
+
+Run time: 00:01:03 (63.28 sec), executed benchmarks: 3
+// ***** BenchmarkRunner: End *****

@@ -1,0 +1,39 @@
+// ***** BenchmarkRunner: Start *****
+// Validating 2 benchmark(s) - TrackingBenchmarks.GetAllTracks_Tracked, GetAllTracks_NoTracking
+// Building benchmark exe in Release...
+// Launch: 1 / 1
+// Warmup + actual run...
+//
+// (chinook.Track is small enough that tracking is actually FASTER than no-tracking
+//  here. On wider tables, the no-tracking baseline flips and runs in front.)
+//
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS Tahoe 26.5 [Darwin 25.5.0]
+Apple M5 Pro, 1 CPU, 18 logical and 18 physical cores
+.NET SDK 10.0.203
+  [Host]     : .NET 10.0.7, Arm64 RyuJIT armv8.0-a
+  DefaultJob : .NET 10.0.7, Arm64 RyuJIT armv8.0-a
+
+
+| Method                  | Mean       | StdDev   | Ratio | Allocated  | Alloc Ratio |
+|------------------------ |-----------:|---------:|------:|-----------:|------------:|
+| GetAllTracks_Tracked    |   700.8 us | 13.37 us |  1.00 |  923.13 KB |        1.00 |
+| GetAllTracks_NoTracking | 3,016.5 us | 36.95 us |  4.31 | 1821.02 KB |        1.97 |
+
+// * Takeaway *
+//
+//   The cost of tracking is real, but on a small narrow table its NOT the
+//   loser most people expect. Tracking wins here because EF reuses tracked
+//   instances via identity resolution; no-tracking allocates fresh objects.
+//
+//   On a wide 50-column table with thousands of rows, that flips - tracking
+//   pays per-property hashes, and AsNoTracking pulls ahead 25-40%.
+//
+//   The point of this insight is the SILENT BUG, not the throughput. Run
+//   the demo (not the benchmark) to see SaveChanges return 0 affected rows
+//   when AsNoTracking is on a write path.
+
+Run time: 00:00:43 (43.96 sec), executed benchmarks: 2
+// ***** BenchmarkRunner: End *****

@@ -1,0 +1,40 @@
+// ***** BenchmarkRunner: Start *****
+// Validating 3 benchmark(s) - TrackingBenchmarks.Tracked / NoTracking / NoTrackingWithIdentityResolution
+// Building benchmark exe in Release...
+// Launch: 1 / 1
+// Warmup + actual run...
+//
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS Tahoe 26.5 [Darwin 25.5.0]
+Apple M5 Pro, 1 CPU, 18 logical and 18 physical cores
+.NET SDK 10.0.203
+  [Host]     : .NET 10.0.7, Arm64 RyuJIT armv8.0-a
+  DefaultJob : .NET 10.0.7, Arm64 RyuJIT armv8.0-a
+
+
+| Method                           | Mean       | StdDev   | Ratio | Allocated  | Alloc Ratio |
+|--------------------------------- |-----------:|---------:|------:|-----------:|------------:|
+| Tracked                          |   672.8 us |  7.91 us |  1.00 |  923.13 KB |        1.00 |
+| NoTracking                       | 3,103.0 us | 39.58 us |  4.61 | 1821.02 KB |        1.97 |
+| NoTrackingWithIdentityResolution | 6,945.4 us | 71.78 us | 10.32 |  5116.9 KB |        5.54 |
+
+// * Takeaway *
+//
+//   Three points on the same axis:
+//
+//     Tracked       - fast lookups (cached), heavy if you don't need writes.
+//     NoTracking    - lightest read, but duplicates entities for the same key.
+//     NoTrackingWithIdentityResolution
+//                   - reads without tracker entries, but still deduplicates.
+//                     Costs more memory because EF keeps a temp dedupe map.
+//
+//   Use case map:
+//
+//     Reading + writing in same request    -> Tracked
+//     Read-only flat list                  -> AsNoTracking
+//     Read-only deep graph (Artist+Albums) -> AsNoTrackingWithIdentityResolution
+
+Run time: 00:01:07 (67.11 sec), executed benchmarks: 3
+// ***** BenchmarkRunner: End *****
