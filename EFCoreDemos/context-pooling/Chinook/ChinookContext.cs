@@ -7,6 +7,9 @@ public partial class ChinookContext : DbContext
 {
     public ChinookContext(DbContextOptions<ChinookContext> options)
         : base(options) => Interlocked.Increment(ref InstanceCount);
+
+    protected ChinookContext(DbContextOptions options)
+        : base(options) => Interlocked.Increment(ref InstanceCount);
     
     public static long InstanceCount;
 

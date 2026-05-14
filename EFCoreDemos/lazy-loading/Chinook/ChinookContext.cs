@@ -32,6 +32,7 @@ public partial class ChinookContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
+                .UseLazyLoadingProxies()
                 .UseSqlite("Data Source=chinook.db")
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
