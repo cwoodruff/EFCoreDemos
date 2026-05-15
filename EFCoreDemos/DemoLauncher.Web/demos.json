@@ -73,6 +73,15 @@
       "supportsBenchmark": false
     },
     {
+      "id": "inheritance-mapping",
+      "insight": 5,
+      "block": "QueryShape",
+      "title": "Inheritance Mapping (TPH / TPT / TPC)",
+      "blurb": "Same model, three strategies - see the table layout and SQL each one generates.",
+      "projectPath": "inheritance-mapping/inheritance-mapping.csproj",
+      "supportsBenchmark": false
+    },
+    {
       "id": "compiled-query",
       "insight": 6,
       "block": "PowerTools",
@@ -148,6 +157,15 @@
       "supportsBenchmark": false
     },
     {
+      "id": "optimistic-concurrency",
+      "insight": 9,
+      "block": "Architecture",
+      "title": "Optimistic Concurrency",
+      "blurb": "Concurrency token + interceptor, then watch DbUpdateConcurrencyException + a three-way merge.",
+      "projectPath": "optimistic-concurrency/optimistic-concurrency.csproj",
+      "supportsBenchmark": false
+    },
+    {
       "id": "simple-logging-improved-diagnostics",
       "insight": 10,
       "block": "Ops",
@@ -163,6 +181,15 @@
       "title": "Query Tags",
       "blurb": "TagWith adds SQL comments that trace prod queries back to a line of code.",
       "projectPath": "query-tags/query-tags.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "migrations-workflow",
+      "insight": 10,
+      "block": "Ops",
+      "title": "Migrations Workflow",
+      "blurb": "Pending -> apply one -> apply rest -> insert -> SQL script preview. The release-day walkthrough.",
+      "projectPath": "migrations-workflow/migrations-workflow.csproj",
       "supportsBenchmark": false
     },
     {
