@@ -821,3 +821,6 @@ tmbootpicker.efi
 /.github/agents
 .github/copilot-instructions.md
 EFCoreDemos/.gitattributes
+EFCoreDemos/package.json
+EFCoreDemos/package-lock.json
+EFCoreDemos/.idea/.idea.EFCoreDemos/.idea/dataSources.xml
