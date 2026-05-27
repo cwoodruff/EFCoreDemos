@@ -143,7 +143,7 @@
       "insight": 9,
       "block": "Architecture",
       "title": "Context Pooling Throughput",
-      "blurb": "Lifetimes side-by-side, transaction across SaveChanges, then a pooling load test.",
+      "blurb": "Lifetimes side-by-side, transaction across SaveChanges, then non-pooled vs pooled throughput under the same load.",
       "projectPath": "context-pooling/context-pooling.csproj",
       "supportsBenchmark": false
     },

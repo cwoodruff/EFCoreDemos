@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,21 +15,9 @@ public class GenreController(ChinookContext? context)
     public async Task ActionAsync() => await context!.Genres.FirstAsync();
 }
 
-public class Startup
-{
-    private const string ConnectionString = @"Data Source=chinook.db";
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDbContextPool<ChinookContext>(c => c
-            .UseSqlite(ConnectionString)
-            .EnableSensitiveDataLogging());
-    }
-}
-
 public class Program
 {
-    private const string ConnectionString = @"Data Source=chinook.db";
+    private static readonly string ConnectionString = $"Data Source={Path.Combine(AppContext.BaseDirectory, "chinook.db")}";
     private const int Threads = 32;
     private const int Seconds = 5;
 
@@ -42,7 +31,7 @@ public class Program
         await DemoTransactionAcrossSaveChanges();
         Console.WriteLine();
 
-        await DemoPoolingThroughput();
+        await DemoThroughputComparison();
     }
 
     // 1) Three ways to register a DbContext, side by side.
@@ -116,14 +105,30 @@ public class Program
         Console.WriteLine($"  Playlist delta after rollback: {playlistCountAfter - playlistCountBefore} (expected 0).");
     }
 
-    // 3) The original pooling-throughput demo - measures context creations vs requests/sec.
-    private static async Task DemoPoolingThroughput()
+    // 3) Compare non-pooled and pooled throughput under the same load.
+    private static async Task DemoThroughputComparison()
     {
-        Console.WriteLine($"== DbContext pooling throughput ({Threads} threads, {Seconds}s) ==");
+        await DemoThroughputScenarioAsync(
+            "DbContext throughput without pooling",
+            services => services.AddDbContext<ChinookContext>(ConfigureContext));
+        Console.WriteLine();
+
+        await DemoThroughputScenarioAsync(
+            "DbContext throughput with pooling",
+            services => services.AddDbContextPool<ChinookContext>(ConfigureContext));
+    }
+
+    private static async Task DemoThroughputScenarioAsync(
+        string heading,
+        Action<IServiceCollection> registerContext)
+    {
+        Console.WriteLine($"== {heading} ({Threads} threads, {Seconds}s) ==");
 
         var serviceCollection = new ServiceCollection();
-        new Startup().ConfigureServices(serviceCollection);
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        registerContext(serviceCollection);
+        using var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        ResetThroughputCounters();
 
         var stopwatch = new Stopwatch();
         var monitor = MonitorResults(TimeSpan.FromSeconds(Seconds), stopwatch);
@@ -136,13 +141,24 @@ public class Program
         await monitor;
     }
 
+    private static void ConfigureContext(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder
+            .UseSqlite(ConnectionString)
+            .EnableSensitiveDataLogging();
+
+    private static void ResetThroughputCounters()
+    {
+        Interlocked.Exchange(ref _requestsProcessed, 0);
+        Interlocked.Exchange(ref ChinookContext.InstanceCount, 0);
+    }
+
     private static async Task SimulateRequestsAsync(IServiceProvider serviceProvider, Stopwatch stopwatch)
     {
         while (stopwatch.IsRunning)
         {
             using (var serviceScope = serviceProvider.CreateScope())
             {
-                await new GenreController(serviceScope.ServiceProvider.GetService<ChinookContext>()).ActionAsync();
+                await new GenreController(serviceScope.ServiceProvider.GetRequiredService<ChinookContext>()).ActionAsync();
             }
 
             Interlocked.Increment(ref _requestsProcessed);
