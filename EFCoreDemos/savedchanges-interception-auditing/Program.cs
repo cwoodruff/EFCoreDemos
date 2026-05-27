@@ -53,7 +53,7 @@ public class Program
 
         using (var context =
                new AuditContext(
-                   @"Data Source=chinook.db"))
+                   DatabasePaths.AuditConnectionString))
         {
             foreach (var audit in context.SaveChangesAudits.Include(e => e.Entities).ToList())
             {
@@ -77,7 +77,7 @@ public class Program
     {
         using (var context =
                new AuditContext(
-                   @"Data Source=chinook.db"))
+                   DatabasePaths.AuditConnectionString))
         {
             await context.Database.EnsureDeletedAsync();
             await context.Database.EnsureCreatedAsync();

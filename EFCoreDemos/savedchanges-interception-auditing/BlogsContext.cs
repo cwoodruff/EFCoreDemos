@@ -15,14 +15,15 @@ public class BlogsContext : DbContext
 
     private readonly AuditingInterceptor _auditingInterceptor =
         new AuditingInterceptor(
-            @"Data Source=chinook.db");
+            DatabasePaths.AuditConnectionString);
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
-                .UseSqlite("Data Source=chinook.db")
+                .AddInterceptors(_auditingInterceptor)
+                .UseSqlite(DatabasePaths.BlogsConnectionString)
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
         }

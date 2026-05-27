@@ -16,7 +16,7 @@ internal class Program
                 .ExecuteUpdateAsync(p => p.SetProperty(t => t.UnitPrice, t => t.UnitPrice + .20m));
 
             await db.Customers.TagWith("Deleting customers with invoices older than 2005")
-                .Where(c => !c.Invoices.Any(i => i.InvoiceDate < new DateTime(2005, 1, 1))).ExecuteDeleteAsync();
+                .Where(c => c.Invoices.Any(i => i.InvoiceDate < new DateTime(2005, 1, 1))).ExecuteDeleteAsync();
         }
 
         Console.ReadLine();
