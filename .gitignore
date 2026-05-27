@@ -814,3 +814,10 @@ Backups.backupdb
 .MobileBackups.trash
 MobileBackups.trash
 tmbootpicker.efi
+/EFCoreDemos/.copilot
+/EFCoreDemos/.squad
+/EFCoreDemos/.idea
+/EFCoreDemos/.idea
+/.github/agents
+.github/copilot-instructions.md
+EFCoreDemos/.gitattributes
