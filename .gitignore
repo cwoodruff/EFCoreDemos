@@ -824,3 +824,4 @@ EFCoreDemos/.gitattributes
 EFCoreDemos/package.json
 EFCoreDemos/package-lock.json
 EFCoreDemos/.idea/.idea.EFCoreDemos/.idea/dataSources.xml
+/EFCoreDemos/SpatialDemo.Api/.idea
