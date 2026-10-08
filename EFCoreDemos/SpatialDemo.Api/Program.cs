@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
@@ -83,7 +84,11 @@ app.MapGet("/locations", async (AppDbContext db) =>
 });
 
 // Find nearby locations within a radius (meters)
-app.MapGet("/locations/near", async (AppDbContext db, double longitude, double latitude, double radiusMeters) =>
+app.MapGet("/locations/near", async (
+    AppDbContext db,
+    [Description("Longitude (X)")] double longitude,
+    [Description("Latitude (Y)")] double latitude,
+    [Description("Radius in meters")] double radiusMeters) =>
 {
     var gf = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
     var origin = gf.CreatePoint(new Coordinate(longitude, latitude));
@@ -95,14 +100,7 @@ app.MapGet("/locations/near", async (AppDbContext db, double longitude, double l
 
     return Results.Ok(results);
 })
-.WithOpenApi(op =>
-{
-    op.Summary = "Find nearby locations within a radius (meters)";
-    op.Parameters![0].Description = "Longitude (X)";
-    op.Parameters[1].Description = "Latitude (Y)";
-    op.Parameters[2].Description = "Radius in meters";
-    return op;
-});
+.WithSummary("Find nearby locations within a radius (meters)");
 
 // Create a city boundary polygon from a list of coordinates (lon/lat)
 app.MapPost("/cities", async (AppDbContext db, CityBoundaryDto dto) =>
