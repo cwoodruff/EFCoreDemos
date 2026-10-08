@@ -38,7 +38,7 @@ public class Program
             {
                 // Create explicit compiled query
                 var explicitQuery = EF.CompileQuery((ChinookContext context, int id)
-                    => _context.Albums.FirstOrDefault(a => a.Id == id));
+                    => context.Albums.FirstOrDefault(a => a.Id == id));
 
                 List<Album?> l = new List<Album?>();
                 foreach (var id in albumIDs)
@@ -165,7 +165,7 @@ public class CmpldQryBenchmark
     {
         // Create explicit compiled query
         var explicitQuery = EF.CompileQuery((ChinookContext context, int id)
-            => _context.Albums.FirstOrDefault(a => a.Id == id));
+            => context.Albums.FirstOrDefault(a => a.Id == id));
 
         List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
