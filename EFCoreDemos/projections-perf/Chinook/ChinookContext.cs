@@ -7,6 +7,14 @@ namespace projections_perf.Chinook;
 
 public partial class ChinookContext : DbContext
 {
+    public ChinookContext()
+    {
+    }
+
+    public ChinookContext(DbContextOptions<ChinookContext> options)
+        : base(options)
+    {
+    }
 
     private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
     {

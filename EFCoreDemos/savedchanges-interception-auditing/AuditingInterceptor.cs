@@ -28,7 +28,7 @@ public class AuditingInterceptor : ISaveChangesInterceptor
         using (var auditContext = new AuditContext(_connectionString))
         {
             auditContext.Add(_audit);
-            await auditContext.SaveChangesAsync();
+            await auditContext.SaveChangesAsync(cancellationToken);
         }
 
         return result;

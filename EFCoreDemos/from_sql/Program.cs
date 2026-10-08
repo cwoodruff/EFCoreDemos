@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Data;
 using from_sql.Chinook;
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace from_sql;
@@ -13,8 +12,9 @@ class Program
         using var db = new ChinookContext();
 
         string country = "Canada";
-        SqlParameter parameter = new SqlParameter("Country", SqlDbType.NVarChar);
-        parameter.Direction = ParameterDirection.InputOutput;
+        // The context uses SQLite, so the explicit DbParameter must be a SqliteParameter
+        // (a SqlClient SqlParameter throws InvalidCastException here).
+        SqliteParameter parameter = new SqliteParameter("Country", SqliteType.Text);
         parameter.Size = country.Length;
         parameter.Value = country;
 

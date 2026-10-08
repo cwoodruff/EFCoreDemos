@@ -64,7 +64,11 @@ public sealed class BumpVersionInterceptor : SaveChangesInterceptor
         {
             if (entry.State == EntityState.Modified)
             {
-                entry.Entity.Version += 1;
+                // Derive from the ORIGINAL value, not the current one: a failed SaveChanges
+                // leaves the bumped current value behind, and a retry must not double-bump
+                // (or, after OriginalValues.SetValues(dbValues), fail to bump at all).
+                var version = entry.Property(d => d.Version);
+                version.CurrentValue = version.OriginalValue + 1;
             }
         }
     }

@@ -10,6 +10,15 @@ public class Program
 {
     private static ChinookContext _context = null!;
 
+    // Create explicit compiled queries once, so their compilation cost isn't part of the timed tests
+    private static readonly Func<ChinookContext, int, Album?> ExplicitQuery =
+        EF.CompileQuery((ChinookContext context, int id)
+            => context.Albums.FirstOrDefault(a => a.Id == id));
+
+    private static readonly Func<ChinookContext, int, Task<Album?>> CompiledExplicitQuery =
+        EF.CompileAsyncQuery((ChinookContext context, int id)
+            => context.Albums.FirstOrDefault(a => a.Id == id));
+
     private static void Main()
     {
         var builder = new DbContextOptionsBuilder<ChinookContext>();
@@ -36,15 +45,11 @@ public class Program
         RunTest(
             albumIDs =>
             {
-                // Create explicit compiled query
-                var explicitQuery = EF.CompileQuery((ChinookContext context, int id)
-                    => context.Albums.FirstOrDefault(a => a.Id == id));
-
                 List<Album?> l = new List<Album?>();
                 foreach (var id in albumIDs)
                 {
                     // Invoke the compiled query
-                    l.Add(explicitQuery(_context, id));
+                    l.Add(ExplicitQuery(_context, id));
                 }
             },
             name: "Compiled EF Core Query");
@@ -52,17 +57,13 @@ public class Program
         RunTest(
             albumIDs =>
             {
-                // Create explicit compiled query
-                var compiledExplicitQuery = EF.CompileAsyncQuery((ChinookContext context, int id)
-                    => context.Albums.FirstOrDefault(a => a.Id == id));
-                
                 List<Task> l = new List<Task>();
                 foreach (var id in albumIDs)
                 {
                     // Invoke the compiled async query
-                    l.Add(compiledExplicitQuery(_context, id));
+                    l.Add(CompiledExplicitQuery(_context, id));
                 }
-                Task.WaitAny(l.ToArray());
+                Task.WaitAll(l.ToArray());
             },
             name: "Async Compiled EF Core Query");
 
@@ -87,7 +88,7 @@ public class Program
                     // Invoke the compiled async query from DBContext;
                     l.Add(_context.GetAlbumAsync(id));
                 }
-                Task.WaitAny(l.ToArray());
+                Task.WaitAll(l.ToArray());
             },
             name: "DBContext Async Compiled EF Core Query");
         
@@ -117,11 +118,20 @@ public class Program
     }
 }
 
-[SimpleJob(RuntimeMoniker.Net70)]
+[SimpleJob(RuntimeMoniker.Net10_0)]
 public class CmpldQryBenchmark
 {
     private int[] _albumIDs = [];
     private static ChinookContext _context = null!;
+
+    // Create explicit compiled queries once, so their compilation cost isn't part of the benchmarks
+    private static readonly Func<ChinookContext, int, Album?> ExplicitQuery =
+        EF.CompileQuery((ChinookContext context, int id)
+            => context.Albums.FirstOrDefault(a => a.Id == id));
+
+    private static readonly Func<ChinookContext, int, Task<Album?>> CompiledExplicitQuery =
+        EF.CompileAsyncQuery((ChinookContext context, int id)
+            => context.Albums.FirstOrDefault(a => a.Id == id));
 
     [Params(500)]
     public int N;
@@ -130,8 +140,7 @@ public class CmpldQryBenchmark
     public void Setup()
     {
         var builder = new DbContextOptionsBuilder<ChinookContext>();
-        builder.UseSqlite(
-            "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos");
+        builder.UseSqlite("Data Source=chinook.db");
 
         var dbContextOptions = builder.Options;
         _context = new ChinookContext(dbContextOptions);
@@ -141,6 +150,9 @@ public class CmpldQryBenchmark
 
         _albumIDs = GetAlbumIDs(N);
     }
+
+    [GlobalCleanup]
+    public void Cleanup() => _context.Dispose();
 
     private static int[] GetAlbumIDs(int count)
     {
@@ -163,32 +175,24 @@ public class CmpldQryBenchmark
     [Benchmark]
     public void CompiledEFCoreQuery()
     {
-        // Create explicit compiled query
-        var explicitQuery = EF.CompileQuery((ChinookContext context, int id)
-            => context.Albums.FirstOrDefault(a => a.Id == id));
-
         List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
             // Invoke the compiled query
-            l.Add(explicitQuery(_context, id));
+            l.Add(ExplicitQuery(_context, id));
         }
     }
     
     [Benchmark]
     public void AsyncCompiledEFCoreQuery()
     {
-        // Create explicit compiled query
-        var compiledExplicitQuery = EF.CompileAsyncQuery((ChinookContext context, int id)
-            => context.Albums.FirstOrDefault(a => a.Id == id));
-                
         List<Task> l = new List<Task>();
         foreach (var id in _albumIDs)
         {
             // Invoke the compiled async query
-            l.Add(compiledExplicitQuery(_context, id));
+            l.Add(CompiledExplicitQuery(_context, id));
         }
-        Task.WaitAny(l.ToArray());
+        Task.WaitAll(l.ToArray());
     }
     
     [Benchmark]
@@ -211,6 +215,6 @@ public class CmpldQryBenchmark
             // Invoke the compiled async query from DBContext;
             l.Add(_context.GetAlbumAsync(id));
         }
-        Task.WaitAny(l.ToArray());
+        Task.WaitAll(l.ToArray());
     }
 }

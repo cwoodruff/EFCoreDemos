@@ -196,8 +196,6 @@ namespace DemoLauncher.Web
             {
                 if (e.Data is not null) channel.Writer.TryWrite(("stderr", e.Data));
             };
-            process.Exited += (_, _) => channel.Writer.TryComplete();
-
             try
             {
                 process.Start();
@@ -211,6 +209,10 @@ namespace DemoLauncher.Web
 
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
+
+            // Complete only once the process has exited AND stdout/stderr have drained.
+            // (Process.Exited can fire before the last OutputDataReceived lines arrive.)
+            _ = process.WaitForExitAsync().ContinueWith(_ => channel.Writer.TryComplete(), TaskScheduler.Default);
 
             try
             {

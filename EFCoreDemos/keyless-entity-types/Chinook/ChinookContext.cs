@@ -68,6 +68,9 @@ public partial class ChinookContext : DbContext
 
         modelBuilder.Entity<AlbumWithArtistName>(entity =>
         {
+            entity.HasNoKey();
+            entity.ToView("AlbumWithArtistName");
+
             entity.Property(e => e.Id);
             entity.Property(e => e.Title).HasMaxLength(160);
             entity.Property(e => e.ArtistId);

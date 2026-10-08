@@ -13,7 +13,7 @@ public class Program
         {
             // Get all the tracks in the database
             var tracks = db.Tracks
-                .FromSql($"dbo.sproc_GetTrack")
+                .FromSql($"EXEC dbo.sproc_GetTrack")
                 .ToList();
             
             Console.WriteLine(tracks.FirstOrDefault()?.Name);

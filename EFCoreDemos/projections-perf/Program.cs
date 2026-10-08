@@ -59,32 +59,44 @@ public class TrackListItem
 [MemoryDiagnoser]
 public class ProjectionBenchmarks
 {
-    private ChinookContext _db = null!;
+    // Options without the console logger from OnConfiguring, so the benchmarks measure
+    // the queries rather than writing every SQL command to the console.
+    private static readonly DbContextOptions<ChinookContext> Options =
+        new DbContextOptionsBuilder<ChinookContext>()
+            .UseSqlite("Data Source=chinook.db")
+            .Options;
 
+    // Each benchmark uses a fresh context, so tracked queries really start with an empty
+    // change tracker instead of resolving against entities tracked by earlier invocations.
     [GlobalSetup]
     public void Setup()
     {
-        _db = new ChinookContext();
-        _db.Tracks.AsNoTracking().FirstOrDefault();
+        using var db = new ChinookContext(Options);
+        db.Tracks.AsNoTracking().FirstOrDefault();
     }
-
-    [GlobalCleanup]
-    public void Cleanup() => _db.Dispose();
 
     [Benchmark(Baseline = true)]
     public List<Track> FullHydration()
-        => _db.Tracks.Where(t => t.UnitPrice >= 0.99m).ToList();
+    {
+        using var db = new ChinookContext(Options);
+        return db.Tracks.Where(t => t.UnitPrice >= 0.99m).ToList();
+    }
 
     [Benchmark]
     public object AnonProjection()
-        => _db.Tracks
+    {
+        using var db = new ChinookContext(Options);
+        return db.Tracks
             .Where(t => t.UnitPrice >= 0.99m)
             .Select(t => new { t.Id, t.Name, t.AlbumId })
             .ToList();
+    }
 
     [Benchmark]
     public List<TrackListItem> DtoProjection()
-        => _db.Tracks
+    {
+        using var db = new ChinookContext(Options);
+        return db.Tracks
             .Where(t => t.UnitPrice >= 0.99m)
             .Select(t => new TrackListItem
             {
@@ -93,4 +105,5 @@ public class ProjectionBenchmarks
                 AlbumTitle = t.Album.Title
             })
             .ToList();
+    }
 }

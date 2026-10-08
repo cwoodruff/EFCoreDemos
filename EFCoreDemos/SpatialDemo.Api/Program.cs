@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var conn = builder.Configuration.GetConnectionString("DefaultConnection")
-              ?? "Server=localhost,1433;Database=spatialdemo;User=sa;Password=8Riwudeg!!;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=true;Application Name=SpatialDemo.Api";
+              ?? "Server=localhost,1433;Database=spatialdemo;User=sa;Password=8riwudeg!!;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=true;Application Name=SpatialDemo.Api";
     options.UseSqlServer(conn, x => x.UseNetTopologySuite());
 });
 
@@ -109,7 +109,11 @@ app.MapPost("/cities", async (AppDbContext db, CityBoundaryDto dto) =>
 
     // Build LinearRing (must end where it starts)
     var coords = dto.Coordinates.Select(c => new Coordinate(c.Longitude, c.Latitude)).ToList();
-    if (coords.Count == 0 || (coords[0].X != coords[^1].X || coords[0].Y != coords[^1].Y))
+    if (coords.Count < 3)
+    {
+        return Results.BadRequest(new { message = "A polygon needs at least 3 coordinates" });
+    }
+    if (coords[0].X != coords[^1].X || coords[0].Y != coords[^1].Y)
     {
         coords.Add(new Coordinate(coords[0].X, coords[0].Y)); // close ring
     }

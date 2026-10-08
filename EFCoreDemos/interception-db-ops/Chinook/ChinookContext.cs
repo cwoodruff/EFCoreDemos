@@ -34,6 +34,7 @@ public partial class ChinookContext : DbContext
         {
             optionsBuilder
                 .UseSqlite("Data Source=chinook.db")
+                .AddInterceptors(new HintCommandInterceptor())
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
         }

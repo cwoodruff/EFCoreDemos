@@ -14,7 +14,7 @@ public class Program
 
             foreach (var album in albumsWithArtistName)
             {
-                Console.WriteLine($"{album.Name} has {album.Name} album.");
+                Console.WriteLine($"{album.Name} has {album.Title} album.");
             }
         }
     }

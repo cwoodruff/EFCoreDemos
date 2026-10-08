@@ -39,7 +39,7 @@ public partial class ChinookContext : DbContext
         {
             optionsBuilder
                 .UseSqlServer(
-                    "Server=.;Database=Chinook;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;")
+                    "Server=localhost,1433;User Id=sa;Password=8riwudeg!!;Database=Chinook;TrustServerCertificate=True;Application Name=EFCoreDemos;")
                 .UseLoggerFactory(loggerFactory);
         }
     }
