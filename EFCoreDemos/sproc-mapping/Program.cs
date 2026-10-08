@@ -16,7 +16,7 @@ public class Program
                 .FromSql($"dbo.sproc_GetTrack")
                 .ToList();
             
-            Console.WriteLine(tracks.FirstOrDefault().Name);
+            Console.WriteLine(tracks.FirstOrDefault()?.Name);
 
             // Insert a new track
             

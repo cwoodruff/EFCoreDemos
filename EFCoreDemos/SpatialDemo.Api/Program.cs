@@ -98,7 +98,7 @@ app.MapGet("/locations/near", async (AppDbContext db, double longitude, double l
 .WithOpenApi(op =>
 {
     op.Summary = "Find nearby locations within a radius (meters)";
-    op.Parameters[0].Description = "Longitude (X)";
+    op.Parameters![0].Description = "Longitude (X)";
     op.Parameters[1].Description = "Latitude (Y)";
     op.Parameters[2].Description = "Radius in meters";
     return op;

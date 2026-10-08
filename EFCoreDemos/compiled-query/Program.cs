@@ -8,7 +8,7 @@ namespace compiled_query;
 
 public class Program
 {
-    private static ChinookContext? _context;
+    private static ChinookContext _context = null!;
 
     private static void Main()
     {
@@ -111,7 +111,7 @@ public class Program
 
     private static int[] GetAlbumIDs(int count)
     {
-        IQueryable<Album> albums = Queryable.Take(_context!.Albums, count);
+        IQueryable<Album> albums = Queryable.Take(_context.Albums, count);
 
         return albums.AsEnumerable().Select(i => i.Id).ToArray();
     }
@@ -120,8 +120,8 @@ public class Program
 [SimpleJob(RuntimeMoniker.Net70)]
 public class CmpldQryBenchmark
 {
-    private int[] _albumIDs;
-    private static ChinookContext? _context;
+    private int[] _albumIDs = [];
+    private static ChinookContext _context = null!;
 
     [Params(500)]
     public int N;
@@ -144,7 +144,7 @@ public class CmpldQryBenchmark
 
     private static int[] GetAlbumIDs(int count)
     {
-        IQueryable<Album> albums = Queryable.Take(_context!.Albums, count);
+        IQueryable<Album> albums = Queryable.Take(_context.Albums, count);
 
         return albums.AsEnumerable().Select(i => i.Id).ToArray();
     }
