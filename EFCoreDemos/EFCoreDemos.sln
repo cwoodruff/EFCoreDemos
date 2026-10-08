@@ -80,6 +80,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "migrations-workflow", "migr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "optimistic-concurrency", "optimistic-concurrency\optimistic-concurrency.csproj", "{4FC16ADE-92F5-4FBB-92E1-95A467010FB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ef-core-sprocs-perf", "ef-core-sprocs-perf\ef-core-sprocs-perf.csproj", "{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -558,6 +560,18 @@ Global
 		{4FC16ADE-92F5-4FBB-92E1-95A467010FB7}.Release|x64.Build.0 = Release|Any CPU
 		{4FC16ADE-92F5-4FBB-92E1-95A467010FB7}.Release|x86.ActiveCfg = Release|Any CPU
 		{4FC16ADE-92F5-4FBB-92E1-95A467010FB7}.Release|x86.Build.0 = Release|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Debug|x64.Build.0 = Debug|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Debug|x86.Build.0 = Debug|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Release|x64.ActiveCfg = Release|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Release|x64.Build.0 = Release|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Release|x86.ActiveCfg = Release|Any CPU
+		{F6EA26F3-A5EA-4FF5-9EE1-4486C711555C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
