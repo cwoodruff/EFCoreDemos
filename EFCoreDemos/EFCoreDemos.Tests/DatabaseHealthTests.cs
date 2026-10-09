@@ -67,7 +67,7 @@ namespace EFCoreDemos.Tests
         [Fact] public async Task IdentityResolution_IsHealthy() => await VerifySqliteHealth(new identity_resolution::identity_resolution.Chinook.ChinookContext());
         [Fact] public async Task InterceptionDbOps_IsHealthy() => await VerifySqliteHealth(new interception_db_ops::interception_db_ops.Chinook.ChinookContext());
         [Fact] public async Task JsonColumns_IsHealthy() => await VerifySqliteHealth(new json_columns::json_columns.Chinook.ChinookContext());
-        [Fact] public async Task KeylessEntityTypes_IsHealthy() => await VerifySqliteHealth(new keyless_entity_types::keylessentitytypes.Chinook.ChinookContext());
+        [Fact] public async Task KeylessEntityTypes_IsHealthy() => await VerifySqliteHealth(new keyless_entity_types::keylessentitytypes.Chinook.ChinookContext(CreateOptions<keyless_entity_types::keylessentitytypes.Chinook.ChinookContext>()));
         [Fact] public async Task LazyLoading_IsHealthy() => await VerifySqliteHealth(new lazy_loading::lazy_loading.Chinook.ChinookContext());
         [Fact] public async Task Like_IsHealthy() => await VerifySqliteHealth(new like::Demos.Chinook.ChinookContext());
         [Fact] public async Task LinqGroupBy_IsHealthy() => await VerifySqliteHealth(new linq_groupby::linq_groupby.Chinook.ChinookContext());
@@ -95,6 +95,16 @@ namespace EFCoreDemos.Tests
         public void DbFunctions_SqlServer_IsHealthy()
         {
             using (var context = new db_functions::Demos.Chinook.ChinookContext())
+            {
+                Assert.NotNull(context);
+                Assert.True(context.Database.IsSqlServer());
+            }
+        }
+
+        [Fact]
+        public void KeylessEntityTypes_SqlServer_IsHealthy()
+        {
+            using (var context = new keyless_entity_types::keylessentitytypes.Chinook.ChinookContext())
             {
                 Assert.NotNull(context);
                 Assert.True(context.Database.IsSqlServer());

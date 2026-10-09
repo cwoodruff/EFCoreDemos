@@ -42,7 +42,9 @@ public partial class ChinookContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
-                .UseSqlite("Data Source=chinook.db")
+                // The AlbumWithArtistName view only exists in the SQL Server Chinook database
+                .UseSqlServer(
+                    "Server=localhost,1433;User Id=sa;Password=8riwudeg!!;Database=Chinook;TrustServerCertificate=True;Application Name=EFCoreDemos;")
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
         }
