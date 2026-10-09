@@ -188,8 +188,9 @@ public partial class ChinookContext : DbContext
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__Invoice__Custome__2D27B809");
 
-            // Hide invoices older than 14 years
-            entity.HasQueryFilter(i => i.InvoiceDate > DateTime.Now.AddYears(-14));
+            // Hide invoices before 2009 (Chinook invoice data only spans 2007-2010,
+            // so a cutoff relative to DateTime.Now would eventually hide everything)
+            entity.HasQueryFilter(i => i.InvoiceDate >= new DateTime(2009, 1, 1));
         });
 
         modelBuilder.Entity<InvoiceLine>(entity =>
