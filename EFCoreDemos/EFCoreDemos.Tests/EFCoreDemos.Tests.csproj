@@ -55,6 +55,17 @@
     <ProjectReference Include="..\split-queries\split-queries.csproj" Aliases="split_queries" />
     <ProjectReference Include="..\sproc-mapping\sproc-mapping.csproj" Aliases="sproc_mapping" />
     <ProjectReference Include="..\temporal-tables\temporal-tables.csproj" Aliases="temporal_tables" />
+    <ProjectReference Include="..\as-no-tracking-perf\as-no-tracking-perf.csproj" Aliases="as_no_tracking_perf" />
+    <ProjectReference Include="..\change-tracker-explorer\change-tracker-explorer.csproj" Aliases="change_tracker_explorer" />
+    <ProjectReference Include="..\dbcontext-lifetimes-di\dbcontext-lifetimes-di.csproj" Aliases="dbcontext_lifetimes_di" />
+    <ProjectReference Include="..\ef-core-sprocs-perf\ef-core-sprocs-perf.csproj" Aliases="ef_core_sprocs_perf" />
+    <ProjectReference Include="..\ef-vs-dapper-vs-ado\ef-vs-dapper-vs-ado.csproj" Aliases="ef_vs_dapper_vs_ado" />
+    <ProjectReference Include="..\inheritance-mapping\inheritance-mapping.csproj" Aliases="inheritance_mapping" />
+    <ProjectReference Include="..\migrations-workflow\migrations-workflow.csproj" Aliases="migrations_workflow" />
+    <ProjectReference Include="..\n-plus-one-problem\n-plus-one-problem.csproj" Aliases="n_plus_one_problem" />
+    <ProjectReference Include="..\optimistic-concurrency\optimistic-concurrency.csproj" Aliases="optimistic_concurrency" />
+    <ProjectReference Include="..\projections-perf\projections-perf.csproj" Aliases="projections_perf" />
+    <ProjectReference Include="..\transactions-and-savechanges\transactions-and-savechanges.csproj" Aliases="transactions_and_savechanges" />
   </ItemGroup>
 
   <!-- Use the seeded Chinook database from the repo's Databases folder for the SQLite health tests.
