@@ -1,4 +1,4 @@
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using Dapper;
 using ef_vs_dapper_vs_ado.Chinook;
@@ -9,11 +9,23 @@ namespace ef_vs_dapper_vs_ado;
 
 // Same hot-path read (look up a Track by Name) across three approaches.
 // Spec uses "Book by Isbn" - adapted to Chinook (Track by Name).
+//
+// Like-for-like rules:
+//  * Same semantics: EF's FirstOrDefault emits "LIMIT 1", so Dapper uses QueryFirstOrDefault and
+//    Dapper/ADO.NET run the same SQL with "LIMIT 1" (QuerySingleOrDefault would read a 2nd row to
+//    check uniqueness - different work).
+//  * Same columns: all three select and materialize every Track column.
+//  * Same connection handling: all three use ONE connection opened once up front. EF normally
+//    opens/closes its connection around every query; Database.OpenConnection() keeps it open, so the
+//    benchmark measures query + materialization overhead, not connection open/close.
 
 public static class Program
 {
     public const string ConnectionString = "Data Source=chinook.db";
     public const string TrackName = "Inject The Venom";
+
+    public const string TrackSql =
+        "SELECT Id, Name, AlbumId, MediaTypeId, GenreId, Composer, Milliseconds, Bytes, UnitPrice FROM Track WHERE Name = @name LIMIT 1";
 
     public static void Main(string[] args)
     {
@@ -27,9 +39,7 @@ public static class Program
         using (var c = new SqliteConnection(ConnectionString))
         {
             c.Open();
-            var d = c.QuerySingleOrDefault<Track>(
-                "SELECT Id, Name, AlbumId, MediaTypeId, GenreId, Composer, Milliseconds, Bytes, UnitPrice FROM Track WHERE Name = @name",
-                new { name = TrackName });
+            var d = c.QueryFirstOrDefault<Track>(TrackSql, new { name = TrackName });
             Console.WriteLine($"[Dapper  ] Track #{d?.Id} '{d?.Name}' on Album {d?.AlbumId}");
         }
 
@@ -37,7 +47,7 @@ public static class Program
         {
             c.Open();
             using var cmd = c.CreateCommand();
-            cmd.CommandText = "SELECT Id, Name, AlbumId FROM Track WHERE Name = @name";
+            cmd.CommandText = TrackSql;
             cmd.Parameters.AddWithValue("@name", TrackName);
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
@@ -67,7 +77,8 @@ public class ReadBenchmarks
     public void Setup()
     {
         _db = new ChinookContext();
-        _db.Tracks.AsNoTracking().FirstOrDefault(); // warm up EF model + connection pool
+        _db.Database.OpenConnection(); // keep EF's connection open, same as the Dapper/ADO.NET one below
+        _db.Tracks.AsNoTracking().FirstOrDefault(); // warm up EF model + query cache
 
         _connection = new SqliteConnection(Program.ConnectionString);
         _connection.Open();
@@ -77,6 +88,7 @@ public class ReadBenchmarks
     public void Cleanup()
     {
         _connection.Dispose();
+        _db.Database.CloseConnection();
         _db.Dispose();
     }
 
@@ -86,15 +98,13 @@ public class ReadBenchmarks
 
     [Benchmark]
     public Track Dapper()
-        => _connection.QuerySingleOrDefault<Track>(
-            "SELECT Id, Name, AlbumId, MediaTypeId, GenreId, Composer, Milliseconds, Bytes, UnitPrice FROM Track WHERE Name = @name",
-            new { name = Program.TrackName });
+        => _connection.QueryFirstOrDefault<Track>(Program.TrackSql, new { name = Program.TrackName });
 
     [Benchmark]
     public Track Ado()
     {
         using var cmd = _connection.CreateCommand();
-        cmd.CommandText = "SELECT Id, Name, AlbumId, MediaTypeId, GenreId, Composer, Milliseconds, Bytes, UnitPrice FROM Track WHERE Name = @name";
+        cmd.CommandText = Program.TrackSql;
         cmd.Parameters.AddWithValue("@name", Program.TrackName);
         using var reader = cmd.ExecuteReader();
         if (!reader.Read()) return null;

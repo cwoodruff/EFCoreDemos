@@ -25,9 +25,13 @@ public class Program
             }
         }
 
-        Console.ReadLine();
+        // Pause when run interactively; skip when input is redirected (DemoLauncher, CI).
+        if (!Console.IsInputRedirected)
+            Console.ReadLine();
     }
 
+    // Drops and recreates this demo's own Blogs database (many-to-many-blogs.db)
+    // on every run -- it is NOT the Chinook database.
     private static void SetupDatabase()
     {
         using (var db = new BloggingContext())
@@ -60,6 +64,10 @@ public class Program
 
 public class BloggingContext : DbContext
 {
+    // Scratch database owned by this demo, created next to the executable.
+    public static readonly string DatabasePath =
+        System.IO.Path.Combine(AppContext.BaseDirectory, "many-to-many-blogs.db");
+
     public DbSet<Blog> Blogs { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Tag> Tags { get; set; }
@@ -69,7 +77,7 @@ public class BloggingContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
-                .UseSqlite("Data Source=chinook.db")
+                .UseSqlite($"Data Source={DatabasePath}")
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
         }
@@ -136,6 +144,10 @@ public class Post
 
 public class Tag
 {
+    // A string key marked "Identity" just means "generated on add". SQLite/SQL Server
+    // can't auto-generate a TEXT key, so EF Core generates it on the CLIENT: it assigns
+    // a Guid string (e.g. "66bd4ad4-...") before sending the INSERT. No database identity
+    // is involved -- watch the INSERT INTO "Tags" parameters in the log.
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string TagId { get; set; }

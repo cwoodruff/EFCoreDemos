@@ -41,5 +41,12 @@ public class HintCommandInterceptor : DbCommandInterceptor
         {
             command.CommandText = "-- Rewritten by HintCommandInterceptor" + Environment.NewLine + command.CommandText;
         }
+
+        // EF's "Executed DbCommand" log entry shows the SQL EF *generated*, i.e. the text
+        // from before this interceptor ran -- so the rewrite would be invisible there.
+        // Print the final CommandText that actually goes to the database.
+        Console.WriteLine("[HintCommandInterceptor] SQL actually sent to the database:");
+        Console.WriteLine(command.CommandText);
+        Console.WriteLine();
     }
 }

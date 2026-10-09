@@ -147,32 +147,45 @@ public static class Program
         Console.WriteLine("Without TransactionScopeAsyncFlowOption.Enabled, the ambient transaction does not flow across await.");
         try
         {
-            // Default option is "Suppress" - the ambient transaction is dropped at the first await.
+            // Default async flow option is "Suppress": the ambient transaction lives in
+            // thread-local storage, so the continuation after the first real await (which
+            // resumes on a thread-pool thread) sees Transaction.Current == null.
             using var scope = new TransactionScope();
+            Console.WriteLine($"  Before await: Transaction.Current = {Describe(Transaction.Current)}");
             await SimulateDbWorkAsync();
+            Console.WriteLine($"  After await:  Transaction.Current = {Describe(Transaction.Current)}  <- ambient transaction lost");
+            Console.WriteLine("  Any EF/ADO.NET call here would run OUTSIDE the scope (no enlistment, no rollback).");
             scope.Complete();
-            Console.WriteLine("(no exception, but the ambient transaction was lost across the await)");
+            Console.WriteLine("  scope.Complete() did not complain... now the 'using' disposes the scope on the wrong thread:");
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
-            Console.WriteLine($"Caught: {ex.GetType().Name} - {ex.Message}");
+            // Dispose() throws because we are no longer on the thread that created the scope.
+            Console.WriteLine($"  Caught on Dispose: {ex.GetType().Name} - {ex.Message}");
         }
 
         Console.WriteLine();
         Console.WriteLine("Fix: pass TransactionScopeAsyncFlowOption.Enabled - one line, problem solved.");
         using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
+            Console.WriteLine($"  Before await: Transaction.Current = {Describe(Transaction.Current)}");
             await SimulateDbWorkAsync();
+            Console.WriteLine($"  After await:  Transaction.Current = {Describe(Transaction.Current)}  <- same transaction");
             scope.Complete();
-            Console.WriteLine("Async TransactionScope flowed correctly through the await.");
         }
+        Console.WriteLine("Async TransactionScope flowed correctly through the await and disposed cleanly.");
     }
+
+    private static string Describe(Transaction tx) =>
+        tx is null ? "null" : tx.TransactionInformation.LocalIdentifier;
 
     private static async Task SimulateDbWorkAsync()
     {
-        // The pattern teams hit in real code: an EF SaveChangesAsync inside a TransactionScope
-        // followed by another async DB call. Without AsyncFlowOption, the second op runs
-        // outside the scope entirely.
+        // Stand-in for real async I/O such as an EF SaveChangesAsync / ToListAsync call.
+        // Task.Delay guarantees a genuine asynchronous completion, so the code after the
+        // await resumes on a thread-pool thread -- exactly what happens with a real network
+        // database call. (SQLite's async methods complete synchronously, which would hide
+        // the problem, so we don't use the local chinook.db here.)
         await Task.Delay(10);
     }
 }

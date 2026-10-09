@@ -22,6 +22,9 @@ class Program
             Console.WriteLine("Closest City is " + nearestCity?.CityName);
         }
 
-        Console.ReadLine();
+        if (!Console.IsInputRedirected)
+        {
+            Console.ReadLine();
+        }
     }
 }

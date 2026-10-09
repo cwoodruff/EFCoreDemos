@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
 using compiled_query.Chinook;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,18 +20,31 @@ public class Program
         EF.CompileAsyncQuery((ChinookContext context, int id)
             => context.Albums.FirstOrDefault(a => a.Id == id));
 
-    private static void Main()
+    // Quick demo:            dotnet run -c Release
+    // Full BenchmarkDotNet:  dotnet run -c Release -- benchmark
+    private static async Task Main(string[] args)
     {
+        if (args.Length > 0 && args[0].TrimStart('-').Equals("benchmark", StringComparison.OrdinalIgnoreCase))
+        {
+            BenchmarkRunner.Run<CmpldQryBenchmark>();
+            return;
+        }
+
         var builder = new DbContextOptionsBuilder<ChinookContext>();
         builder.UseSqlite("Data Source=chinook.db");
 
         var dbContextOptions = builder.Options;
         _context = new ChinookContext(dbContextOptions);
 
-        // Warm up
-        _context.Artists.First();
+        // Warm up every variant once (JIT, query cache, materializer) so the first timed test
+        // doesn't pay one-time costs the others don't.
+        _context.Albums.FirstOrDefault(a => a.Id == 1);
+        ExplicitQuery(_context, 1);
+        await CompiledExplicitQuery(_context, 1);
+        _context.GetAlbum(1);
+        await _context.GetAlbumAsync(1);
 
-        RunTest(
+        await RunTest(
             albumIDs =>
             {
                 List<Album?> l = new List<Album?>();
@@ -39,10 +53,11 @@ public class Program
                     // Use a regular auto-compiled query
                     l.Add(_context.Albums.FirstOrDefault(a => a.Id == id));
                 }
+                return Task.CompletedTask;
             },
             name: "Run-time EF Core Query");
 
-        RunTest(
+        await RunTest(
             albumIDs =>
             {
                 List<Album?> l = new List<Album?>();
@@ -51,23 +66,24 @@ public class Program
                     // Invoke the compiled query
                     l.Add(ExplicitQuery(_context, id));
                 }
+                return Task.CompletedTask;
             },
             name: "Compiled EF Core Query");
 
-        RunTest(
-            albumIDs =>
+        await RunTest(
+            async albumIDs =>
             {
-                List<Task> l = new List<Task>();
+                List<Album?> l = new List<Album?>();
                 foreach (var id in albumIDs)
                 {
-                    // Invoke the compiled async query
-                    l.Add(CompiledExplicitQuery(_context, id));
+                    // Invoke the compiled async query. A DbContext does not support concurrent
+                    // operations, so each query is awaited before the next one starts.
+                    l.Add(await CompiledExplicitQuery(_context, id));
                 }
-                Task.WaitAll(l.ToArray());
             },
             name: "Async Compiled EF Core Query");
 
-        RunTest(
+        await RunTest(
             albumIDs =>
             {
                 List<Album?> l = new List<Album?>();
@@ -76,46 +92,43 @@ public class Program
                     // Invoke the compiled query from DBContext
                     l.Add(_context.GetAlbum(id));
                 }
+                return Task.CompletedTask;
             },
             name: "DBContext Compiled EF Core Query");
 
-        RunTest(
-            albumIDs =>
+        await RunTest(
+            async albumIDs =>
             {
-                List<Task> l = new List<Task>();
+                List<Album?> l = new List<Album?>();
                 foreach (var id in albumIDs)
                 {
-                    // Invoke the compiled async query from DBContext;
-                    l.Add(_context.GetAlbumAsync(id));
+                    // Invoke the compiled async query from DBContext (awaited sequentially).
+                    l.Add(await _context.GetAlbumAsync(id));
                 }
-                Task.WaitAll(l.ToArray());
             },
             name: "DBContext Async Compiled EF Core Query");
-        
-        // dotnet run --project .\compiled-query.csproj -c Release
-        //var summary = BenchmarkRunner.Run<CmpldQryBenchmark>();
     }
-    
-    private static void RunTest(Action<int[]> test, string name)
+
+    private static async Task RunTest(Func<int[], Task> test, string name)
     {
         var albumIDs = GetAlbumIDs(500);
-        var stopwatch = new Stopwatch();
 
-        stopwatch.Start();
+        // Every test starts with an empty change tracker, so each one materializes and tracks
+        // the same albums. Without this, later tests would just find already-tracked instances.
+        _context.ChangeTracker.Clear();
 
-        test(albumIDs);
+        var stopwatch = Stopwatch.StartNew();
+
+        await test(albumIDs);
 
         stopwatch.Stop();
 
-        Console.WriteLine($"{name}:  {stopwatch.ElapsedMilliseconds.ToString(),4}ms");
+        Console.WriteLine($"{name,-40} {stopwatch.ElapsedMilliseconds,4}ms  ({albumIDs.Length} queries)");
     }
 
-    private static int[] GetAlbumIDs(int count)
-    {
-        IQueryable<Album> albums = Queryable.Take(_context.Albums, count);
-
-        return albums.AsEnumerable().Select(i => i.Id).ToArray();
-    }
+    // Projects only the keys, so fetching the IDs doesn't put any albums into the change tracker.
+    private static int[] GetAlbumIDs(int count) =>
+        _context.Albums.OrderBy(a => a.Id).Take(count).Select(a => a.Id).ToArray();
 }
 
 [SimpleJob(RuntimeMoniker.Net10_0)]
@@ -146,7 +159,7 @@ public class CmpldQryBenchmark
         _context = new ChinookContext(dbContextOptions);
 
         // Warm up
-        _context.Artists.First();
+        _context.Artists.AsNoTracking().First();
 
         _albumIDs = GetAlbumIDs(N);
     }
@@ -154,16 +167,15 @@ public class CmpldQryBenchmark
     [GlobalCleanup]
     public void Cleanup() => _context.Dispose();
 
-    private static int[] GetAlbumIDs(int count)
-    {
-        IQueryable<Album> albums = Queryable.Take(_context.Albums, count);
+    private static int[] GetAlbumIDs(int count) =>
+        _context.Albums.OrderBy(a => a.Id).Take(count).Select(a => a.Id).ToArray();
 
-        return albums.AsEnumerable().Select(i => i.Id).ToArray();
-    }
-
+    // Every benchmark clears the change tracker first (same cost for all of them), so each
+    // invocation really materializes and tracks the albums instead of hitting tracked instances.
     [Benchmark]
     public void RunTimeEFCoreQuery()
     {
+        _context.ChangeTracker.Clear();
         List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
@@ -175,6 +187,7 @@ public class CmpldQryBenchmark
     [Benchmark]
     public void CompiledEFCoreQuery()
     {
+        _context.ChangeTracker.Clear();
         List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
@@ -184,20 +197,21 @@ public class CmpldQryBenchmark
     }
     
     [Benchmark]
-    public void AsyncCompiledEFCoreQuery()
+    public async Task AsyncCompiledEFCoreQuery()
     {
-        List<Task> l = new List<Task>();
+        _context.ChangeTracker.Clear();
+        List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
-            // Invoke the compiled async query
-            l.Add(CompiledExplicitQuery(_context, id));
+            // Invoke the compiled async query (awaited sequentially - one DbContext, one operation at a time)
+            l.Add(await CompiledExplicitQuery(_context, id));
         }
-        Task.WaitAll(l.ToArray());
     }
     
     [Benchmark]
     public void DBContextCompiledEFCoreQuery()
     {
+        _context.ChangeTracker.Clear();
         List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
@@ -207,14 +221,14 @@ public class CmpldQryBenchmark
     }
     
     [Benchmark]
-    public void DBContextAsyncCompiledEFCoreQuery()
+    public async Task DBContextAsyncCompiledEFCoreQuery()
     {
-        List<Task> l = new List<Task>();
+        _context.ChangeTracker.Clear();
+        List<Album?> l = new List<Album?>();
         foreach (var id in _albumIDs)
         {
-            // Invoke the compiled async query from DBContext;
-            l.Add(_context.GetAlbumAsync(id));
+            // Invoke the compiled async query from DBContext (awaited sequentially)
+            l.Add(await _context.GetAlbumAsync(id));
         }
-        Task.WaitAll(l.ToArray());
     }
 }

@@ -40,8 +40,12 @@ public partial class ChinookContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlite("Data Source=chinook.db");
+        }
+
         optionsBuilder
-            .UseSqlite("Data Source=chinook.db")
             .EnableSensitiveDataLogging()
             .UseLoggerFactory(loggerFactory);
     }

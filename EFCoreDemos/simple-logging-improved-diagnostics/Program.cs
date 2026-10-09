@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -12,6 +12,17 @@ namespace simple_logging_improved_diagnostics;
 class Program
 {
     private const string ConnectionString = "Data Source=chinook.db";
+
+    // Same query text for Dapper and ADO.NET; LIMIT 1 matches what EF's FirstOrDefault emits.
+    private const string TrackSql = "SELECT Id, Name, AlbumId FROM Track WHERE Id = @id LIMIT 1";
+
+    // The timed EF context must NOT use the default constructor: its OnConfiguring attaches the
+    // console command logger, and writing every SQL command to the console would be timed against
+    // EF only. Dapper and ADO.NET don't log, so neither does this context.
+    private static readonly DbContextOptions<ChinookContext> QuietOptions =
+        new DbContextOptionsBuilder<ChinookContext>()
+            .UseSqlite(ConnectionString)
+            .Options;
 
     static void Main()
     {
@@ -31,6 +42,7 @@ class Program
             .TagWith("simple-logging-improved-diagnostics: Artists with Albums (split query)")
             .Include(e => e.Albums)
             .AsSplitQuery()
+            .OrderBy(e => e.Id)
             .Take(5)
             .ToList();
 
@@ -50,22 +62,25 @@ class Program
         const int iterations = 200;
         const int trackId = 1;
 
+        // Like-for-like: each iteration opens a (pooled) connection, reads the same 3 columns of the
+        // same row with LIMIT 1, and materializes a TrackRow. No logging on any of the three.
         // Warm everything up so JIT and connection-pool costs don't pollute the comparison.
         WarmUp();
 
         var efMs = Time(iterations, () =>
         {
-            using var db = new ChinookContext();
-            _ = db.Tracks.AsNoTracking().FirstOrDefault(t => t.Id == trackId);
+            using var db = new ChinookContext(QuietOptions);
+            _ = db.Tracks.AsNoTracking()
+                .Where(t => t.Id == trackId)
+                .Select(t => new TrackRow { Id = t.Id, Name = t.Name, AlbumId = t.AlbumId })
+                .FirstOrDefault();
         });
 
         var dapperMs = Time(iterations, () =>
         {
             using var c = new SqliteConnection(ConnectionString);
             c.Open();
-            _ = c.QuerySingleOrDefault<TrackRow>(
-                "SELECT Id, Name, AlbumId FROM Track WHERE Id = @id",
-                new { id = trackId });
+            _ = c.QueryFirstOrDefault<TrackRow>(TrackSql, new { id = trackId });
         });
 
         var adoMs = Time(iterations, () =>
@@ -73,7 +88,7 @@ class Program
             using var c = new SqliteConnection(ConnectionString);
             c.Open();
             using var cmd = c.CreateCommand();
-            cmd.CommandText = "SELECT Id, Name, AlbumId FROM Track WHERE Id = @id";
+            cmd.CommandText = TrackSql;
             var p = cmd.CreateParameter();
             p.ParameterName = "@id";
             p.Value = trackId;
@@ -91,7 +106,7 @@ class Program
         });
 
         Console.WriteLine($"  {iterations,4} x EF Core   FirstOrDefault: {efMs,7:F2} ms");
-        Console.WriteLine($"  {iterations,4} x Dapper    QuerySingle:    {dapperMs,7:F2} ms");
+        Console.WriteLine($"  {iterations,4} x Dapper    QueryFirst:     {dapperMs,7:F2} ms");
         Console.WriteLine($"  {iterations,4} x ADO.NET   reader:         {adoMs,7:F2} ms");
         Console.WriteLine();
         Console.WriteLine("  EF Core's overhead is ~constant per call. At hundreds of requests per second");
@@ -100,12 +115,15 @@ class Program
 
     private static void WarmUp()
     {
-        using var db = new ChinookContext();
-        _ = db.Tracks.AsNoTracking().FirstOrDefault();
+        using var db = new ChinookContext(QuietOptions);
+        _ = db.Tracks.AsNoTracking()
+            .Where(t => t.Id == 1)
+            .Select(t => new TrackRow { Id = t.Id, Name = t.Name, AlbumId = t.AlbumId })
+            .FirstOrDefault();
 
         using var c = new SqliteConnection(ConnectionString);
         c.Open();
-        _ = c.QuerySingleOrDefault<TrackRow>("SELECT Id, Name, AlbumId FROM Track WHERE Id = 1");
+        _ = c.QueryFirstOrDefault<TrackRow>(TrackSql, new { id = 1 });
     }
 
     private static double Time(int iterations, Action body)

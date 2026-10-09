@@ -17,7 +17,7 @@ public partial class WideWorldImportersContext : DbContext
     {
         optionsBuilder
             .UseSqlServer(
-                "Server=.;initial catalog=WideWorldImporters;Trusted_Connection=True;TrustServerCertificate=True;Application Name=EFCoreDemos;",
+                "Server=localhost,1433;Database=WideWorldImporters;User Id=sa;Password=8riwudeg!!;TrustServerCertificate=True;Application Name=EFCoreDemos;",
                 x => x.UseNetTopologySuite());
     }
 

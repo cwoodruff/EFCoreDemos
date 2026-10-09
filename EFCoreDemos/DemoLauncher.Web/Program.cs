@@ -23,8 +23,7 @@ var runner = new DemoRunner(demoRoot, benchmarksDir);
 
 app.MapGet("/api/demos", () => Results.Json(new
 {
-    demos = manifest.Demos,
-    demoRoot
+    demos = manifest.Demos
 }));
 
 app.MapGet("/api/run/{id}", async (string id, string? mode, HttpContext ctx, CancellationToken ct) =>
@@ -52,7 +51,7 @@ app.MapPost("/api/stop", () =>
     return Results.Json(new { stopped });
 });
 
-app.MapGet("/api/health", () => Results.Json(new { ok = true, demoRoot, demoCount = manifest.Demos.Count }));
+app.MapGet("/api/health", () => Results.Json(new { ok = true, demoCount = manifest.Demos.Count }));
 
 app.Run();
 return;
@@ -118,10 +117,16 @@ namespace DemoLauncher.Web
         {
             lock (_lock)
             {
-                if (_current is null || _current.HasExited) return false;
-                try { _current.Kill(entireProcessTree: true); } catch { }
+                if (_current is null) return false;
+                // The owning Run*Async method disposes the Process; Stop only kills it.
+                bool running;
+                try { running = !_current.HasExited; } catch (InvalidOperationException) { running = false; }
+                if (running)
+                {
+                    try { _current.Kill(entireProcessTree: true); } catch { }
+                }
                 _current = null;
-                return true;
+                return running;
             }
         }
 
@@ -180,11 +185,11 @@ namespace DemoLauncher.Web
             };
             foreach (var a in args) psi.ArgumentList.Add(a);
 
-            await WriteEventAsync(response, "info", $"$ dotnet {string.Join(' ', args)}", ct);
-            await WriteEventAsync(response, "info", $"  (cwd: {projectDir})", ct);
+            // Echo the project path relative to the repo root so the local checkout path isn't shown on screen.
+            await WriteEventAsync(response, "info", $"$ dotnet run --project {demo.ProjectPath} -c Release", ct);
+            await WriteEventAsync(response, "info", $"  (cwd: {Path.GetRelativePath(_demoRoot, projectDir)})", ct);
 
-            var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
-            lock (_lock) { _current = process; }
+            using var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
 
             var channel = Channel.CreateUnbounded<(string Kind, string Line)>();
 
@@ -199,6 +204,7 @@ namespace DemoLauncher.Web
             try
             {
                 process.Start();
+                lock (_lock) { _current = process; }
             }
             catch (Exception ex)
             {
@@ -265,12 +271,12 @@ namespace DemoLauncher.Web
             await WriteEventAsync(response, "info", $"$ dotnet run --project {demo.ProjectPath} -c Release", ct);
             await WriteEventAsync(response, "info", $"  (web server on {url})", ct);
 
-            var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
-            lock (_lock) { _current = process; }
+            using var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
 
             try
             {
                 process.Start();
+                lock (_lock) { _current = process; }
                 _ = ForwardAsync(process.StandardError, response, "stderr", ct);
                 _ = ForwardAsync(process.StandardOutput, response, "stdout", ct);
 

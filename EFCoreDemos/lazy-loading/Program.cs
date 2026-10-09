@@ -15,20 +15,25 @@ static class Program
     }
 
     // The classic lazy-loading N+1: load albums, then touch each album.Artist
-    // inside the loop. Each property access fires a separate round-trip.
+    // inside the loop. The first access to an Artist that isn't tracked yet fires
+    // a separate round-trip. Identity resolution means an Artist already loaded by
+    // an earlier album is reused from the change tracker (no query), so 5 albums by
+    // 3 distinct artists = 1 + 3 queries. With 1,000 albums by 1,000 artists it's 1 + 1,000.
     private static void DemoLazyLoadingN1()
     {
-        Console.WriteLine("== Lazy-loading N+1 (each artist access = one round-trip) ==");
+        Console.WriteLine("== Lazy-loading N+1 (each not-yet-loaded artist = one round-trip) ==");
         using var db = new ChinookContext();
 
-        var albums = db.Albums.Take(5).ToList();
+        var albums = db.Albums.OrderBy(a => a.Id).Take(5).ToList();
         foreach (var album in albums)
         {
             if (album.Artist != null)
                 Console.WriteLine($"  {album.Title} -- {album.Artist.Name}");
         }
 
-        Console.WriteLine("  (Look at the SQL log above: 1 SELECT for Albums + 1 SELECT per album.Artist access.)");
+        var distinctArtists = albums.Select(a => a.ArtistId).Distinct().Count();
+        Console.WriteLine("  (Look at the SQL log above: 1 SELECT for Albums + 1 SELECT per distinct Artist not yet loaded");
+        Console.WriteLine($"   = 1 + {distinctArtists} queries for {albums.Count} albums. Repeat artists come from the change tracker, not the DB.)");
     }
 
     // The change tracker, made visible. Walk an Album+Tracks graph through

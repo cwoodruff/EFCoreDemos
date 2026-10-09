@@ -49,10 +49,11 @@ public class Program
 
         // Without identity resolution, the same Artist row shows up as multiple .NET instances
         // across the loaded Album graph. With identity resolution, EF deduplicates them.
-        var albumsPlain = db2.Albums.AsNoTracking().Include(a => a.Artist).Take(5).ToList();
+        // Albums 1-5 by Id belong to only 3 artists (AC/DC, Accept, Aerosmith).
+        var albumsPlain = db2.Albums.AsNoTracking().Include(a => a.Artist).OrderBy(a => a.Id).Take(5).ToList();
         var distinctPlain = albumsPlain.Select(a => a.Artist).Distinct().Count();
 
-        var albumsIdRes = db2.Albums.AsNoTrackingWithIdentityResolution().Include(a => a.Artist).Take(5).ToList();
+        var albumsIdRes = db2.Albums.AsNoTrackingWithIdentityResolution().Include(a => a.Artist).OrderBy(a => a.Id).Take(5).ToList();
         var distinctIdRes = albumsIdRes.Select(a => a.Artist).Distinct().Count();
 
         Console.WriteLine($"AsNoTracking()                          - distinct Artist instances across 5 Albums: {distinctPlain}");

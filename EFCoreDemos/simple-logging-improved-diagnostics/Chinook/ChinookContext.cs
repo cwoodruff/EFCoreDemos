@@ -8,6 +8,16 @@ namespace simple_logging_improved_diagnostics.Chinook;
 
 public partial class ChinookContext : DbContext
 {
+    // Default: OnConfiguring wires up SQLite + the console command logger used by the logging demo.
+    public ChinookContext()
+    {
+    }
+
+    // Explicit options (e.g. no logger) - OnConfiguring then leaves the configuration alone.
+    public ChinookContext(DbContextOptions<ChinookContext> options)
+        : base(options)
+    {
+    }
 
     private static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
     {

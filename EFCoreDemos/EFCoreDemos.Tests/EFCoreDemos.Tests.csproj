@@ -57,4 +57,13 @@
     <ProjectReference Include="..\temporal-tables\temporal-tables.csproj" Aliases="temporal_tables" />
   </ItemGroup>
 
+  <!-- Use the seeded Chinook database from the repo's Databases folder for the SQLite health tests.
+       Runs after the build so it wins over chinook.db copies that flow in from referenced demo projects. -->
+  <PropertyGroup>
+    <SeededChinookDb>$(MSBuildProjectDirectory)/../../Databases/chinook.db</SeededChinookDb>
+  </PropertyGroup>
+  <Target Name="CopySeededChinookDb" AfterTargets="Build" Condition="Exists('$(SeededChinookDb)')">
+    <Copy SourceFiles="$(SeededChinookDb)" DestinationFiles="$(OutDir)chinook.db" />
+  </Target>
+
 </Project>
