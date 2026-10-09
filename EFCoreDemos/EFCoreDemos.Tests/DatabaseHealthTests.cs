@@ -1,4 +1,4 @@
-extern alias compiled_models;
+﻿extern alias compiled_models;
 extern alias compiled_query;
 extern alias context_pooling;
 extern alias db_functions;
@@ -58,7 +58,7 @@ namespace EFCoreDemos.Tests
         [Fact] public async Task CompiledQuery_IsHealthy() => await VerifySqliteHealth(new compiled_query::compiled_query.Chinook.ChinookContext(CreateOptions<compiled_query::compiled_query.Chinook.ChinookContext>()));
         [Fact] public async Task ContextPooling_IsHealthy() => await VerifySqliteHealth(new context_pooling::context_pooling.Chinook.ChinookContext(CreateOptions<context_pooling::context_pooling.Chinook.ChinookContext>()));
         
-        [Fact] public async Task DbFunctions_IsHealthy() => await VerifySqliteHealth(new db_functions::Demos.Chinook.ChinookContext());
+        [Fact] public async Task DbFunctions_IsHealthy() => await VerifySqliteHealth(new db_functions::Demos.Chinook.ChinookContext(CreateOptions<db_functions::Demos.Chinook.ChinookContext>()));
         [Fact] public async Task Demo4EntityCounters_IsHealthy() => await VerifySqliteHealth(new demo_4_entity_counters::Demos.Chinook.ChinookContext());
         [Fact] public async Task ExecuteUpdateExecuteDelete_IsHealthy() => await VerifySqliteHealth(new executeupdate_executedelete::executeupdate_executedelete.Chinook.ChinookContext());
         [Fact] public async Task FilteredInclude_IsHealthy() => await VerifySqliteHealth(new filtered_include::filtered_include.Chinook.ChinookContext());
@@ -85,6 +85,16 @@ namespace EFCoreDemos.Tests
         public void SprocMapping_SqlServer_IsHealthy()
         {
             using (var context = new sproc_mapping::sproc_mapping.Chinook.ChinookContext())
+            {
+                Assert.NotNull(context);
+                Assert.True(context.Database.IsSqlServer());
+            }
+        }
+
+        [Fact]
+        public void DbFunctions_SqlServer_IsHealthy()
+        {
+            using (var context = new db_functions::Demos.Chinook.ChinookContext())
             {
                 Assert.NotNull(context);
                 Assert.True(context.Database.IsSqlServer());

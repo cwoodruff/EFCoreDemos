@@ -39,13 +39,15 @@ public partial class ChinookContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder
-                .UseSqlite("Data Source=chinook.db")
+                // dbo.ComputeInvoiceCount is a SQL Server scalar function; SQLite has no equivalent
+                .UseSqlServer(
+                    "Server=localhost,1433;User Id=sa;Password=8riwudeg!!;Database=Chinook;TrustServerCertificate=True;Application Name=EFCoreDemos;")
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(loggerFactory);
         }
     }
 
-    [DbFunction]
+    [DbFunction(Schema = "dbo")]
     public static int ComputeInvoiceCount(int customerId)
     {
         return 0;
