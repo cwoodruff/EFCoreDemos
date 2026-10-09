@@ -82,6 +82,15 @@
       "supportsBenchmark": false
     },
     {
+      "id": "json-columns",
+      "insight": 5,
+      "block": "QueryShape",
+      "title": "JSON Columns",
+      "blurb": "Map a nested document with ToJson(), then filter, project and json_set straight into the JSON.",
+      "projectPath": "json-columns/json-columns.csproj",
+      "supportsBenchmark": false
+    },
+    {
       "id": "compiled-query",
       "insight": 6,
       "block": "PowerTools",
@@ -124,6 +133,15 @@
       "title": "SaveChanges Auditing Interceptor",
       "blurb": "30 lines of audit code, applied to every IAuditable entity automatically.",
       "projectPath": "savedchanges-interception-auditing/savedchanges-interception-auditing.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "temporal-tables",
+      "insight": 8,
+      "block": "PowerTools",
+      "title": "Temporal Tables",
+      "blurb": "SQL Server keeps every version: query AsOf / Between / All, then restore a deleted row. Needs the sql2025 container.",
+      "projectPath": "temporal-tables/temporal-tables.csproj",
       "supportsBenchmark": false
     },
     {
