@@ -1,0 +1,41 @@
+// ***** BenchmarkRunner: Start *****
+// Validating 4 benchmark(s) - AlbumQueryBenchmarks.LINQ / Sproc (NoTracking, Tracking)
+// Building benchmark exe in Release...
+// Launch: 1 / 1
+// Warmup + actual run...
+//
+// Load all 347 Albums: SELECT ... FROM [Album] vs EXEC dbo.sproc_GetAlbum
+//
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS 27.2 (26B5101f) [Darwin 27.2.0]
+Apple M5 Pro, 1 CPU, 18 logical and 18 physical cores
+.NET SDK 10.0.401
+  [Host]     : .NET 10.0.12 (10.0.12, 10.0.1226.42308), Arm64 RyuJIT armv8.0-a
+  Job-YYPKTM : .NET 10.0.12 (10.0.12, 10.0.1226.42308), Arm64 RyuJIT armv8.0-a
+
+IterationCount=8  WarmupCount=2
+
+| Method | Categories | Mean     | StdDev    | Ratio | Allocated | Alloc Ratio |
+|------- |----------- |---------:|----------:|------:|----------:|------------:|
+| LINQ   | NoTracking | 445.4 us |   6.43 us |  1.00 | 229.49 KB |        1.00 |
+| Sproc  | NoTracking | 550.5 us |  49.55 us |  1.24 | 235.78 KB |        1.03 |
+|        |            |          |           |       |           |             |
+| LINQ   | Tracking   | 590.7 us |  30.15 us |  1.00 | 529.98 KB |        1.00 |
+| Sproc  | Tracking   | 719.6 us | 102.54 us |  1.22 | 535.78 KB |        1.01 |
+
+// * Takeaway *
+//
+//   "Stored procedures are faster" - not here. The sproc path is ~20%
+//   SLOWER, with noisier timings, and allocates about the same.
+//
+//   SQL Server caches plans for parameterized ad-hoc SQL just like it
+//   does for procedures, so the old precompiled-sproc advantage is gone.
+//   The EXEC adds a little server-side overhead on a trivial query.
+//
+//   Tracking vs NoTracking moves the needle more (~30% time, 2.3x memory)
+//   than LINQ vs sproc does. Use sprocs for security boundaries or
+//   logic that belongs in the database - not for speed.
+
+// ***** BenchmarkRunner: End *****

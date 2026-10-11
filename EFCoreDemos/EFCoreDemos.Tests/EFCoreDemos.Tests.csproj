@@ -60,6 +60,7 @@
     <ProjectReference Include="..\dbcontext-lifetimes-di\dbcontext-lifetimes-di.csproj" Aliases="dbcontext_lifetimes_di" />
     <ProjectReference Include="..\ef-core-sprocs-perf\ef-core-sprocs-perf.csproj" Aliases="ef_core_sprocs_perf" />
     <ProjectReference Include="..\ef-vs-dapper-vs-ado\ef-vs-dapper-vs-ado.csproj" Aliases="ef_vs_dapper_vs_ado" />
+    <ProjectReference Include="..\linq-query-vs-fromsql-perf\linq-query-vs-fromsql-perf.csproj" Aliases="linq_query_vs_fromsql_perf" />
     <ProjectReference Include="..\inheritance-mapping\inheritance-mapping.csproj" Aliases="inheritance_mapping" />
     <ProjectReference Include="..\migrations-workflow\migrations-workflow.csproj" Aliases="migrations_workflow" />
     <ProjectReference Include="..\n-plus-one-problem\n-plus-one-problem.csproj" Aliases="n_plus_one_problem" />

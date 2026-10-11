@@ -21,7 +21,7 @@ namespace ef_core_sprocs_perf.Benchmarks;
 [CategoriesColumn]
 public class AlbumQueryBenchmarks
 {
-    private const string ConnectionString =
+    public const string ConnectionString =
         "Server=localhost,1433;User Id=sa;Password=8riwudeg!!;Database=Chinook;TrustServerCertificate=True;Application Name=EFCoreDemos-SprocPerf;";
 
     private DbContextOptions<ChinookContext> _options = null!;

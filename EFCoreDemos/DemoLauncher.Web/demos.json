@@ -109,6 +109,24 @@
       "supportsBenchmark": false
     },
     {
+      "id": "linq-query-vs-fromsql-perf",
+      "insight": 7,
+      "block": "PowerTools",
+      "title": "LINQ vs FromSql (Complex Query)",
+      "blurb": "4-table sales report in LINQ vs hand-written SQL - same rows, how much does translation cost?",
+      "projectPath": "linq-query-vs-fromsql-perf/linq-query-vs-fromsql-perf.csproj",
+      "supportsBenchmark": true
+    },
+    {
+      "id": "ef-core-sprocs-perf",
+      "insight": 7,
+      "block": "PowerTools",
+      "title": "LINQ vs Stored Procedure",
+      "blurb": "Load every Album via LINQ vs FromSql(\"EXEC sproc\"), tracked and untracked.",
+      "projectPath": "ef-core-sprocs-perf/ef-core-sprocs-perf.csproj",
+      "supportsBenchmark": true
+    },
+    {
       "id": "executeupdate-executedelete",
       "insight": 7,
       "block": "PowerTools",
