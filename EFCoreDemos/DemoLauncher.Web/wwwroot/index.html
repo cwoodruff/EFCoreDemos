@@ -48,10 +48,22 @@
         <span><kbd>1</kbd>-<kbd>9</kbd> select demo</span>
         <span><kbd>Enter</kbd> Run</span>
         <span><kbd>B</kbd> Benchmark</span>
+        <span><kbd>I</kbd> Demo info</span>
         <span><kbd>Esc</kbd> Stop</span>
         <span><kbd>F</kbd> Deck mode</span>
         <span><kbd>C</kbd> Clear</span>
     </footer>
+
+    <dialog id="info" class="info" aria-labelledby="info-title">
+        <div class="info-head">
+            <div class="info-head-text">
+                <h2 id="info-title" class="info-title"></h2>
+                <div id="info-chips" class="info-chips"></div>
+            </div>
+            <button id="info-close" class="btn btn-mini info-close" aria-label="Close demo info">Close (Esc)</button>
+        </div>
+        <div id="info-body" class="info-body"></div>
+    </dialog>
 
     <script src="app.js"></script>
 </body>

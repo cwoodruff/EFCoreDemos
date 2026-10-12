@@ -19,6 +19,20 @@
     const $btnClear = document.getElementById('btn-clear');
     const $btnFontUp = document.getElementById('btn-font-up');
     const $btnFontDown = document.getElementById('btn-font-down');
+    const $info = document.getElementById('info');
+    const $infoTitle = document.getElementById('info-title');
+    const $infoChips = document.getElementById('info-chips');
+    const $infoBody = document.getElementById('info-body');
+    const $infoClose = document.getElementById('info-close');
+
+    const SOURCE_ROOT = 'https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/';
+    const BLOCK_NAMES = {
+        Tracking: 'Tracking',
+        QueryShape: 'Query Shape',
+        PowerTools: 'Power Tools',
+        Architecture: 'Architecture',
+        Ops: 'Ops'
+    };
 
     init();
 
@@ -44,6 +58,9 @@
         $btnClear.addEventListener('click', clearTerm);
         $btnFontUp.addEventListener('click', () => bumpFont(+1));
         $btnFontDown.addEventListener('click', () => bumpFont(-1));
+        $infoClose.addEventListener('click', () => $info.close());
+        // Click on the backdrop (outside the panel) closes it too.
+        $info.addEventListener('click', e => { if (e.target === $info) $info.close(); });
 
         document.addEventListener('keydown', onKey);
     }
@@ -63,6 +80,7 @@
                     <div class="tile-num">${d.insight}</div>
                     <div class="tile-title" style="flex:1">${escapeHtml(d.title)}</div>
                     ${keyHint}
+                    <button class="info-btn" data-action="info" title="About this demo" aria-label="About ${escapeHtml(d.title)}">i</button>
                 </div>
                 <div class="tile-blurb">${escapeHtml(d.blurb)}</div>
                 <div class="tile-actions">
@@ -77,7 +95,8 @@
                     e.stopPropagation();
                     const action = btn.dataset.action;
                     select(i);
-                    if (action === 'run') run(d, 'run');
+                    if (action === 'info') openInfo(d);
+                    else if (action === 'run') run(d, 'run');
                     else if (action === 'benchmark' && d.supportsBenchmark) run(d, 'benchmark');
                 } else {
                     select(i);
@@ -213,6 +232,15 @@
     function onKey(e) {
         const tag = (e.target.tagName || '').toLowerCase();
         if (tag === 'input' || tag === 'textarea') return;
+        // While the info panel is open, leave keys to it: the dialog closes itself on Esc,
+        // and Esc must not also stop a running demo.
+        if ($info.open) return;
+
+        if (e.key === 'i' || e.key === 'I') {
+            const d = state.demos[state.selectedIndex];
+            if (d) openInfo(d);
+            e.preventDefault(); return;
+        }
 
         if (e.key === 'Escape') { stop(); e.preventDefault(); return; }
         if (e.key === 'f' || e.key === 'F') { toggleDeck(); e.preventDefault(); return; }
@@ -234,10 +262,103 @@
         }
     }
 
+    // ---- Demo info panel -------------------------------------------------------------------------------
+    // Every demo gets the same sections in the same order. Text comes from demos.json "info";
+    // the type, run commands and source link are derived from the demo's own manifest fields.
+
+    function demoType(d) {
+        if (d.specialCase === 'dotnet-test') return 'Test suite (xUnit)';
+        if (d.specialCase === 'webserver-curl') return 'Web API + curl';
+        if (d.supportsBenchmark) return 'Console demo + benchmark';
+        return 'Console demo';
+    }
+
+    function runCommands(d) {
+        const p = d.projectPath;
+        if (d.specialCase === 'dotnet-test') {
+            return [
+                { cmd: `dotnet test ${p} -c Release`, note: 'Runs the test suite. Failing tests are expected - they are the demo.' }
+            ];
+        }
+        const cmds = [{ cmd: `dotnet run --project ${p} -c Release`, note: 'Run (Enter)' }];
+        if (d.specialCase === 'webserver-curl') {
+            const port = d.webServerPort;
+            (d.webServerEndpoints || []).forEach(ep =>
+                cmds.push({ cmd: `curl http://localhost:${port}${ep}`, note: 'The launcher calls each endpoint in turn' }));
+        }
+        if (d.supportsBenchmark) {
+            cmds.push({
+                cmd: `dotnet run --project ${p} -c Release -- benchmark`,
+                note: 'BenchmarkDotNet harness. The launcher\'s Benchmark button (B) replays a recorded run.'
+            });
+        }
+        return cmds;
+    }
+
+    function sourceUrl(d) {
+        const folder = d.projectPath.includes('/') ? d.projectPath.slice(0, d.projectPath.lastIndexOf('/')) : d.projectPath;
+        return SOURCE_ROOT + folder;
+    }
+
+    function openInfo(d) {
+        const info = d.info || {};
+        const missing = '<p class="info-missing">Not documented yet.</p>';
+        const list = items => (items && items.length)
+            ? `<ul>${items.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>` : missing;
+        const para = text => text ? `<p>${escapeHtml(text)}</p>` : missing;
+        const section = (title, html) => `<section class="info-section"><h3>${title}</h3>${html}</section>`;
+
+        $info.style.setProperty('--block-color', `var(--block-${d.block})`);
+        $infoTitle.textContent = d.title;
+        $infoChips.innerHTML = [
+            `<span class="chip chip-block">${escapeHtml(BLOCK_NAMES[d.block] || d.block)}</span>`,
+            `<span class="chip">Insight ${escapeHtml(d.insight)}</span>`,
+            `<span class="chip">${escapeHtml(demoType(d))}</span>`
+        ].join('');
+
+        const apis = (info.keyApis && info.keyApis.length)
+            ? `<div class="info-apis">${info.keyApis.map(a => `<code>${escapeHtml(a)}</code>`).join('')}</div>` : missing;
+
+        const requirements = `<dl class="info-dl">
+                <dt>Database</dt><dd>${escapeHtml(info.database || 'Not documented yet.')}</dd>
+                <dt>Setup</dt><dd>${escapeHtml(info.setup || 'Not documented yet.')}</dd>
+            </dl>`;
+
+        const howToRun = `<div class="info-cmds">${runCommands(d).map(c => `
+                <div class="info-cmd"><code>${escapeHtml(c.cmd)}</code><span>${escapeHtml(c.note)}</span></div>`).join('')}
+            </div>`;
+
+        const links = (info.learnLinks || []).filter(l => /^https:\/\//.test(l.url || ''));
+        const learn = links.length
+            ? `<ul class="info-links">${links.map(l =>
+                `<li><a href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.title)}</a></li>`).join('')}</ul>`
+            : missing;
+
+        const src = sourceUrl(d);
+        const source = `<p><a href="${escapeHtml(src)}" target="_blank" rel="noopener noreferrer">${escapeHtml(d.projectPath)}</a></p>`;
+
+        $infoBody.innerHTML = [
+            section('Overview', para(info.summary)),
+            section('What you\'ll see', list(info.highlights)),
+            section('Key APIs', apis),
+            section('Takeaway', info.takeaway ? `<p class="info-takeaway">${escapeHtml(info.takeaway)}</p>` : missing),
+            section('Requirements', requirements),
+            section('How to run', howToRun),
+            section('Learn more on Microsoft Learn', learn),
+            section('Source', source)
+        ].join('');
+
+        $infoBody.scrollTop = 0;
+        if (!$info.open) $info.showModal();
+        $infoClose.focus();
+    }
+
     function escapeHtml(s) {
         return String(s)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 })();
