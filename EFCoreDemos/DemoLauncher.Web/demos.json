@@ -238,6 +238,15 @@
       "supportsBenchmark": true
     },
     {
+      "id": "left-right-join",
+      "insight": 3,
+      "block": "QueryShape",
+      "title": "LeftJoin / RightJoin (EF Core 10)",
+      "blurb": "Outer joins without the GroupJoin + SelectMany + DefaultIfEmpty dance - same SQL, readable LINQ.",
+      "projectPath": "left-right-join/left-right-join.csproj",
+      "supportsBenchmark": false
+    },
+    {
       "id": "query-filters",
       "insight": 8,
       "block": "PowerTools",
