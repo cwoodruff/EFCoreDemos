@@ -344,6 +344,15 @@
       "blurb": "Tenant filter, database per tenant, the cached-model leak, IModelCacheKeyFactory and pooled-context resets.",
       "projectPath": "multitenancy/multitenancy.csproj",
       "supportsBenchmark": false
+    },
+    {
+      "id": "connection-resiliency",
+      "insight": 10,
+      "block": "Ops",
+      "title": "Connection Resiliency",
+      "blurb": "EnableRetryOnFailure vs injected transient faults, why your own BeginTransaction breaks it, and a lost commit acknowledgement.",
+      "projectPath": "connection-resiliency/connection-resiliency.csproj",
+      "supportsBenchmark": false
     }
   ]
 }
