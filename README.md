@@ -14,7 +14,7 @@
 * [From SQL](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/from_sql)
 * [Identity Resolution](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/identity-resolution)
 * [Interception DB Ops](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/interception-db-ops)
-* JSON Columns
+* [JSON Columns](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/json-columns)
 * [Keyless Entity Types](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/keyless-entity-types)
 * [Lazy Loading](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/lazy-loading)
 * [LeftJoin / RightJoin](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/left-right-join) (EF Core 10)
@@ -29,5 +29,5 @@
 * [Spatial](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/spatial)
 * [Split Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/split-queries)
 * Stored procedure mapping
-* SQL Server temporal tables
+* [SQL Server Temporal Tables](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/temporal-tables)
 * [Vector Search with SqlVector and VectorDistance](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/vector-search) (EF Core 10, SQL Server 2025; downloads a ~90 MB embedding model on first run)
