@@ -254,6 +254,15 @@
       "blurb": "EF Core 10: two named filters on Invoice (since 2009, one sales rep), each switched off on its own.",
       "projectPath": "query-filters/query-filters.csproj",
       "supportsBenchmark": false
+    },
+    {
+      "id": "complex-vs-owned-types",
+      "insight": 5,
+      "block": "QueryShape",
+      "title": "Complex Types vs Owned Types",
+      "blurb": "Same Address two ways: hidden keys and identity vs pure values. Plus EF 10 struct, optional and JSON complex types.",
+      "projectPath": "complex-vs-owned-types/complex-vs-owned-types.csproj",
+      "supportsBenchmark": false
     }
   ]
 }
