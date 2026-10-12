@@ -3,6 +3,8 @@
 * Compiled Models
 * [Compiled Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-query) (run with "dotnet run -c Release
 ")
+* [Complex Types vs Owned Types](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/complex-vs-owned-types) (EF Core 10)
+* [Contains over a List: EF.Constant / EF.Parameter](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/contains-collection-translation) (EF Core 10, SQL Server; benchmark with "dotnet run -c Release -- benchmark")
 * [DBContext Pooling](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/context-pooling)
 * [DB Functions](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/db-functions)
 * [Entity Counters](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/demo-4-entity-counters)
@@ -15,10 +17,11 @@
 * JSON Columns
 * [Keyless Entity Types](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/keyless-entity-types)
 * [Lazy Loading](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/lazy-loading)
+* [LeftJoin / RightJoin](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/left-right-join) (EF Core 10)
 * [Like](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/like)
 * [LINQ GroupBy](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/linq-groupby)
 * [Many to Many](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/many-to-many)
-* [Query Filters](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/query-filters)
+* [Query Filters](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/query-filters) (named filters, EF Core 10)
 * [Query Tags](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/query-tags)
 * [Required 1-on-1 Dependents](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/required-1-on-1-dependants)
 * [Saved Changes Interception Auditing](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/savedchanges-interception-auditing)
@@ -27,3 +30,4 @@
 * [Split Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/split-queries)
 * Stored procedure mapping
 * SQL Server temporal tables
+* [Vector Search with SqlVector and VectorDistance](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/vector-search) (EF Core 10, SQL Server 2025; downloads a ~90 MB embedding model on first run)
