@@ -308,6 +308,15 @@
       "blurb": "Enum-as-string, typed ids, encrypted and JSON columns - then watch ORDER BY, > and StartsWith go wrong on the stored values.",
       "projectPath": "value-converters/value-converters.csproj",
       "supportsBenchmark": false
+    },
+    {
+      "id": "bulk-insert-perf",
+      "insight": 4,
+      "block": "QueryShape",
+      "title": "Bulk Insert Performance",
+      "blurb": "Per-row SaveChanges vs AddRange batching vs a bigger MaxBatchSize vs SqlBulkCopy - and why bigger batches can be slower.",
+      "projectPath": "bulk-insert-perf/bulk-insert-perf.csproj",
+      "supportsBenchmark": true
     }
   ]
 }

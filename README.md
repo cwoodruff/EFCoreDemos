@@ -1,5 +1,6 @@
 # EFCoreDemos
 
+* [Bulk Insert Performance](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/bulk-insert-perf) (SQL Server; benchmark with "dotnet run -c Release -- benchmark")
 * [Compiled Models](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-models)
 * [Compiled Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-query) (run with "dotnet run -c Release")
 * [Complex Types vs Owned Types](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/complex-vs-owned-types) (EF Core 10)
