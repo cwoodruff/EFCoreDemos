@@ -1,6 +1,6 @@
 # EFCoreDemos
 
-* Compiled Models
+* [Compiled Models](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-models)
 * [Compiled Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-query) (run with "dotnet run -c Release
 ")
 * [Complex Types vs Owned Types](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/complex-vs-owned-types) (EF Core 10)
@@ -28,6 +28,6 @@
 * [Simple Logging Improved Diagnostics](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/simple-logging-improved-diagnostics)
 * [Spatial](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/spatial)
 * [Split Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/split-queries)
-* Stored procedure mapping
+* [Stored Procedure Mapping](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/sproc-mapping)
 * [SQL Server Temporal Tables](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/temporal-tables)
 * [Vector Search with SqlVector and VectorDistance](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/vector-search) (EF Core 10, SQL Server 2025; downloads a ~90 MB embedding model on first run)
