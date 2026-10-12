@@ -281,6 +281,15 @@
       "blurb": "ids.Contains(x.Id) three ways - padded parameters, inlined constants, OPENJSON - and what each does to the plan cache.",
       "projectPath": "contains-collection-translation/contains-collection-translation.csproj",
       "supportsBenchmark": true
+    },
+    {
+      "id": "hierarchyid",
+      "insight": 7,
+      "block": "Architecture",
+      "title": "HierarchyId Tree Queries",
+      "blurb": "Chinook's org chart as hierarchyid paths: descendants, reports, chain of command, a recursive CTE for contrast, and a one-UPDATE subtree move.",
+      "projectPath": "hierarchyid/hierarchyid.csproj",
+      "supportsBenchmark": false
     }
   ]
 }

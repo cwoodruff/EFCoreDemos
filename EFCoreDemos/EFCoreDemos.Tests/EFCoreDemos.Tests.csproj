@@ -71,6 +71,7 @@
     <ProjectReference Include="..\vector-search\vector-search.csproj" Aliases="vector_search" />
     <ProjectReference Include="..\complex-vs-owned-types\complex-vs-owned-types.csproj" Aliases="complex_vs_owned_types" />
     <ProjectReference Include="..\left-right-join\left-right-join.csproj" Aliases="left_right_join" />
+    <ProjectReference Include="..\hierarchyid\hierarchyid.csproj" Aliases="hierarchyid" />
   </ItemGroup>
 
   <!-- Use the seeded Chinook database from the repo's Databases folder for the SQLite health tests.
