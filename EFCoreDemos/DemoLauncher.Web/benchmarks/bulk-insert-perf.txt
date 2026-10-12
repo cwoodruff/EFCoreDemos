@@ -1,0 +1,61 @@
+// ***** BenchmarkRunner: Start *****
+// Validating 13 benchmark(s) - BulkInsertBenchmarks x RowCount 1000, 10000, 100000
+// Building benchmark exe in Release...
+// Launch: 1 / 1
+// Warmup + actual run...
+//
+// Insert RowCount order lines into an empty table (IDENTITY key, 5 columns)
+// Table truncated and fresh entities generated before every iteration
+// Per-row SaveChanges runs at 1,000 rows only - at 100k it takes minutes
+//
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS 27.2 (26B5101f) [Darwin 27.2.0]
+Apple M5 Pro, 1 CPU, 18 logical and 18 physical cores
+.NET SDK 10.0.401
+  [Host]     : .NET 10.0.12 (10.0.12, 10.0.1226.42308), Arm64 RyuJIT armv8.0-a
+  Job-NDVVYK : .NET 10.0.12 (10.0.12, 10.0.1226.42308), Arm64 RyuJIT armv8.0-a
+
+IterationCount=5  LaunchCount=1  WarmupCount=1
+
+| Method                         | RowCount | Mean        | StdDev     | Ratio | Allocated    | Alloc Ratio |
+|------------------------------- |--------- |------------:|-----------:|------:|-------------:|------------:|
+| 'Add + SaveChanges per row'    | 1000     | 1,037.13 ms |   7.031 ms | 15.98 | 253897.1 KB  |       27.28 |
+| 'AddRange (default batch)'     | 1000     |    68.74 ms |  18.597 ms |  1.06 |   9307.08 KB |        1.00 |
+| 'AddRange + MaxBatchSize(400)' | 1000     |    78.59 ms |   5.776 ms |  1.21 |    9280.1 KB |        1.00 |
+| 'AutoDetectChanges off'        | 1000     |    48.53 ms |   3.432 ms |  0.75 |   8868.87 KB |        0.95 |
+| SqlBulkCopy                    | 1000     |     7.84 ms |   0.230 ms |  0.12 |    766.73 KB |        0.08 |
+|                                |          |             |            |       |              |             |
+| 'AddRange (default batch)'     | 10000    |   320.30 ms |  11.590 ms |  1.00 |  87509.09 KB |        1.00 |
+| 'AddRange + MaxBatchSize(400)' | 10000    |   591.19 ms |  35.638 ms |  1.85 |   87245.8 KB |        1.00 |
+| 'AutoDetectChanges off'        | 10000    |   318.70 ms |  33.309 ms |  1.00 |  82846.52 KB |        0.95 |
+| SqlBulkCopy                    | 10000    |    24.55 ms |   0.166 ms |  0.08 |   8108.02 KB |        0.09 |
+|                                |          |             |            |       |              |             |
+| 'AddRange (default batch)'     | 100000   | 2,498.42 ms | 158.784 ms |  1.00 | 868173.84 KB |        1.00 |
+| 'AddRange + MaxBatchSize(400)' | 100000   | 6,029.59 ms |  74.299 ms |  2.42 | 865852.63 KB |        1.00 |
+| 'AutoDetectChanges off'        | 100000   | 2,574.37 ms | 153.869 ms |  1.03 | 821327.05 KB |        0.95 |
+| SqlBulkCopy                    | 100000   |   251.04 ms |  24.430 ms |  0.10 |  77451.55 KB |        0.09 |
+
+// * Takeaway *
+//
+//   Per-row SaveChanges is ~16x slower than AddRange at just 1,000
+//   rows: one round trip and one transaction per row. Never save
+//   inside the loop.
+//
+//   AddRange + one SaveChanges is the real fix, and EF's default
+//   batching (42 rows per MERGE) already does the work.
+//
+//   "Tune MaxBatchSize up" backfires: 400-row MERGE statements were
+//   1.2-2.4x SLOWER than 42-row ones, despite ~10x fewer round trips.
+//   On localhost a round trip is cheap; the big MERGE is not. Leave
+//   the default unless you've measured on your own network.
+//
+//   AutoDetectChanges off: noise. EF Core's Add doesn't rescan the
+//   change tracker the way EF6 did - that tip is a decade old.
+//
+//   SqlBulkCopy is ~10-13x faster than AddRange at 10k-100k rows and
+//   allocates ~11x less. No change tracking, no Ids read back. It is
+//   the tool for imports and ETL, not for everyday saves.
+
+// ***** BenchmarkRunner: End *****

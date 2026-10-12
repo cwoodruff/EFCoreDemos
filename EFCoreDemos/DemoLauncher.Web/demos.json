@@ -317,6 +317,15 @@
       "blurb": "Stamp and inject services into entities as they load; add a default OrderBy to every unordered query before EF translates it.",
       "projectPath": "query-pipeline-interceptors/query-pipeline-interceptors.csproj",
       "supportsBenchmark": false
+    },
+    {
+      "id": "bulk-insert-perf",
+      "insight": 4,
+      "block": "QueryShape",
+      "title": "Bulk Insert Performance",
+      "blurb": "Per-row SaveChanges vs AddRange batching vs a bigger MaxBatchSize vs SqlBulkCopy - and why bigger batches can be slower.",
+      "projectPath": "bulk-insert-perf/bulk-insert-perf.csproj",
+      "supportsBenchmark": true
     }
   ]
 }
