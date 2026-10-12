@@ -20,13 +20,13 @@ IterationCount=8  WarmupCount=2
 
 | Method                     | Mean      | StdDev    | Ratio | Allocated   | Alloc Ratio |
 |--------------------------- |----------:|----------:|------:|------------:|------------:|
-| 'VectorDistance (server)'  |  4.277 ms | 0.6497 ms |  1.00 |    101.0 KB |        1.00 |
-| 'Load all + rank (client)' | 20.408 ms | 1.9477 ms |  4.86 | 27469.35 KB |      271.98 |
-| 'Embed phrase (ONNX)'      |  0.856 ms | 0.0217 ms |  0.20 |     3.09 KB |        0.03 |
+| 'VectorDistance (server)'  |  3.367 ms | 0.0389 ms |  1.00 |    101.0 KB |        1.00 |
+| 'Load all + rank (client)' | 18.904 ms | 1.2505 ms |  5.62 | 27471.81 KB |      272.06 |
+| 'Embed phrase (ONNX)'      |  0.757 ms | 0.0066 ms |  0.22 |     3.09 KB |        0.03 |
 
 // * Takeaway *
 //
-//   ~5x faster and ~270x less allocation when SQL Server ranks the
+//   ~5.5x faster and ~270x less allocation when SQL Server ranks the
 //   vectors. Both paths return the same 10 tracks.
 //
 //   VECTOR_DISTANCE scans all 3,503 vectors inside the database and
