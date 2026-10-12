@@ -238,6 +238,42 @@
       "supportsBenchmark": true
     },
     {
+      "id": "left-right-join",
+      "insight": 3,
+      "block": "QueryShape",
+      "title": "LeftJoin / RightJoin (EF Core 10)",
+      "blurb": "Outer joins without the GroupJoin + SelectMany + DefaultIfEmpty dance - same SQL, readable LINQ.",
+      "projectPath": "left-right-join/left-right-join.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "query-filters",
+      "insight": 8,
+      "block": "PowerTools",
+      "title": "Named Query Filters",
+      "blurb": "EF Core 10: two named filters on Invoice (since 2009, one sales rep), each switched off on its own.",
+      "projectPath": "query-filters/query-filters.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "complex-vs-owned-types",
+      "insight": 5,
+      "block": "QueryShape",
+      "title": "Complex Types vs Owned Types",
+      "blurb": "Same Address two ways: hidden keys and identity vs pure values. Plus EF 10 struct, optional and JSON complex types.",
+      "projectPath": "complex-vs-owned-types/complex-vs-owned-types.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "vector-search",
+      "insight": 8,
+      "block": "PowerTools",
+      "title": "Vector Search (SQL Server 2025)",
+      "blurb": "SqlVector<float> + EF.Functions.VectorDistance: semantic search over Chinook tracks inside SQL Server.",
+      "projectPath": "vector-search/vector-search.csproj",
+      "supportsBenchmark": true
+    },
+    {
       "id": "contains-collection-translation",
       "insight": 6,
       "block": "PowerTools",
