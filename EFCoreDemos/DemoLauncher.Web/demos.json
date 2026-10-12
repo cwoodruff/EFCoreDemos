@@ -236,6 +236,15 @@
       "blurb": "Optional closer: same hot-path read, three approaches. Numbers usually surprise.",
       "projectPath": "ef-vs-dapper-vs-ado/ef-vs-dapper-vs-ado.csproj",
       "supportsBenchmark": true
+    },
+    {
+      "id": "vector-search",
+      "insight": 8,
+      "block": "PowerTools",
+      "title": "Vector Search (SQL Server 2025)",
+      "blurb": "SqlVector<float> + EF.Functions.VectorDistance: semantic search over Chinook tracks inside SQL Server.",
+      "projectPath": "vector-search/vector-search.csproj",
+      "supportsBenchmark": true
     }
   ]
 }

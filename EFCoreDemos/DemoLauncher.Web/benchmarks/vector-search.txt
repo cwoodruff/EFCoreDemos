@@ -1,0 +1,43 @@
+// ***** BenchmarkRunner: Start *****
+// Validating 3 benchmark(s) - VectorSearchBenchmarks.VectorDistance / Load all + rank / Embed phrase
+// Building benchmark exe in Release...
+// Launch: 1 / 1
+// Warmup + actual run...
+//
+// Top 10 nearest tracks to "aggressive heavy metal"
+// 3,503 x vector(384) in VectorDemo.dbo.TrackEmbedding, cosine distance
+//
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS 27.2 (26B5101f) [Darwin 27.2.0]
+Apple M5 Pro, 1 CPU, 18 logical and 18 physical cores
+.NET SDK 10.0.401
+  [Host]     : .NET 10.0.12 (10.0.12, 10.0.1226.42308), Arm64 RyuJIT armv8.0-a
+  Job-YYPKTM : .NET 10.0.12 (10.0.12, 10.0.1226.42308), Arm64 RyuJIT armv8.0-a
+
+IterationCount=8  WarmupCount=2
+
+| Method                     | Mean      | StdDev    | Ratio | Allocated   | Alloc Ratio |
+|--------------------------- |----------:|----------:|------:|------------:|------------:|
+| 'VectorDistance (server)'  |  4.277 ms | 0.6497 ms |  1.00 |    101.0 KB |        1.00 |
+| 'Load all + rank (client)' | 20.408 ms | 1.9477 ms |  4.86 | 27469.35 KB |      271.98 |
+| 'Embed phrase (ONNX)'      |  0.856 ms | 0.0217 ms |  0.20 |     3.09 KB |        0.03 |
+
+// * Takeaway *
+//
+//   ~5x faster and ~270x less allocation when SQL Server ranks the
+//   vectors. Both paths return the same 10 tracks.
+//
+//   VECTOR_DISTANCE scans all 3,503 vectors inside the database and
+//   sends back 10 rows. The client path drags ~5 MB of vectors over
+//   the wire and materializes every row just to throw 3,493 of them
+//   away - and that gap grows with every row you add.
+//
+//   Embedding the search phrase with the in-process ONNX model costs
+//   under a millisecond. No API key, no network, no per-call bill.
+//
+//   At this size an exact scan is plenty. Reach for a vector index
+//   (approximate search) when you're into the millions of rows.
+
+// ***** BenchmarkRunner: End *****
