@@ -30,8 +30,14 @@ namespace EFCoreDemos.Tests.Demos
 
         public void Dispose() => _db.Dispose();
 
+        // Each test uses fresh interceptor instances, and EF builds one internal service provider per instance.
+        // Cached, those providers pile up in EF's process-wide cache and push the whole test run past its limit
+        // of 20, failing whichever test class happens to create the 21st. Uncached, each context gets a private
+        // provider (and an empty query cache, which is what the call counts below expect anyway).
         private ChinookContext CreateContext(params IInterceptor[] interceptors) =>
-            new(Demo.Options(_db.ConnectionString, interceptors));
+            new(new DbContextOptionsBuilder<ChinookContext>(Demo.Options(_db.ConnectionString, interceptors))
+                .EnableServiceProviderCaching(false)
+                .Options);
 
         private ChinookContext CreateContext() => CreateContext(_materialization, _ordering);
 
@@ -197,7 +203,8 @@ namespace EFCoreDemos.Tests.Demos
             var calls = Enumerable.Range(0, 3).Select(_ =>
             {
                 var fresh = new DefaultOrderingInterceptor();
-                using var db = CreateContext(fresh);
+                // Cached providers on purpose: this test is about EF's provider cache keying on the instance.
+                using var db = new ChinookContext(Demo.Options(_db.ConnectionString, [fresh]));
                 db.Tracks.Where(t => t.AlbumId == 1).Skip(1).Take(5).ToList();
                 return fresh.Calls;
             }).ToList();
