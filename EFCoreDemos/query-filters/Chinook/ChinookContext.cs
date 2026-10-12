@@ -18,6 +18,15 @@ public partial class ChinookContext : DbContext
 
     public static long InstanceCount;
 
+    public const string Since2009Filter = "Since2009";
+    public const string SalesRepFilter = "SalesRep";
+
+    /// <summary>
+    /// Support rep (Employee.Id) whose customers' invoices are visible through the "SalesRep" filter,
+    /// like a tenant id. Null leaves the filter switched on but matching every invoice.
+    /// </summary>
+    public int? SalesRepId { get; init; }
+
     public virtual DbSet<Album> Albums { get; set; } = null!;
     public virtual DbSet<Artist> Artists { get; set; } = null!;
     public virtual DbSet<Customer> Customers { get; set; } = null!;
@@ -188,9 +197,17 @@ public partial class ChinookContext : DbContext
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull), "FK__Invoice__Custome__2D27B809");
 
+            // EF Core 10: named filters. Each one can be switched off on its own with
+            // IgnoreQueryFilters(["name"]). Before EF 10 an entity had a single filter, a second
+            // HasQueryFilter call silently replaced the first, and IgnoreQueryFilters() was all-or-nothing.
+
             // Hide invoices before 2009 (Chinook invoice data only spans 2007-2010,
             // so a cutoff relative to DateTime.Now would eventually hide everything)
-            entity.HasQueryFilter(i => i.InvoiceDate >= new DateTime(2009, 1, 1));
+            entity.HasQueryFilter(Since2009Filter, i => i.InvoiceDate >= new DateTime(2009, 1, 1));
+
+            // Tenant-style filter: only invoices of customers looked after by one support rep.
+            // SalesRepId is read from the current context instance per query; null means "no rep selected".
+            entity.HasQueryFilter(SalesRepFilter, i => SalesRepId == null || i.Customer.SupportRepId == SalesRepId);
         });
 
         modelBuilder.Entity<InvoiceLine>(entity =>

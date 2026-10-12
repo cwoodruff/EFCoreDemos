@@ -236,6 +236,15 @@
       "blurb": "Optional closer: same hot-path read, three approaches. Numbers usually surprise.",
       "projectPath": "ef-vs-dapper-vs-ado/ef-vs-dapper-vs-ado.csproj",
       "supportsBenchmark": true
+    },
+    {
+      "id": "query-filters",
+      "insight": 8,
+      "block": "PowerTools",
+      "title": "Named Query Filters",
+      "blurb": "EF Core 10: two named filters on Invoice (since 2009, one sales rep), each switched off on its own.",
+      "projectPath": "query-filters/query-filters.csproj",
+      "supportsBenchmark": false
     }
   ]
 }
