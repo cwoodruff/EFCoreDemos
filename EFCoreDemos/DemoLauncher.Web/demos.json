@@ -308,6 +308,15 @@
       "blurb": "Enum-as-string, typed ids, encrypted and JSON columns - then watch ORDER BY, > and StartsWith go wrong on the stored values.",
       "projectPath": "value-converters/value-converters.csproj",
       "supportsBenchmark": false
+    },
+    {
+      "id": "query-pipeline-interceptors",
+      "insight": 9,
+      "block": "PowerTools",
+      "title": "Materialization + Query Expression Interceptors",
+      "blurb": "Stamp and inject services into entities as they load; add a default OrderBy to every unordered query before EF translates it.",
+      "projectPath": "query-pipeline-interceptors/query-pipeline-interceptors.csproj",
+      "supportsBenchmark": false
     }
   ]
 }
