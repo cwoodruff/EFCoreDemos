@@ -283,6 +283,15 @@
       "supportsBenchmark": true
     },
     {
+      "id": "shadow-properties-backing-fields",
+      "insight": 7,
+      "block": "Architecture",
+      "title": "Shadow Properties, Backing Fields and Conventions",
+      "blurb": "Plain domain classes: private setters, a read-only track list over _tracks, audit columns EF owns, model-wide defaults.",
+      "projectPath": "shadow-properties-backing-fields/shadow-properties-backing-fields.csproj",
+      "supportsBenchmark": false
+    },
+    {
       "id": "hierarchyid",
       "insight": 7,
       "block": "Architecture",
