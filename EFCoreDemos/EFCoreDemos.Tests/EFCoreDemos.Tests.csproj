@@ -75,6 +75,7 @@
     <ProjectReference Include="..\bulk-insert-perf\bulk-insert-perf.csproj" Aliases="bulk_insert_perf" />
     <ProjectReference Include="..\hierarchyid\hierarchyid.csproj" Aliases="hierarchyid" />
     <ProjectReference Include="..\shadow-properties-backing-fields\shadow-properties-backing-fields.csproj" Aliases="shadow_properties_backing_fields" />
+    <ProjectReference Include="..\query-pipeline-interceptors\query-pipeline-interceptors.csproj" Aliases="query_pipeline_interceptors" />
   </ItemGroup>
 
   <!-- Use the seeded Chinook database from the repo's Databases folder for the SQLite health tests.

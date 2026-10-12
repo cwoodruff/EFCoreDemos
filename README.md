@@ -23,6 +23,7 @@
 * [LINQ GroupBy](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/linq-groupby)
 * [Many to Many](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/many-to-many)
 * [Query Filters](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/query-filters) (named filters, EF Core 10)
+* [Query Pipeline Interceptors (Materialization and Query Expression)](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/query-pipeline-interceptors)
 * [Query Tags](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/query-tags)
 * [Required 1-on-1 Dependents](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/required-1-on-1-dependants)
 * [Saved Changes Interception Auditing](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/savedchanges-interception-auditing)

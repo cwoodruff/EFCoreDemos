@@ -310,6 +310,15 @@
       "supportsBenchmark": false
     },
     {
+      "id": "query-pipeline-interceptors",
+      "insight": 9,
+      "block": "PowerTools",
+      "title": "Materialization + Query Expression Interceptors",
+      "blurb": "Stamp and inject services into entities as they load; add a default OrderBy to every unordered query before EF translates it.",
+      "projectPath": "query-pipeline-interceptors/query-pipeline-interceptors.csproj",
+      "supportsBenchmark": false
+    },
+    {
       "id": "bulk-insert-perf",
       "insight": 4,
       "block": "QueryShape",
