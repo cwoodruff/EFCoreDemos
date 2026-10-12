@@ -7,6 +7,7 @@
 * [Contains over a List: EF.Constant / EF.Parameter](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/contains-collection-translation) (EF Core 10, SQL Server; benchmark with "dotnet run -c Release -- benchmark")
 * [DBContext Pooling](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/context-pooling)
 * [DB Functions](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/db-functions)
+* [Disconnected Object Graphs](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/disconnected-graphs)
 * [Entity Counters](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/demo-4-entity-counters)
 * [ExecuteUpdate and ExecuteDelete (Bulk updates)](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/executeupdate-executedelete)
 * [Filtered Include](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/filtered-include)
