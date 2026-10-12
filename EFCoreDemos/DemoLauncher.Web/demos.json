@@ -328,6 +328,24 @@
       "supportsBenchmark": true
     },
     {
+      "id": "disconnected-graphs",
+      "insight": 2,
+      "block": "Tracking",
+      "title": "Saving Disconnected Graphs",
+      "blurb": "An API PUTs back a whole Album + Tracks graph: Update vs Attach vs TrackGraph vs load-then-diff, and the deleted child nobody notices.",
+      "projectPath": "disconnected-graphs/disconnected-graphs.csproj",
+      "supportsBenchmark": false
+    },
+    {
+      "id": "multitenancy",
+      "insight": 7,
+      "block": "Architecture",
+      "title": "Multitenancy Patterns",
+      "blurb": "Tenant filter, database per tenant, the cached-model leak, IModelCacheKeyFactory and pooled-context resets.",
+      "projectPath": "multitenancy/multitenancy.csproj",
+      "supportsBenchmark": false
+    },
+    {
       "id": "connection-resiliency",
       "insight": 10,
       "block": "Ops",
