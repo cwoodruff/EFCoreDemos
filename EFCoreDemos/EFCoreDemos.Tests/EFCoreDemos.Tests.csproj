@@ -67,6 +67,7 @@
     <ProjectReference Include="..\optimistic-concurrency\optimistic-concurrency.csproj" Aliases="optimistic_concurrency" />
     <ProjectReference Include="..\projections-perf\projections-perf.csproj" Aliases="projections_perf" />
     <ProjectReference Include="..\transactions-and-savechanges\transactions-and-savechanges.csproj" Aliases="transactions_and_savechanges" />
+    <ProjectReference Include="..\vector-search\vector-search.csproj" Aliases="vector_search" />
     <ProjectReference Include="..\complex-vs-owned-types\complex-vs-owned-types.csproj" Aliases="complex_vs_owned_types" />
     <ProjectReference Include="..\left-right-join\left-right-join.csproj" Aliases="left_right_join" />
   </ItemGroup>

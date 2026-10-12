@@ -263,6 +263,15 @@
       "blurb": "Same Address two ways: hidden keys and identity vs pure values. Plus EF 10 struct, optional and JSON complex types.",
       "projectPath": "complex-vs-owned-types/complex-vs-owned-types.csproj",
       "supportsBenchmark": false
+    },
+    {
+      "id": "vector-search",
+      "insight": 8,
+      "block": "PowerTools",
+      "title": "Vector Search (SQL Server 2025)",
+      "blurb": "SqlVector<float> + EF.Functions.VectorDistance: semantic search over Chinook tracks inside SQL Server.",
+      "projectPath": "vector-search/vector-search.csproj",
+      "supportsBenchmark": true
     }
   ]
 }
