@@ -1,8 +1,7 @@
 # EFCoreDemos
 
 * [Compiled Models](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-models)
-* [Compiled Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-query) (run with "dotnet run -c Release
-")
+* [Compiled Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/compiled-query) (run with "dotnet run -c Release")
 * [Complex Types vs Owned Types](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/complex-vs-owned-types) (EF Core 10)
 * [Contains over a List: EF.Constant / EF.Parameter](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/contains-collection-translation) (EF Core 10, SQL Server; benchmark with "dotnet run -c Release -- benchmark")
 * [DBContext Pooling](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/context-pooling)
