@@ -84,6 +84,7 @@ body {
 .pill.running { background: #003e2a; color: #4ade80; animation: pulse 1.5s ease-in-out infinite; }
 .pill.error   { background: #3e0000; color: #ff8585; }
 .pill.done    { background: #003e2a; color: #4ade80; }
+.pill.expected { background: #3e2e00; color: #fbbf24; }
 
 @keyframes pulse {
     0%, 100% { opacity: 1; }
@@ -215,6 +216,7 @@ main {
 .terminal .line-cmd  { color: var(--term-cmd); }
 .terminal .line-exit { color: #4ade80; font-weight: 700; padding-top: 4px; }
 .terminal .line-exit.fail { color: #ff8585; }
+.terminal .line-exit.expected { color: #fbbf24; }
 
 .shortcuts {
     display: flex;

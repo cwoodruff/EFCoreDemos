@@ -163,16 +163,28 @@ namespace DemoLauncher.Web
                 return;
             }
 
-            await RunDotnetAsync(demo, mode, response, ct);
+            // testing-strategies is an xUnit project - run its tests and stream each result.
+            if (demo.SpecialCase == "dotnet-test")
+            {
+                await RunDotnetAsync(demo, response, ct,
+                    ["test", Path.Combine(_demoRoot, demo.ProjectPath), "-c", "Release", "--logger", "console;verbosity=normal"],
+                    $"$ dotnet test {demo.ProjectPath} -c Release --logger \"console;verbosity=normal\"");
+                return;
+            }
+
+            // (Live-benchmark mode would append "--", "benchmark" here. We use replay instead.)
+            await RunDotnetAsync(demo, response, ct,
+                ["run", "--project", Path.Combine(_demoRoot, demo.ProjectPath), "-c", "Release"],
+                $"$ dotnet run --project {demo.ProjectPath} -c Release");
         }
 
-        private async Task RunDotnetAsync(Demo demo, string mode, HttpResponse response, CancellationToken ct)
+        // displayCommand echoes the command with the project path relative to the repo root, so the local
+        // checkout path isn't shown on screen.
+        private async Task RunDotnetAsync(Demo demo, HttpResponse response, CancellationToken ct,
+            List<string> args, string displayCommand)
         {
             var projectFile = Path.Combine(_demoRoot, demo.ProjectPath);
             var projectDir = Path.GetDirectoryName(projectFile)!;
-
-            var args = new List<string> { "run", "--project", projectFile, "-c", "Release" };
-            // (Live-benchmark mode would append "--", "benchmark" here. We use replay instead.)
 
             var psi = new ProcessStartInfo("dotnet")
             {
@@ -185,8 +197,7 @@ namespace DemoLauncher.Web
             };
             foreach (var a in args) psi.ArgumentList.Add(a);
 
-            // Echo the project path relative to the repo root so the local checkout path isn't shown on screen.
-            await WriteEventAsync(response, "info", $"$ dotnet run --project {demo.ProjectPath} -c Release", ct);
+            await WriteEventAsync(response, "info", displayCommand, ct);
             await WriteEventAsync(response, "info", $"  (cwd: {Path.GetRelativePath(_demoRoot, projectDir)})", ct);
 
             using var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
