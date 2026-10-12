@@ -76,6 +76,7 @@
     <ProjectReference Include="..\hierarchyid\hierarchyid.csproj" Aliases="hierarchyid" />
     <ProjectReference Include="..\shadow-properties-backing-fields\shadow-properties-backing-fields.csproj" Aliases="shadow_properties_backing_fields" />
     <ProjectReference Include="..\query-pipeline-interceptors\query-pipeline-interceptors.csproj" Aliases="query_pipeline_interceptors" />
+    <ProjectReference Include="..\multitenancy\multitenancy.csproj" Aliases="multitenancy" />
     <ProjectReference Include="..\disconnected-graphs\disconnected-graphs.csproj" Aliases="disconnected_graphs" />
   </ItemGroup>
 
