@@ -7,7 +7,36 @@
       "title": "Identity Resolution",
       "blurb": "Duplicate-key on Update + identity-resolution dedupe across a graph.",
       "projectPath": "identity-resolution/identity-resolution.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "A DbContext can track only one instance per key, and no-tracking queries hand back a separate object for every row a related entity appears in. The demo first triggers the duplicate-key error by calling Update on a new Album whose key is already tracked, then loads five Albums with their Artists using AsNoTracking and AsNoTrackingWithIdentityResolution and counts the distinct Artist instances.",
+        "highlights": [
+          "Update() on a second Album with Id 1 throws InvalidOperationException because Album #1 is already tracked",
+          "AsNoTracking() over 5 Albums returns one Artist object per row, even though only 3 artists are involved",
+          "AsNoTrackingWithIdentityResolution() collapses them to 3 distinct Artist instances",
+          "Prints the SQL for each query via the console logger",
+          "Benchmark mode compares Tracked vs NoTracking vs NoTrackingWithIdentityResolution loading all Tracks"
+        ],
+        "keyApis": [
+          "DbContext.Update",
+          "AsNoTracking",
+          "AsNoTrackingWithIdentityResolution",
+          "Include"
+        ],
+        "takeaway": "Use AsNoTracking for flat read-only lists, and AsNoTrackingWithIdentityResolution when a read-only graph must share one instance per key.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Identity Resolution",
+            "url": "https://learn.microsoft.com/ef/core/change-tracking/identity-resolution"
+          },
+          {
+            "title": "Tracking vs. No-Tracking Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/tracking"
+          }
+        ]
+      }
     },
     {
       "id": "as-no-tracking-perf",
@@ -16,7 +45,35 @@
       "title": "AsNoTracking Perf + Silent Bug",
       "blurb": "Tracked vs NoTracking throughput; the AsNoTracking-on-write silent-bug demo.",
       "projectPath": "as-no-tracking-perf/as-no-tracking-perf.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "AsNoTracking skips the change tracker, which is great for reads and a silent bug on a write path. The demo loads an Album with AsNoTracking, edits its Title and calls SaveChanges, which writes nothing and throws no error. A benchmark mode compares loading every Track tracked vs untracked.",
+        "highlights": [
+          "Loads the first Album with AsNoTracking(), changes its Title and calls SaveChanges()",
+          "SaveChanges returns 0 and a re-read shows the Title unchanged, with no exception",
+          "Prints the fix: call db.Update(album) before SaveChanges, or drop AsNoTracking",
+          "Benchmark mode: ToList() over all Tracks, tracked vs AsNoTracking, with memory diagnostics",
+          "Recorded run: tracked ~0.7 ms vs no-tracking ~3.0 ms on the narrow Track table, not the expected winner"
+        ],
+        "keyApis": [
+          "AsNoTracking",
+          "SaveChanges",
+          "DbContext.Update"
+        ],
+        "takeaway": "Use AsNoTracking only for data you will not save, and measure before assuming it is faster.",
+        "database": "SQLite (Chinook copy in the build output)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Tracking vs. No-Tracking Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/tracking"
+          },
+          {
+            "title": "Efficient Querying",
+            "url": "https://learn.microsoft.com/ef/core/performance/efficient-querying"
+          }
+        ]
+      }
     },
     {
       "id": "lazy-loading",
@@ -25,7 +82,36 @@
       "title": "Lazy Loading + Change Tracker",
       "blurb": "Lazy-loading N+1 in action plus a change-tracker state walk.",
       "projectPath": "lazy-loading/lazy-loading.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Lazy-loading proxies make navigation access look free, but every first touch of an unloaded reference is a separate database round-trip. The demo loads five albums and reads each album.Artist in a loop to show the N+1 queries in the SQL log, then walks an Album-with-Tracks graph through load, edit, save, add and save while printing change-tracker states.",
+        "highlights": [
+          "SQL log shows 1 SELECT for albums plus 1 SELECT per distinct, not-yet-loaded artist",
+          "Repeat artists come from the change tracker, so 5 albums cost 1 + (distinct artists) queries",
+          "Prints tracker state per step: Unchanged -> Modified -> Unchanged -> Added -> Unchanged",
+          "All writes run in a transaction that is rolled back, so the database is unchanged between runs"
+        ],
+        "keyApis": [
+          "UseLazyLoadingProxies",
+          "Include",
+          "ChangeTracker.Entries",
+          "SaveChanges",
+          "Database.BeginTransaction"
+        ],
+        "takeaway": "Lazy loading hides a query behind every navigation access; load related data on purpose with Include or a projection when you loop.",
+        "database": "SQLite (Chinook copy, changes rolled back)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Lazy Loading of Related Data",
+            "url": "https://learn.microsoft.com/ef/core/querying/related-data/lazy"
+          },
+          {
+            "title": "Change Tracking",
+            "url": "https://learn.microsoft.com/ef/core/change-tracking/"
+          }
+        ]
+      }
     },
     {
       "id": "change-tracker-explorer",
@@ -34,16 +120,78 @@
       "title": "Change Tracker Explorer",
       "blurb": "Walk an Album+Tracks graph: Unchanged -> Modified -> Added -> Unchanged.",
       "projectPath": "change-tracker-explorer/change-tracker-explorer.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "EF Core decides what SQL SaveChanges sends from the state it tracks for each entity. The demo loads the first Album with its Tracks inside a transaction, renames it, adds a new Track, and prints the ChangeTracker's entries grouped by entity type and state after every step, then rolls the transaction back.",
+        "highlights": [
+          "Album and its Tracks listed as Unchanged right after the Include query",
+          "Changing Album.Title flips the Album to Modified while the Tracks stay Unchanged",
+          "After SaveChanges the logged UPDATE runs and everything returns to Unchanged",
+          "db.Tracks.Add shows the new Track as Added; SaveChanges logs the INSERT and it becomes Unchanged",
+          "Transaction rolled back at the end so the database is unchanged for the next run"
+        ],
+        "keyApis": [
+          "ChangeTracker.Entries",
+          "EntityState",
+          "Include",
+          "SaveChanges",
+          "Database.BeginTransaction"
+        ],
+        "takeaway": "SaveChanges only writes what the change tracker marks as Added, Modified or Deleted, so inspect entity states when the SQL surprises you.",
+        "database": "SQLite (Chinook copy; changes rolled back each run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Change Tracking in EF Core",
+            "url": "https://learn.microsoft.com/ef/core/change-tracking/"
+          },
+          {
+            "title": "Accessing Tracked Entities",
+            "url": "https://learn.microsoft.com/ef/core/change-tracking/entity-entries"
+          },
+          {
+            "title": "Change Tracker Debugging",
+            "url": "https://learn.microsoft.com/ef/core/change-tracking/debug-views"
+          }
+        ]
+      }
     },
     {
       "id": "filtered-include",
       "insight": 3,
       "block": "QueryShape",
       "title": "Filtered Include",
-      "blurb": "Filter and order at the SQL layer, not after materialization.",
+      "blurb": "Filter included collections at the SQL layer, not after materialization.",
       "projectPath": "filtered-include/filtered-include.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Loading a collection navigation and filtering it in memory pulls every child row over the wire first. The demo loads all Artists with only the Albums whose title contains \"the\", putting the filter inside Include and using AsSplitQuery so the filtering happens in SQL.",
+        "highlights": [
+          "Include(e => e.Albums.Where(a => a.Title.Contains(\"the\"))) filters the child collection in the query",
+          "AsSplitQuery() sends one SELECT for Artists and a second for the filtered Albums",
+          "The logged SQL shows the LIKE filter applied in the Albums query",
+          "Prints each artist with the count of matching albums, including artists with 0"
+        ],
+        "keyApis": [
+          "Include",
+          "AsSplitQuery",
+          "Where",
+          "Contains"
+        ],
+        "takeaway": "Put the filter inside Include so the database returns only the child rows you need.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Eager Loading of Related Data",
+            "url": "https://learn.microsoft.com/ef/core/querying/related-data/eager"
+          },
+          {
+            "title": "Single vs. Split Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/single-split-queries"
+          }
+        ]
+      }
     },
     {
       "id": "split-queries",
@@ -52,7 +200,34 @@
       "title": "Split Queries",
       "blurb": "Trade one big query for N small ones - escape hatch for cartesian explosions.",
       "projectPath": "split-queries/split-queries.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Including a collection navigation in one JOIN repeats parent columns for every child row, and stacking includes can cause a cartesian explosion. The demo loads Artists with their Albums using AsSplitQuery and Invoices with their InvoiceLines using AsSingleQuery, logging the SQL for both.",
+        "highlights": [
+          "Artists.Include(Albums).AsSplitQuery() logs two separate SELECT statements",
+          "Invoices.Include(InvoiceLines).AsSingleQuery() logs one SELECT with a JOIN",
+          "Every executed SQL command is written to the console by the logger factory",
+          "Prints each artist name and invoice id so both result sets are visible"
+        ],
+        "keyApis": [
+          "Include",
+          "AsSplitQuery",
+          "AsSingleQuery"
+        ],
+        "takeaway": "Reach for AsSplitQuery when a collection Include multiplies rows; keep single queries when the join is small.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Single vs. Split Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/single-split-queries"
+          },
+          {
+            "title": "Eager Loading of Related Data",
+            "url": "https://learn.microsoft.com/ef/core/querying/related-data/eager"
+          }
+        ]
+      }
     },
     {
       "id": "projections-perf",
@@ -61,7 +236,34 @@
       "title": "Projections Perf",
       "blurb": "Full hydration vs anonymous vs DTO projection - the highest-leverage technique.",
       "projectPath": "projections-perf/projections-perf.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "Loading full entities pulls every column and pays for change tracking even when a page only needs a few fields. The demo writes the SQL for full hydration, an anonymous-type projection and a DTO projection (with a join to Album) to ./sql/*.sql, and with the benchmark argument runs BenchmarkDotNet over all three.",
+        "highlights": [
+          "Writes full-hydration.sql, anon-projection.sql and dto-projection.sql via ToQueryString",
+          "Full hydration selects every Track column; the anonymous projection selects three",
+          "DTO projection pulls AlbumTitle through a JOIN without loading Album entities",
+          "Benchmark on narrow Chinook.Track shows little time difference; the SQL is the lasting reason to project"
+        ],
+        "keyApis": [
+          "Select",
+          "ToQueryString",
+          "Where"
+        ],
+        "takeaway": "Project read queries to the columns you need; the savings grow with the width of the real table.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Efficient Querying",
+            "url": "https://learn.microsoft.com/ef/core/performance/efficient-querying"
+          },
+          {
+            "title": "Tracking vs. No-Tracking Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/tracking"
+          }
+        ]
+      }
     },
     {
       "id": "n-plus-one-problem",
@@ -70,7 +272,42 @@
       "title": "N+1 Problem (3 Fixes)",
       "blurb": "Reproduce the N+1 with logs, then kill it three ways: Include, Project, Batched IN.",
       "projectPath": "n-plus-one-problem/n-plus-one-problem.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Querying inside a loop over parent rows sends one SQL statement per row, the N+1 problem. The demo totals invoices per customer four ways and counts the executed commands: a per-customer Sum in a loop, then Include, a Select projection, and a batched Contains/IN query with GroupBy.",
+        "highlights": [
+          "Section A logs one SELECT for customers plus one SUM query per customer, with the total statement count",
+          "Fix 1: Include(c => c.Invoices) loads everything in a single joined query",
+          "Fix 2: a Select projection computes each customer's invoice total in the database in one statement",
+          "Fix 3: one customers query plus one IN (...) GROUP BY query for all invoice totals",
+          "Every section prints the same grand total, so only the SQL statement count changes"
+        ],
+        "keyApis": [
+          "Include",
+          "Select",
+          "Contains",
+          "GroupBy",
+          "AsNoTracking",
+          "LogTo"
+        ],
+        "takeaway": "Never run a query per row inside a loop; fetch related data with Include, a projection, or one batched IN query.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Efficient Querying",
+            "url": "https://learn.microsoft.com/ef/core/performance/efficient-querying"
+          },
+          {
+            "title": "Eager Loading of Related Data",
+            "url": "https://learn.microsoft.com/ef/core/querying/related-data/eager"
+          },
+          {
+            "title": "Single vs. Split Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/single-split-queries"
+          }
+        ]
+      }
     },
     {
       "id": "inheritance-mapping",
@@ -79,7 +316,37 @@
       "title": "Inheritance Mapping (TPH / TPT / TPC)",
       "blurb": "Same model, three strategies - see the table layout and SQL each one generates.",
       "projectPath": "inheritance-mapping/inheritance-mapping.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "EF Core can map a class hierarchy as TPH, TPT or TPC, and each choice changes the tables and the SQL for every query. The demo maps the same MediaItem hierarchy (Song, Podcast, Audiobook) three ways, inserts one of each, and prints the resulting tables plus the SQL for a polymorphic query and a subtype-only query.",
+        "highlights": [
+          "Lists the tables each strategy creates: one for TPH, base plus one per subtype for TPT, one per concrete type for TPC",
+          "Prints the SQL for db.Items under each strategy: Discriminator column, LEFT JOINs, or UNION ALL",
+          "Prints the SQL for db.Songs to show how subtype-only queries differ",
+          "TPC sets ValueGeneratedNever on Id because the subtype tables cannot share an autoincrement sequence",
+          "Ends with a one-line summary of the trade-offs of each strategy"
+        ],
+        "keyApis": [
+          "UseTpcMappingStrategy",
+          "ToTable",
+          "ValueGeneratedNever",
+          "ToQueryString",
+          "EnsureCreated"
+        ],
+        "takeaway": "TPH is the default and usually fastest; choose TPT or TPC only when the table layout matters more than the extra JOINs or UNIONs.",
+        "database": "SQLite (tph.db, tpt.db and tpc.db recreated per run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Inheritance",
+            "url": "https://learn.microsoft.com/ef/core/modeling/inheritance"
+          },
+          {
+            "title": "Modeling for Performance",
+            "url": "https://learn.microsoft.com/ef/core/performance/modeling-for-performance"
+          }
+        ]
+      }
     },
     {
       "id": "json-columns",
@@ -88,7 +355,41 @@
       "title": "JSON Columns",
       "blurb": "Map a nested document with ToJson(), then filter, project and json_set straight into the JSON.",
       "projectPath": "json-columns/json-columns.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "EF Core can map a nested object graph to a single JSON column and still query into it. The demo maps a Customer's ContactDetails (Address plus a Phones collection) as complex types with ToJson(), then inserts, filters, projects, updates and bulk-updates inside the JSON while logging the SQL.",
+        "highlights": [
+          "CREATE TABLE shows the whole Contact graph stored as one TEXT column",
+          "Filters on Contact.Address.Country and projects JSON properties without loading the full document",
+          "Phones.Any(p => p.Kind == \"Mobile\") queries into the JSON array",
+          "Changing one tracked property rewrites the whole Contact document on SaveChanges",
+          "ExecuteUpdate sets one JSON path with json_set, then prints the raw JSON stored in the column"
+        ],
+        "keyApis": [
+          "ComplexProperty",
+          "ToJson",
+          "ComplexCollection",
+          "ExecuteUpdateAsync",
+          "SqlQuery"
+        ],
+        "takeaway": "Map document-shaped data with ToJson() and keep querying it in LINQ; use ExecuteUpdate to touch one path without rewriting the document.",
+        "database": "SQLite (json-columns.db, recreated every run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Complex Types",
+            "url": "https://learn.microsoft.com/ef/core/modeling/complex-types"
+          },
+          {
+            "title": "What's New in EF Core 10",
+            "url": "https://learn.microsoft.com/ef/core/what-is-new/ef-core-10.0/whatsnew"
+          },
+          {
+            "title": "ExecuteUpdate and ExecuteDelete",
+            "url": "https://learn.microsoft.com/ef/core/saving/execute-insert-update-delete"
+          }
+        ]
+      }
     },
     {
       "id": "compiled-query",
@@ -97,16 +398,71 @@
       "title": "Compiled Queries",
       "blurb": "EF.CompileAsyncQuery for hot paths - microseconds when they matter.",
       "projectPath": "compiled-query/compiled-query.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Every LINQ query has to be turned into a cached query plan, and the cache lookup itself costs time on very hot paths. The demo times 500 single-album lookups five ways: a normal LINQ query, EF.CompileQuery, EF.CompileAsyncQuery, and both compiled forms exposed as methods on the DbContext.",
+        "highlights": [
+          "Warms every variant first so the timed runs skip one-time JIT and compilation costs",
+          "Prints elapsed milliseconds for 500 queries per variant on one line each",
+          "Clears the change tracker before each run so every variant materializes the same albums",
+          "Shows compiled queries wrapped as DbContext methods (GetAlbum, GetAlbumAsync)",
+          "Optional BenchmarkDotNet run with the benchmark argument"
+        ],
+        "keyApis": [
+          "EF.CompileQuery",
+          "EF.CompileAsyncQuery",
+          "ChangeTracker.Clear"
+        ],
+        "takeaway": "Compiled queries skip the query-cache lookup, which only matters on hot paths that run the same query thousands of times.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Advanced Performance Topics",
+            "url": "https://learn.microsoft.com/ef/core/performance/advanced-performance-topics"
+          },
+          {
+            "title": "How Queries Work",
+            "url": "https://learn.microsoft.com/ef/core/querying/how-query-works"
+          }
+        ]
+      }
     },
     {
       "id": "from_sql",
       "insight": 7,
       "block": "PowerTools",
       "title": "FromSql (Parameterized)",
-      "blurb": "Interpolated FromSql -> parameterized SQL. String concat is injection.",
+      "blurb": "FromSqlInterpolated turns interpolated values into parameters - never concatenated SQL text.",
       "projectPath": "from_sql/from_sql.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Raw SQL in EF Core is safe from injection only when values travel as parameters. The demo runs FromSqlInterpolated against the Customer table, passing the country as an explicit SqliteParameter inside the interpolated string, and prints the matching customers.",
+        "highlights": [
+          "The logged SQL shows the country value sent as a parameter, not concatenated into the query text",
+          "An explicit SqliteParameter (name, type, size) is embedded in an interpolated FromSqlInterpolated string",
+          "Prints each customer found in Canada",
+          "Code comment notes a SqlClient SqlParameter would throw InvalidCastException against SQLite"
+        ],
+        "keyApis": [
+          "FromSqlInterpolated",
+          "SqliteParameter",
+          "SqliteType.Text"
+        ],
+        "takeaway": "Pass values to raw SQL through interpolation or DbParameter objects, never by concatenating strings.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "SQL Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/sql-queries"
+          },
+          {
+            "title": "Simple logging",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/simple-logging"
+          }
+        ]
+      }
     },
     {
       "id": "linq-query-vs-fromsql-perf",
@@ -115,7 +471,37 @@
       "title": "LINQ vs FromSql (Complex Query)",
       "blurb": "4-table sales report in LINQ vs hand-written SQL - same rows, how much does translation cost?",
       "projectPath": "linq-query-vs-fromsql-perf/linq-query-vs-fromsql-perf.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "Complex reports are often rewritten as raw SQL on the assumption that LINQ translation is expensive. The demo runs the same four-table album sales report (Invoice, InvoiceLine, Track, Album) as a grouped LINQ query and as a hand-written SELECT through FromSql into a keyless type, prints both SQL texts, and checks that the rows match.",
+        "highlights": [
+          "Prints the SQL EF Core generates for the grouped LINQ report next to the hand-written FromSql SQL",
+          "Shows the top 5 albums by revenue for 2009-2010 with invoices, tracks, units and revenue",
+          "Confirms both paths return identical rows in the same order",
+          "FromSql passes typed SqlParameters for the datetime column, and interpolated values become DbParameters",
+          "Benchmark mode times LINQ vs FromSql; the saved results show 9.37 ms vs 9.06 ms"
+        ],
+        "keyApis": [
+          "FromSql",
+          "ToQueryString",
+          "HasNoKey",
+          "ToView",
+          "SqlParameter"
+        ],
+        "takeaway": "Write the report in LINQ first; on a warm query cache, hand-written SQL saves only a few percent and you lose composability.",
+        "database": "SQL Server - sql2025 container, Chinook database (read-only)",
+        "setup": "Start the sql2025 Docker container",
+        "learnLinks": [
+          {
+            "title": "SQL Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/sql-queries"
+          },
+          {
+            "title": "Efficient Querying",
+            "url": "https://learn.microsoft.com/ef/core/performance/efficient-querying"
+          }
+        ]
+      }
     },
     {
       "id": "ef-core-sprocs-perf",
@@ -124,7 +510,36 @@
       "title": "LINQ vs Stored Procedure",
       "blurb": "Load every Album via LINQ vs FromSql(\"EXEC sproc\"), tracked and untracked.",
       "projectPath": "ef-core-sprocs-perf/ef-core-sprocs-perf.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "A common belief is that stored procedures are faster than LINQ. The demo loads every Album through a LINQ query and through FromSql(\"EXEC dbo.sproc_GetAlbum\"), shows both SQL statements, checks the rows match, and benchmarks both paths with and without tracking.",
+        "highlights": [
+          "Prints ToQueryString() for the LINQ query and the FromSql EXEC call side by side",
+          "Both paths return the same albums, confirmed with a row-by-row comparison",
+          "Benchmark groups LINQ vs sproc separately for NoTracking and Tracking",
+          "Recorded run: the sproc path is about 20% slower in both groups",
+          "Tracking vs no-tracking moves time and memory more than LINQ vs sproc does"
+        ],
+        "keyApis": [
+          "FromSql",
+          "AsNoTracking",
+          "ToQueryString",
+          "ToListAsync"
+        ],
+        "takeaway": "Use stored procedures for security boundaries or logic that belongs in the database, not for speed.",
+        "database": "SQL Server - sql2025 container, Chinook database",
+        "setup": "Start the sql2025 Docker container (uses dbo.sproc_GetAlbum in its Chinook database)",
+        "learnLinks": [
+          {
+            "title": "SQL Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/sql-queries"
+          },
+          {
+            "title": "Introduction to Performance",
+            "url": "https://learn.microsoft.com/ef/core/performance/"
+          }
+        ]
+      }
     },
     {
       "id": "executeupdate-executedelete",
@@ -133,16 +548,75 @@
       "title": "ExecuteUpdate / ExecuteDelete",
       "blurb": "Set-based writes - one UPDATE/DELETE, zero entities materialized.",
       "projectPath": "executeupdate-executedelete/executeupdate-executedelete.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Updating or deleting rows through the change tracker means loading every entity first and sending a statement per row. The demo raises the price of every Reggae track with one ExecuteUpdateAsync and deletes Belgium's customers, invoices and invoice lines with three ExecuteDeleteAsync calls, all inside a transaction that is rolled back.",
+        "highlights": [
+          "Prints the Reggae average price before and after a single set-based UPDATE",
+          "SQL log shows one UPDATE and three DELETE statements, with no entities loaded",
+          "Deletes children first because ExecuteDelete skips EF's client-side cascade; database FKs still apply",
+          "TagWith comments appear on the DELETEs but are dropped from the UPDATE in EF Core 10",
+          "Rolls back and re-reads to show the database is unchanged"
+        ],
+        "keyApis": [
+          "ExecuteUpdateAsync",
+          "SetProperty",
+          "ExecuteDeleteAsync",
+          "TagWith",
+          "Database.BeginTransactionAsync"
+        ],
+        "takeaway": "Use ExecuteUpdate/ExecuteDelete for bulk changes, and remember they bypass the change tracker and its cascades.",
+        "database": "SQLite (Chinook copy, changes rolled back)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "ExecuteUpdate and ExecuteDelete",
+            "url": "https://learn.microsoft.com/ef/core/saving/execute-insert-update-delete"
+          },
+          {
+            "title": "Transactions",
+            "url": "https://learn.microsoft.com/ef/core/saving/transactions"
+          }
+        ]
+      }
     },
     {
       "id": "interception-db-ops",
       "insight": 8,
       "block": "PowerTools",
       "title": "DbCommand Interceptor",
-      "blurb": "Rewrite SQL, log slow queries, add multi-tenant filters - all cross-cutting.",
+      "blurb": "A DbCommandInterceptor rewrites every SQL command before it runs - one cross-cutting hook.",
       "projectPath": "interception-db-ops/interception-db-ops.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "A DbCommandInterceptor can change every command EF Core sends, in one place, without touching query code. The demo registers HintCommandInterceptor, which on SQLite prepends a comment to the SQL (on SQL Server it would append OPTION (OPTIMIZE FOR UNKNOWN)), then streams rock tracks with an async query.",
+        "highlights": [
+          "Interceptor prints the SQL actually sent, starting with '-- Rewritten by HintCommandInterceptor'",
+          "EF's own 'Executed DbCommand' log still shows the original text, because it records SQL before interception",
+          "Overrides both ReaderExecuting and ReaderExecutingAsync, since AsAsyncEnumerable takes the async path",
+          "Lists every track with GenreId 1 and its unit price"
+        ],
+        "keyApis": [
+          "DbCommandInterceptor",
+          "ReaderExecuting",
+          "ReaderExecutingAsync",
+          "AddInterceptors",
+          "AsAsyncEnumerable"
+        ],
+        "takeaway": "Use an interceptor for cross-cutting command changes, and override the async methods too or async queries will bypass it.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Interceptors",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/interceptors"
+          },
+          {
+            "title": "Simple logging",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/simple-logging"
+          }
+        ]
+      }
     },
     {
       "id": "savedchanges-interception-auditing",
@@ -151,7 +625,38 @@
       "title": "SaveChanges Auditing Interceptor",
       "blurb": "30 lines of audit code, applied to every IAuditable entity automatically.",
       "projectPath": "savedchanges-interception-auditing/savedchanges-interception-auditing.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Audit logging is often copied into every place that calls SaveChanges. The demo registers one ISaveChangesInterceptor that reads the ChangeTracker before each save, writes an audit record to a separate audit database, and marks it as succeeded or failed when the save completes.",
+        "highlights": [
+          "Inserts a Blog with two Posts, then renames the Blog, deletes a Post and adds a new one",
+          "Forces a failed insert with a duplicate Post key to exercise SaveChangesFailed",
+          "Prints each audit with start/end time and Inserting/Updating/Deleting messages built from the ChangeTracker",
+          "The failed save is recorded as not successful along with its error message",
+          "Console logging shows the SQL for both the blog database and the audit database"
+        ],
+        "keyApis": [
+          "ISaveChangesInterceptor",
+          "AddInterceptors",
+          "SavingChangesAsync",
+          "SavedChanges",
+          "SaveChangesFailed",
+          "ChangeTracker.Entries"
+        ],
+        "takeaway": "Put cross-cutting save logic such as auditing in a SaveChanges interceptor so every SaveChanges call goes through it.",
+        "database": "SQLite (auditing-blogs.db and audit.db recreated per run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Interceptors",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/interceptors"
+          },
+          {
+            "title": ".NET events",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/events"
+          }
+        ]
+      }
     },
     {
       "id": "temporal-tables",
@@ -160,7 +665,37 @@
       "title": "Temporal Tables",
       "blurb": "SQL Server keeps every version: query AsOf / Between / All, then restore a deleted row. Needs the sql2025 container.",
       "projectPath": "temporal-tables/temporal-tables.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "SQL Server temporal tables keep every past version of a row in a history table. The demo creates a system-versioned Employees table, inserts, updates and deletes rows with normal EF code, then queries the history with TemporalAll, TemporalAsOf and TemporalBetween and restores a deleted row.",
+        "highlights": [
+          "CREATE TABLE shows PERIOD FOR SYSTEM_TIME and SYSTEM_VERSIONING with an EmployeeHistory table",
+          "Takes timestamped checkpoints from the SQL Server clock between insert, update and delete",
+          "TemporalAll lists every version of every row with ValidFrom / ValidTo",
+          "TemporalAsOf shows the table as it was after the insert; TemporalBetween shows Jane's versions",
+          "Reads the deleted Nancy row from history and inserts it again with its original Id"
+        ],
+        "keyApis": [
+          "IsTemporal",
+          "TemporalAll",
+          "TemporalAsOf",
+          "TemporalBetween",
+          "EF.Property"
+        ],
+        "takeaway": "Let SQL Server keep the audit history and query it with the Temporal* LINQ operators instead of building history tables by hand.",
+        "database": "SQL Server - sql2025 container, demo-owned TemporalTablesDemo database (recreated each run)",
+        "setup": "Start the sql2025 Docker container",
+        "learnLinks": [
+          {
+            "title": "SQL Server Provider - Temporal Tables",
+            "url": "https://learn.microsoft.com/ef/core/providers/sql-server/temporal-tables"
+          },
+          {
+            "title": "Temporal Tables - SQL Server",
+            "url": "https://learn.microsoft.com/sql/relational-databases/tables/temporal/overview"
+          }
+        ]
+      }
     },
     {
       "id": "dbcontext-lifetimes-di",
@@ -172,7 +707,47 @@
       "supportsBenchmark": false,
       "specialCase": "webserver-curl",
       "webServerPort": 5193,
-      "webServerEndpoints": ["/scoped", "/factory", "/pooled", "/captive", "/captive"]
+      "webServerEndpoints": [
+        "/scoped",
+        "/factory",
+        "/pooled",
+        "/captive",
+        "/captive"
+      ],
+      "info": {
+        "summary": "How a DbContext is registered in DI decides how long it lives, and a singleton that holds a scoped context outlives the request that created it. This minimal API server exposes /scoped, /factory and /pooled endpoints that each count albums with a different registration, plus a /captive endpoint where a singleton captures the first request's scoped context.",
+        "highlights": [
+          "Each endpoint returns its lifetime, the context's hash code and the album count as JSON",
+          "/factory and /pooled create a context per call from IDbContextFactory<T>",
+          "First /captive call succeeds; the second fails because the captured context was disposed",
+          "Scope validation is turned off so the captive dependency fails at runtime, not at startup"
+        ],
+        "keyApis": [
+          "AddDbContext",
+          "AddDbContextFactory",
+          "AddPooledDbContextFactory",
+          "IDbContextFactory<T>",
+          "CreateDbContextAsync",
+          "ValidateScopes"
+        ],
+        "takeaway": "Never let a singleton hold a DbContext; inject IDbContextFactory<T> and create a short-lived context instead.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "DbContext Lifetime, Configuration, and Initialization",
+            "url": "https://learn.microsoft.com/ef/core/dbcontext-configuration/"
+          },
+          {
+            "title": "Advanced Performance Topics - EF Core (DbContext pooling)",
+            "url": "https://learn.microsoft.com/ef/core/performance/advanced-performance-topics"
+          },
+          {
+            "title": "Dependency injection guidelines - .NET",
+            "url": "https://learn.microsoft.com/dotnet/core/extensions/dependency-injection/guidelines"
+          }
+        ]
+      }
     },
     {
       "id": "context-pooling",
@@ -181,7 +756,41 @@
       "title": "Context Pooling Throughput",
       "blurb": "Lifetimes side-by-side, transaction across SaveChanges, then non-pooled vs pooled throughput under the same load.",
       "projectPath": "context-pooling/context-pooling.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Creating a DbContext per request has a cost, and pooling reuses instances instead. The demo registers scoped, factory and pooled-factory contexts side by side, rolls back a transaction that spans two SaveChanges calls, then runs 32 threads for 5 seconds with and without AddDbContextPool and reports context creations and requests per second.",
+        "highlights": [
+          "Scoped, factory and pooled contexts each print their instance hash and a genre count",
+          "Two playlists saved in one transaction, a simulated failure, rollback, and a playlist delta of 0",
+          "Per-second lines of context creations and requests for the non-pooled run",
+          "The pooled run creates far fewer contexts under the same 32-thread load",
+          "Final totals of context creations and requests per second for each run"
+        ],
+        "keyApis": [
+          "AddDbContext",
+          "AddDbContextFactory",
+          "AddPooledDbContextFactory",
+          "AddDbContextPool",
+          "Database.BeginTransactionAsync"
+        ],
+        "takeaway": "Pool your DbContext in high-throughput apps, and keep no per-request state on it because pooled instances are reset and reused.",
+        "database": "SQLite (Chinook copy; transaction rolled back)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Advanced Performance Topics (DbContext pooling)",
+            "url": "https://learn.microsoft.com/ef/core/performance/advanced-performance-topics"
+          },
+          {
+            "title": "DbContext Lifetime, Configuration, and Initialization",
+            "url": "https://learn.microsoft.com/ef/core/dbcontext-configuration/"
+          },
+          {
+            "title": "Transactions",
+            "url": "https://learn.microsoft.com/ef/core/saving/transactions"
+          }
+        ]
+      }
     },
     {
       "id": "transactions-and-savechanges",
@@ -190,7 +799,38 @@
       "title": "Transactions + Savepoints",
       "blurb": "Multi-SaveChanges transaction, savepoint rollback, TransactionScope async footgun.",
       "projectPath": "transactions-and-savechanges/transactions-and-savechanges.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Each SaveChanges call is its own transaction, so a multi-step write needs an explicit transaction to roll back as a unit. The demo inserts an Invoice and its lines over several SaveChanges calls, rolls everything back on a simulated failure, rolls back to a savepoint to keep the invoice, and shows TransactionScope losing its ambient transaction across await.",
+        "highlights": [
+          "Scenario A: Invoice and lines saved in separate SaveChanges calls, then a failure on line 3 rolls back to a 0 / 0 delta",
+          "Scenario B: rolling back to the \"after-invoice\" savepoint keeps the Invoice but drops the lines",
+          "Scenario C: a default TransactionScope shows Transaction.Current as null after await, then throws on Dispose",
+          "The fix, TransactionScopeAsyncFlowOption.Enabled, keeps the same transaction across the await",
+          "Every scenario ends in a rollback, so the database is unchanged between runs"
+        ],
+        "keyApis": [
+          "Database.BeginTransactionAsync",
+          "CreateSavepointAsync",
+          "RollbackToSavepointAsync",
+          "ChangeTracker.Clear",
+          "TransactionScope",
+          "TransactionScopeAsyncFlowOption.Enabled"
+        ],
+        "takeaway": "Wrap multi-step saves in BeginTransaction, use savepoints for partial rollback, and always enable async flow on TransactionScope.",
+        "database": "SQLite (Chinook copy; all writes rolled back)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Transactions",
+            "url": "https://learn.microsoft.com/ef/core/saving/transactions"
+          },
+          {
+            "title": "TransactionScopeAsyncFlowOption Enum",
+            "url": "https://learn.microsoft.com/dotnet/api/system.transactions.transactionscopeasyncflowoption"
+          }
+        ]
+      }
     },
     {
       "id": "optimistic-concurrency",
@@ -199,16 +839,79 @@
       "title": "Optimistic Concurrency",
       "blurb": "Concurrency token + interceptor, then watch DbUpdateConcurrencyException + a three-way merge.",
       "projectPath": "optimistic-concurrency/optimistic-concurrency.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Two users editing the same row can silently overwrite each other. The demo marks a Version column as a concurrency token, bumps it in a SaveChangesInterceptor, lets user B save over a stale copy, catches the DbUpdateConcurrencyException and resolves it with a three-way merge.",
+        "highlights": [
+          "Two contexts, A and B, load Document #1 at Version 1",
+          "A edits the Title and saves; the interceptor bumps Version to 2",
+          "B edits the Body and SaveChanges throws DbUpdateConcurrencyException (B Version=1, DB Version=2)",
+          "Lists the abort, client-wins and merge options, then applies the merge",
+          "Final row keeps A's Title and B's Body at Version 3"
+        ],
+        "keyApis": [
+          "IsConcurrencyToken",
+          "SaveChangesInterceptor",
+          "DbUpdateConcurrencyException",
+          "GetDatabaseValues",
+          "OriginalValues.SetValues"
+        ],
+        "takeaway": "Put a concurrency token on rows people edit concurrently and decide up front how a conflict is resolved.",
+        "database": "SQLite (concurrency.db, deleted and recreated each run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Handling Concurrency Conflicts",
+            "url": "https://learn.microsoft.com/ef/core/saving/concurrency"
+          },
+          {
+            "title": "Interceptors",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/interceptors"
+          }
+        ]
+      }
     },
     {
       "id": "simple-logging-improved-diagnostics",
       "insight": 10,
       "block": "Ops",
       "title": "Logging + Diagnostics",
-      "blurb": "TagWith + LogTo for traceable SQL, then EF vs Dapper vs ADO.NET head-to-head.",
+      "blurb": "TagWith + command logging for traceable SQL, then EF vs Dapper vs ADO.NET head-to-head.",
       "projectPath": "simple-logging-improved-diagnostics/simple-logging-improved-diagnostics.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "When EF Core is slow or wrong, the first step is seeing the SQL it sends and being able to trace it back to the code that issued it. The demo logs a tagged, split-query Include of artists and albums to the console with parameter values, then times the same single-row read 200 times with EF Core, Dapper and raw ADO.NET.",
+        "highlights": [
+          "Console log shows the executed SQL, with the TagWith comment at the top of each statement",
+          "AsSplitQuery produces separate SELECTs for Artists and Albums",
+          "EnableSensitiveDataLogging puts parameter values in the log",
+          "Prints elapsed ms for 200 reads each through EF Core, Dapper and ADO.NET, all without logging"
+        ],
+        "keyApis": [
+          "TagWith",
+          "AsSplitQuery",
+          "EnableSensitiveDataLogging",
+          "UseLoggerFactory",
+          "DbLoggerCategory.Database.Command"
+        ],
+        "takeaway": "Log and tag your SQL so you can find it, and drop to Dapper or ADO.NET only for tight loops where EF's per-call overhead shows.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Simple logging",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/simple-logging"
+          },
+          {
+            "title": "Query Tags",
+            "url": "https://learn.microsoft.com/ef/core/querying/tags"
+          },
+          {
+            "title": "Single vs. Split Queries",
+            "url": "https://learn.microsoft.com/ef/core/querying/single-split-queries"
+          }
+        ]
+      }
     },
     {
       "id": "query-tags",
@@ -217,7 +920,33 @@
       "title": "Query Tags",
       "blurb": "TagWith adds SQL comments that trace prod queries back to a line of code.",
       "projectPath": "query-tags/query-tags.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "SQL captured in production logs or a profiler is hard to trace back to the LINQ that produced it. The demo groups Chinook invoices by date with Sum, Min, Max and Average, and adds three TagWith calls so the generated SQL carries comments describing the query and where it lives.",
+        "highlights": [
+          "Logged SQL starts with -- comment lines from each TagWith call",
+          "A multi-line tag keeps its line breaks in the SQL comment",
+          "GroupBy with Sum, Min, Max and Average translated into one SQL statement",
+          "Prints the invoice sum for each invoice date"
+        ],
+        "keyApis": [
+          "TagWith",
+          "GroupBy"
+        ],
+        "takeaway": "Tag important queries with TagWith so a slow statement in the logs points straight back to the code that sent it.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Query Tags",
+            "url": "https://learn.microsoft.com/ef/core/querying/tags"
+          },
+          {
+            "title": "Simple logging",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/simple-logging"
+          }
+        ]
+      }
     },
     {
       "id": "migrations-workflow",
@@ -226,7 +955,37 @@
       "title": "Migrations Workflow",
       "blurb": "Pending -> apply one -> apply rest -> insert -> SQL script preview. The release-day walkthrough.",
       "projectPath": "migrations-workflow/migrations-workflow.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Release day means applying schema changes in a controlled order and handing a reviewable script to whoever deploys. The demo starts from an empty database, lists the three pending migrations (Initial, AddPublishedAt, AddIsbnUnique), applies the first one, then the rest, inserts a row, and prints the generated SQL script.",
+        "highlights": [
+          "Lists pending migrations with GetPendingMigrations before anything is applied",
+          "Applies only Initial with IMigrator.Migrate and prints the Article columns and indexes",
+          "Applies the rest with Database.Migrate and shows the new PublishedAt column and the unique Isbn index",
+          "Inserts and reads an Article to show the migrated schema works",
+          "Prints a trimmed GenerateScript output and the dotnet ef migrations bundle command"
+        ],
+        "keyApis": [
+          "GetPendingMigrations",
+          "IMigrator.Migrate",
+          "Database.Migrate",
+          "IMigrator.GenerateScript",
+          "GetService"
+        ],
+        "takeaway": "Review the generated SQL script and apply it with a script or a migrations bundle as a deployment step, not from app startup.",
+        "database": "SQLite (migrations.db recreated per run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Migrations Overview",
+            "url": "https://learn.microsoft.com/ef/core/managing-schemas/migrations/"
+          },
+          {
+            "title": "Applying Migrations",
+            "url": "https://learn.microsoft.com/ef/core/managing-schemas/migrations/applying"
+          }
+        ]
+      }
     },
     {
       "id": "ef-vs-dapper-vs-ado",
@@ -235,7 +994,40 @@
       "title": "EF Core vs Dapper vs ADO.NET",
       "blurb": "Optional closer: same hot-path read, three approaches. Numbers usually surprise.",
       "projectPath": "ef-vs-dapper-vs-ado/ef-vs-dapper-vs-ado.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "How much does EF Core cost compared with Dapper and raw ADO.NET on a hot-path read? The demo looks up one Chinook Track by name three ways with the same SQL, columns and single open connection, prints the row from each, and benchmarks all three.",
+        "highlights": [
+          "Fetches the track 'Inject The Venom' with EF Core, Dapper and ADO.NET and prints the same row three times",
+          "All three use LIMIT 1, select every Track column and share one connection opened up front",
+          "Recorded benchmark: ADO.NET ~6.5 us, EF Core ~17 us, Dapper ~109 us",
+          "EF Core allocates ~12.6 KB per call vs ~2.4 KB for Dapper and ~1.4 KB for ADO.NET"
+        ],
+        "keyApis": [
+          "AsNoTracking",
+          "FirstOrDefault",
+          "Database.OpenConnection",
+          "QueryFirstOrDefault",
+          "SqliteCommand.ExecuteReader"
+        ],
+        "takeaway": "EF Core is fast enough until the inner loop is measured in microseconds; then drop to ADO.NET for that one path.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Introduction to Performance",
+            "url": "https://learn.microsoft.com/ef/core/performance/"
+          },
+          {
+            "title": "Efficient Querying",
+            "url": "https://learn.microsoft.com/ef/core/performance/efficient-querying"
+          },
+          {
+            "title": "Overview - Microsoft.Data.Sqlite",
+            "url": "https://learn.microsoft.com/dotnet/standard/data/sqlite/"
+          }
+        ]
+      }
     },
     {
       "id": "left-right-join",
@@ -244,7 +1036,37 @@
       "title": "LeftJoin / RightJoin (EF Core 10)",
       "blurb": "Outer joins without the GroupJoin + SelectMany + DefaultIfEmpty dance - same SQL, readable LINQ.",
       "projectPath": "left-right-join/left-right-join.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Before .NET 10, an outer join in LINQ meant GroupJoin, SelectMany and DefaultIfEmpty, and there was no right join at all. The demo writes artists-with-albums both the old way and with LeftJoin, compares the generated SQL and rows, then uses RightJoin to list every employee with the customers they support.",
+        "highlights": [
+          "Prints the SQL for the GroupJoin/SelectMany/DefaultIfEmpty version and the LeftJoin version",
+          "Reports whether the two SQL strings and result rows are identical",
+          "Lists artists with no albums, kept by the LEFT JOIN with a null album",
+          "RightJoin keeps employees with zero customers; the flipped old-style query returns the same rows",
+          "Ends with an old vs new side-by-side cheat sheet"
+        ],
+        "keyApis": [
+          "LeftJoin",
+          "RightJoin",
+          "GroupJoin",
+          "DefaultIfEmpty",
+          "ToQueryString"
+        ],
+        "takeaway": "Use LeftJoin and RightJoin in EF Core 10; the SQL is the same, but the intent is readable in one method call.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "What's New in EF Core 10",
+            "url": "https://learn.microsoft.com/ef/core/what-is-new/ef-core-10.0/whatsnew"
+          },
+          {
+            "title": "Complex Query Operators",
+            "url": "https://learn.microsoft.com/ef/core/querying/complex-query-operators"
+          }
+        ]
+      }
     },
     {
       "id": "query-filters",
@@ -253,7 +1075,41 @@
       "title": "Named Query Filters",
       "blurb": "EF Core 10: two named filters on Invoice (since 2009, one sales rep), each switched off on its own.",
       "projectPath": "query-filters/query-filters.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Before EF Core 10 an entity could have only one global query filter, and IgnoreQueryFilters switched it off entirely. The demo defines two named filters on Invoice (Since2009 and SalesRep, a tenant-style filter for one support rep) and prints the SQL and row count with both on, each one ignored separately, and both off.",
+        "highlights": [
+          "Lists the declared named filters on Invoice and the selected sales rep (Jane Peacock)",
+          "ToQueryString shows the WHERE clause for both filters together, with invoice counts",
+          "IgnoreQueryFilters([\"Since2009\"]) and IgnoreQueryFilters([\"SalesRep\"]) each drop only one condition",
+          "IgnoreQueryFilters() with no arguments returns every invoice",
+          "Customers.Include(c => c.Invoices) shows the filters also apply to included invoices"
+        ],
+        "keyApis": [
+          "HasQueryFilter",
+          "IgnoreQueryFilters",
+          "GetDeclaredQueryFilters",
+          "ToQueryString",
+          "Include"
+        ],
+        "takeaway": "In EF Core 10, name your query filters so each one can be turned off on its own instead of all at once.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Global Query Filters",
+            "url": "https://learn.microsoft.com/ef/core/querying/filters"
+          },
+          {
+            "title": "What's New in EF Core 10",
+            "url": "https://learn.microsoft.com/ef/core/what-is-new/ef-core-10.0/whatsnew"
+          },
+          {
+            "title": "Multi-tenancy",
+            "url": "https://learn.microsoft.com/ef/core/miscellaneous/multitenancy"
+          }
+        ]
+      }
     },
     {
       "id": "complex-vs-owned-types",
@@ -262,7 +1118,42 @@
       "title": "Complex Types vs Owned Types",
       "blurb": "Same Address two ways: hidden keys and identity vs pure values. Plus EF 10 struct, optional and JSON complex types.",
       "projectPath": "complex-vs-owned-types/complex-vs-owned-types.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Value objects such as Address can be mapped as owned entity types, which have hidden keys and identity, or as complex types, which are pure values. The demo maps the same Address record both ways and compares the schema, change tracking, sharing an instance, == comparisons in LINQ and replacing a value, then shows EF 10 struct, optional and JSON-collection complex types.",
+        "highlights": [
+          "Prints both CREATE scripts: OwnsMany needs a second table with a hidden key, ComplexCollection is one JSON column",
+          "Assigning the same Address instance to shipping and billing throws for owned types and saves fine for complex types",
+          "ShippingAddress == BillingAddress expands column by column for complex types but folds to WHERE 0 for owned types",
+          "Replacing an owned Address shows Deleted + Added entries; the complex version updates only the changed columns",
+          "EF 10: a struct GeoPoint, a null BillingAddress and a query over PreviousAddresses stored as JSON"
+        ],
+        "keyApis": [
+          "ComplexProperty",
+          "ComplexCollection",
+          "ToJson",
+          "OwnsOne",
+          "OwnsMany",
+          "GenerateCreateScript"
+        ],
+        "takeaway": "On EF 10, map value objects as complex types, and use owned types only when the rows need their own table.",
+        "database": "SQLite (owned.db and complex.db recreated per run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Complex Types",
+            "url": "https://learn.microsoft.com/ef/core/modeling/complex-types"
+          },
+          {
+            "title": "Owned Entity Types",
+            "url": "https://learn.microsoft.com/ef/core/modeling/owned-entities"
+          },
+          {
+            "title": "What's New in EF Core 10",
+            "url": "https://learn.microsoft.com/ef/core/what-is-new/ef-core-10.0/whatsnew"
+          }
+        ]
+      }
     },
     {
       "id": "vector-search",
@@ -271,7 +1162,40 @@
       "title": "Vector Search (SQL Server 2025)",
       "blurb": "SqlVector<float> + EF.Functions.VectorDistance: semantic search over Chinook tracks inside SQL Server.",
       "projectPath": "vector-search/vector-search.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "SQL Server 2025 has a native vector type and VECTOR_DISTANCE, and EF Core 10 maps both. The demo embeds every Chinook track in-process with the all-MiniLM-L6-v2 ONNX model, stores the vectors in a vector(384) column, and runs semantic searches that rank tracks inside SQL Server.",
+        "highlights": [
+          "Searches 'aggressive heavy metal', 'classical piano' and 'latin samba from brazil' (or your own phrase)",
+          "Prints the generated SQL once: VECTOR_DISTANCE with ORDER BY and TOP, only 5 rows returned",
+          "Shows the top 5 tracks per phrase with cosine distance, artist and genre",
+          "Checks that loading every vector and ranking in .NET gives the same top 5",
+          "Recorded benchmark: server ~3.4 ms vs client ~18.9 ms and ~270x more allocation; embedding a phrase <1 ms"
+        ],
+        "keyApis": [
+          "SqlVector<float>",
+          "EF.Functions.VectorDistance",
+          "HasColumnType",
+          "ToQueryString"
+        ],
+        "takeaway": "Let the database rank vectors and return only the top rows instead of pulling every embedding to the client.",
+        "database": "SQL Server - sql2025 container, reads Chinook and writes the demo-owned VectorDemo database",
+        "setup": "Start the sql2025 Docker container and run once before the talk to download the model and embed the tracks",
+        "learnLinks": [
+          {
+            "title": "SQL Server Provider - Vector Search",
+            "url": "https://learn.microsoft.com/ef/core/providers/sql-server/vector-search"
+          },
+          {
+            "title": "VECTOR_DISTANCE (Transact-SQL)",
+            "url": "https://learn.microsoft.com/sql/t-sql/functions/vector-distance-transact-sql"
+          },
+          {
+            "title": "Vector Data Type - SQL Server",
+            "url": "https://learn.microsoft.com/sql/t-sql/data-types/vector-data-type"
+          }
+        ]
+      }
     },
     {
       "id": "contains-collection-translation",
@@ -280,7 +1204,37 @@
       "title": "Contains Translation (EF.Constant / EF.Parameter)",
       "blurb": "ids.Contains(x.Id) three ways - padded parameters, inlined constants, OPENJSON - and what each does to the plan cache.",
       "projectPath": "contains-collection-translation/contains-collection-translation.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "A query like ids.Contains(t.Id) has to send a .NET list to SQL, and the way it is translated decides how many plans SQL Server compiles and caches. The demo shows EF Core 10's default padded parameters, EF.Constant and EF.Parameter, switches the context default with UseParameterizedCollectionMode, and counts the cached plans each strategy leaves in sys.dm_exec_cached_plans.",
+        "highlights": [
+          "Prints the WHERE clause for 3, 7 and 10 ids: one parameter per value, padded to a bucket size",
+          "Prints a ladder of list size -> parameters sent for lists of 1 to 40 ids",
+          "EF.Constant inlines the values; EF.Parameter sends one JSON parameter unpacked with OPENJSON",
+          "Plan-cache table: 40 queries per strategy vs cached plans and plan reuses",
+          "Evicts only this run's tagged plans at the end; benchmark shows EF.Constant 4-6x slower on changing lists"
+        ],
+        "keyApis": [
+          "EF.Constant",
+          "EF.Parameter",
+          "UseParameterizedCollectionMode",
+          "ParameterTranslationMode",
+          "TagWith"
+        ],
+        "takeaway": "Keep the EF 10 default, use EF.Parameter for large lists, and use EF.Constant only for lists that never change.",
+        "database": "SQL Server - sql2025 container, Chinook database",
+        "setup": "Start the sql2025 Docker container",
+        "learnLinks": [
+          {
+            "title": "What's New in EF Core 10",
+            "url": "https://learn.microsoft.com/ef/core/what-is-new/ef-core-10.0/whatsnew"
+          },
+          {
+            "title": "Advanced Performance Topics",
+            "url": "https://learn.microsoft.com/ef/core/performance/advanced-performance-topics"
+          }
+        ]
+      }
     },
     {
       "id": "shadow-properties-backing-fields",
@@ -289,7 +1243,42 @@
       "title": "Shadow Properties, Backing Fields and Conventions",
       "blurb": "Plain domain classes: private setters, a read-only track list over _tracks, audit columns EF owns, model-wide defaults.",
       "projectPath": "shadow-properties-backing-fields/shadow-properties-backing-fields.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Domain classes with private setters, no parameterless constructor and read-only collections can still be mapped without adding persistence concerns to them. The demo maps Album and Track with a _tracks backing field, shadow CreatedAt, LastUpdated and AlbumId columns, and model-wide string and decimal conventions, then scaffolds the migration in-process and saves, updates and queries data.",
+        "highlights": [
+          "Compares Album's public surface via reflection with EF's model, where shadow properties are marked SHADOW",
+          "Prints the scaffolded migration Up() (maxLength 200, precision 10,2) and the SQLite create script",
+          "Casting Tracks to ICollection or IList to modify it throws; only AddTrack can add tracks",
+          "SaveChanges stamps CreatedAt and LastUpdated from a fake clock, shown with the UPDATE SQL",
+          "EF.Property<DateTime> filters and sorts on shadow audit columns, with the SQL printed"
+        ],
+        "keyApis": [
+          "EF.Property",
+          "HasField",
+          "UsePropertyAccessMode",
+          "ConfigureConventions",
+          "IsShadowProperty",
+          "IMigrationsScaffolder"
+        ],
+        "takeaway": "Keep entities as plain domain classes and put keys, audit columns, backing fields and column facets in the DbContext configuration.",
+        "database": "SQLite (music.db, recreated each run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Shadow and Indexer Properties",
+            "url": "https://learn.microsoft.com/ef/core/modeling/shadow-properties"
+          },
+          {
+            "title": "Backing Fields",
+            "url": "https://learn.microsoft.com/ef/core/modeling/backing-field"
+          },
+          {
+            "title": "Model Bulk Configuration",
+            "url": "https://learn.microsoft.com/ef/core/modeling/bulk-configuration"
+          }
+        ]
+      }
     },
     {
       "id": "hierarchyid",
@@ -298,7 +1287,38 @@
       "title": "HierarchyId Tree Queries",
       "blurb": "Chinook's org chart as hierarchyid paths: descendants, reports, chain of command, a recursive CTE for contrast, and a one-UPDATE subtree move.",
       "projectPath": "hierarchyid/hierarchyid.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Trees stored as a parent-id column need recursive SQL for every tree question. The demo copies Chinook's Employee.ReportsTo org chart into a demo-owned database as hierarchyid paths, answers descendant, direct-report, chain-of-command and level questions in LINQ, compares against a recursive CTE, and moves a whole subtree with one UPDATE.",
+        "highlights": [
+          "Shows Chinook's ReportsTo rows (Andrew reports to himself) and the hierarchyid paths built with GetDescendant",
+          "Prints the SQL for IsDescendantOf, GetAncestor(1) == manager, an ancestor chain, and GROUP BY GetLevel()",
+          "Runs the same \"everyone under Andrew\" question as a recursive CTE via FromSql and confirms the same rows",
+          "Moves Michael Mitchell's team under Nancy Edwards with one ExecuteUpdate using GetReparentedValue",
+          "The move runs in a transaction that is rolled back, so every run starts from the same tree"
+        ],
+        "keyApis": [
+          "HierarchyId",
+          "UseHierarchyId",
+          "IsDescendantOf",
+          "GetAncestor",
+          "GetReparentedValue",
+          "ExecuteUpdateAsync"
+        ],
+        "takeaway": "Store a tree as hierarchyid paths when you query subtrees often; descendants become an index range seek instead of a recursive CTE.",
+        "database": "SQL Server - sql2025 container, Chinook (read-only) plus demo-owned HierarchyDemo database",
+        "setup": "Start the sql2025 Docker container",
+        "learnLinks": [
+          {
+            "title": "SQL Server Provider - Hierarchical Data",
+            "url": "https://learn.microsoft.com/ef/core/providers/sql-server/hierarchyid"
+          },
+          {
+            "title": "Hierarchical Data (SQL Server)",
+            "url": "https://learn.microsoft.com/sql/relational-databases/hierarchical-data-sql-server"
+          }
+        ]
+      }
     },
     {
       "id": "value-converters",
@@ -307,7 +1327,41 @@
       "title": "Value Converters + the Filter Trap",
       "blurb": "Enum-as-string, typed ids, encrypted and JSON columns - then watch ORDER BY, > and StartsWith go wrong on the stored values.",
       "projectPath": "value-converters/value-converters.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Value converters change how a property is stored, and EF translates queries against the stored value, not the C# value. The demo stores an enum as a string, typed ids as integers, an encrypted email and a JSON tag list, shows what works, then runs queries that return wrong rows or fail.",
+        "highlights": [
+          "Prints the CREATE script and raw rows: enum names, plain integer ids, JSON text and ciphertext",
+          "Equality works on every converter, including the deterministically encrypted Email",
+          "Tags.Add() is saved only because a ValueComparer compares list contents",
+          "Trap list: OrderBy and > on Genre use alphabetical order; StartsWith/Contains on Email match nothing or throw",
+          "Id.Value and Tags.Contains cannot be translated; a primitive collection (Moods) is the fix"
+        ],
+        "keyApis": [
+          "HasConversion",
+          "ValueConverter",
+          "ValueComparer",
+          "ConfigureConventions",
+          "HaveConversion"
+        ],
+        "takeaway": "Only equality is safe on converted values; ordering, ranges and string functions run against what is stored.",
+        "database": "SQLite (catalog.db, rebuilt every run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Value Conversions",
+            "url": "https://learn.microsoft.com/ef/core/modeling/value-conversions"
+          },
+          {
+            "title": "Value Comparers",
+            "url": "https://learn.microsoft.com/ef/core/modeling/value-comparers"
+          },
+          {
+            "title": "Model Bulk Configuration",
+            "url": "https://learn.microsoft.com/ef/core/modeling/bulk-configuration"
+          }
+        ]
+      }
     },
     {
       "id": "query-pipeline-interceptors",
@@ -316,7 +1370,37 @@
       "title": "Materialization + Query Expression Interceptors",
       "blurb": "Stamp and inject services into entities as they load; add a default OrderBy to every unordered query before EF translates it.",
       "projectPath": "query-pipeline-interceptors/query-pipeline-interceptors.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "EF Core lets you hook into a query before it is translated and into each entity as it is created. The demo uses an IMaterializationInterceptor to stamp a [NotMapped] RetrievedAt and inject a formatter service into each Track, and an IQueryExpressionInterceptor that adds OrderBy on the key to any unordered entity query.",
+        "highlights": [
+          "Tracks print a Length computed by the injected formatter and a RetrievedAt timestamp",
+          "Counts interceptor calls: plain-value projections and already-tracked rows create no entity, so no call",
+          "Prints the LINQ expression before and after the rewrite for paging, projections, First() and Last()",
+          "Last() without the interceptor throws; with it, EF emits ORDER BY ... DESC LIMIT 1",
+          "Cost table: the expression interceptor runs once per compile; new interceptor instances mean a fresh query cache"
+        ],
+        "keyApis": [
+          "IMaterializationInterceptor",
+          "InitializedInstance",
+          "IQueryExpressionInterceptor",
+          "QueryCompilationStarting",
+          "AddInterceptors"
+        ],
+        "takeaway": "Keep materialization interceptors cheap, reuse interceptor instances, and treat a default-ordering rewrite as a safety net rather than a substitute for OrderBy.",
+        "database": "SQLite (Chinook copy, read-only)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Interceptors",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/interceptors"
+          },
+          {
+            "title": "How Queries Work",
+            "url": "https://learn.microsoft.com/ef/core/querying/how-query-works"
+          }
+        ]
+      }
     },
     {
       "id": "bulk-insert-perf",
@@ -325,7 +1409,42 @@
       "title": "Bulk Insert Performance",
       "blurb": "Per-row SaveChanges vs AddRange batching vs a bigger MaxBatchSize vs SqlBulkCopy - and why bigger batches can be slower.",
       "projectPath": "bulk-insert-perf/bulk-insert-perf.csproj",
-      "supportsBenchmark": true
+      "supportsBenchmark": true,
+      "info": {
+        "summary": "Inserting thousands of rows through EF Core can be slow, and common tuning advice does not always help. The demo shows the batched MERGE SQL that AddRange plus one SaveChanges sends, then times per-row SaveChanges, AddRange, a MaxBatchSize of 400, AutoDetectChanges off, and SqlBulkCopy on 10,000 rows.",
+        "highlights": [
+          "Prints the first MERGE batch with its OUTPUT clause and the number of commands for 10,000 rows (42 rows per batch)",
+          "MaxBatchSize(400) cuts the command count roughly 10x but ran slower in the benchmark",
+          "Per-row SaveChanges is capped at 1,000 rows and extrapolated; ~16x slower than AddRange in the benchmark",
+          "Turning AutoDetectChanges off makes no meaningful difference in EF Core",
+          "SqlBulkCopy was about 10-13x faster than AddRange at 10k-100k rows in the benchmark"
+        ],
+        "keyApis": [
+          "AddRange",
+          "SaveChangesAsync",
+          "MaxBatchSize",
+          "ChangeTracker.AutoDetectChangesEnabled",
+          "SqlBulkCopy",
+          "DbCommandInterceptor"
+        ],
+        "takeaway": "Use AddRange with one SaveChanges and EF's default batch size, and switch to SqlBulkCopy for large imports.",
+        "database": "SQL Server - sql2025 container, BulkInsertDemo database (created and truncated by the demo)",
+        "setup": "Start the sql2025 Docker container",
+        "learnLinks": [
+          {
+            "title": "Efficient Updating",
+            "url": "https://learn.microsoft.com/ef/core/performance/efficient-updating"
+          },
+          {
+            "title": "Basic SaveChanges",
+            "url": "https://learn.microsoft.com/ef/core/saving/basic"
+          },
+          {
+            "title": "SqlBulkCopy Class (Microsoft.Data.SqlClient)",
+            "url": "https://learn.microsoft.com/dotnet/api/microsoft.data.sqlclient.sqlbulkcopy"
+          }
+        ]
+      }
     },
     {
       "id": "disconnected-graphs",
@@ -334,7 +1453,38 @@
       "title": "Saving Disconnected Graphs",
       "blurb": "An API PUTs back a whole Album + Tracks graph: Update vs Attach vs TrackGraph vs load-then-diff, and the deleted child nobody notices.",
       "projectPath": "disconnected-graphs/disconnected-graphs.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "When an API client sends back a whole Album with its Tracks, the server gets new objects that no DbContext has tracked, so EF does not know what changed. The demo simulates a GET and PUT (rename one track, delete one, add one) and saves the payload with Update, Attach, Attach plus marking, TrackGraph and load-then-diff, printing the tracked states, the SQL and the resulting rows for each.",
+        "highlights": [
+          "Update() rewrites every column of the album and all tracks, and the deleted 'Bridge' track survives",
+          "Attach() runs only the INSERT, so the rename is silently lost",
+          "TrackGraph logs a per-entity callback decision but still cannot see the deleted track",
+          "Load-then-diff with SetValues sends a one-column UPDATE, a DELETE and an INSERT",
+          "Shows that removing from the collection orphans the row, and a made-up Id throws DbUpdateConcurrencyException"
+        ],
+        "keyApis": [
+          "DbSet.Update",
+          "DbSet.Attach",
+          "ChangeTracker.TrackGraph",
+          "CurrentValues.SetValues",
+          "EntityEntry.IsKeySet",
+          "DbUpdateConcurrencyException"
+        ],
+        "takeaway": "For a PUT of a whole graph, load the current graph and diff it, because only load-then-diff sees deleted children.",
+        "database": "SQLite (temp copy of Chinook created per run)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Disconnected Entities",
+            "url": "https://learn.microsoft.com/ef/core/saving/disconnected-entities"
+          },
+          {
+            "title": "Explicitly Tracking Entities",
+            "url": "https://learn.microsoft.com/ef/core/change-tracking/explicit-tracking"
+          }
+        ]
+      }
     },
     {
       "id": "multitenancy",
@@ -343,7 +1493,42 @@
       "title": "Multitenancy Patterns",
       "blurb": "Tenant filter, database per tenant, the cached-model leak, IModelCacheKeyFactory and pooled-context resets.",
       "projectPath": "multitenancy/multitenancy.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Multi-tenant apps have to keep each tenant's data separate even though EF caches one model per context type. The demo runs a shared database with a tenant filter, database per tenant, and table per tenant side by side, and shows how a captured tenant id, the model cache and context pooling leak one tenant's rows to another.",
+        "highlights": [
+          "Global query filter on a context field: acme and globex each see only their rows; no tenant returns 0 rows",
+          "SaveChanges stamps TenantId on new rows; IgnoreQueryFilters counts rows across all tenants",
+          "A filter that captures a local in OnModelCreating makes globex read acme's data",
+          "Table per tenant reuses acme's table until IModelCacheKeyFactory adds the tenant to the cache key",
+          "A pooled context keeps the previous tenant, and a new interceptor per tenant hits the service provider limit"
+        ],
+        "keyApis": [
+          "HasQueryFilter",
+          "IgnoreQueryFilters",
+          "IDbContextFactory",
+          "IModelCacheKeyFactory",
+          "AddPooledDbContextFactory",
+          "ReplaceService"
+        ],
+        "takeaway": "Read the tenant from a scoped service into a context field, never a captured local, and set it again on every pooled lease.",
+        "database": "SQLite (temp files per run: one shared database plus one per tenant)",
+        "setup": "None",
+        "learnLinks": [
+          {
+            "title": "Multi-tenancy",
+            "url": "https://learn.microsoft.com/ef/core/miscellaneous/multitenancy"
+          },
+          {
+            "title": "Global Query Filters",
+            "url": "https://learn.microsoft.com/ef/core/querying/filters"
+          },
+          {
+            "title": "Advanced Performance Topics",
+            "url": "https://learn.microsoft.com/ef/core/performance/advanced-performance-topics"
+          }
+        ]
+      }
     },
     {
       "id": "connection-resiliency",
@@ -352,7 +1537,42 @@
       "title": "Connection Resiliency",
       "blurb": "EnableRetryOnFailure vs injected transient faults, why your own BeginTransaction breaks it, and a lost commit acknowledgement.",
       "projectPath": "connection-resiliency/connection-resiliency.csproj",
-      "supportsBenchmark": false
+      "supportsBenchmark": false,
+      "info": {
+        "summary": "Transient SQL errors such as dropped connections or failovers can be retried automatically, but only for operations EF Core runs on its own. The demo injects real transient SqlExceptions with interceptors to show what EnableRetryOnFailure retries, why a user-started transaction is refused, how CreateExecutionStrategy fixes it, and how a lost commit acknowledgement causes a duplicate unless verifySucceeded checks first.",
+        "highlights": [
+          "Retry scenarios report attempt counts: no strategy, two failures, a query, more failures than maxRetryCount",
+          "Error 547 is never retried; errorNumbersToAdd makes error 50000 transient; 40613 waits about 5 s",
+          "BeginTransaction with retries on throws InvalidOperationException even with no fault injected",
+          "ExecuteAsync replays the whole order + payment unit of work after a failed INSERT",
+          "Lost COMMIT ack saves the order twice; ExecuteInTransactionAsync with verifySucceeded saves it once"
+        ],
+        "keyApis": [
+          "EnableRetryOnFailure",
+          "CreateExecutionStrategy",
+          "ExecuteAsync",
+          "ExecuteInTransactionAsync",
+          "DbCommandInterceptor",
+          "DbTransactionInterceptor"
+        ],
+        "takeaway": "Wrap any multi-step transaction in the execution strategy, and make retried work idempotent so a lost commit acknowledgement cannot save it twice.",
+        "database": "SQL Server - sql2025 container, demo-owned ResiliencyDemo database",
+        "setup": "Start the sql2025 Docker container",
+        "learnLinks": [
+          {
+            "title": "Connection Resiliency",
+            "url": "https://learn.microsoft.com/ef/core/miscellaneous/connection-resiliency"
+          },
+          {
+            "title": "Transactions",
+            "url": "https://learn.microsoft.com/ef/core/saving/transactions"
+          },
+          {
+            "title": "Interceptors",
+            "url": "https://learn.microsoft.com/ef/core/logging-events-diagnostics/interceptors"
+          }
+        ]
+      }
     },
     {
       "id": "testing-strategies",
@@ -362,7 +1582,42 @@
       "blurb": "One test suite, three databases: in-memory vs SQLite vs Testcontainers SQL Server. The failures are the demo.",
       "projectPath": "testing-strategies/testing-strategies.csproj",
       "supportsBenchmark": false,
-      "specialCase": "dotnet-test"
+      "specialCase": "dotnet-test",
+      "info": {
+        "summary": "Test doubles for the database can pass tests that would fail in production. One xUnit suite of eight scenarios runs unchanged against the EF Core in-memory provider, SQLite in-memory, and SQL Server in a Testcontainers container, asserting what SQL Server actually does; the failing tests are intentional and show what each double misses.",
+        "highlights": [
+          "InMemory fails all 8 scenarios: no constraints, rollback, raw SQL, ExecuteUpdate or SQL Server collation",
+          "SQLite passes rollback, unique index, foreign key, portable raw SQL and ExecuteUpdate",
+          "SQLite fails max length, case-insensitive lookup and the T-SQL TOP query",
+          "SQL Server via Testcontainers passes all 8, with a fresh database per test",
+          "dotnet test exits non-zero by design; failing tests are tagged Category=ProviderGap"
+        ],
+        "keyApis": [
+          "UseInMemoryDatabase",
+          "UseSqlite",
+          "UseSqlServer",
+          "MsSqlBuilder",
+          "ExecuteUpdateAsync",
+          "FromSql"
+        ],
+        "takeaway": "Test against your production database engine, which Testcontainers makes cheap, and avoid the in-memory provider for testing.",
+        "database": "EF InMemory, SQLite in-memory, and SQL Server 2025 in a Testcontainers container",
+        "setup": "Start Docker and run docker pull mcr.microsoft.com/mssql/server:2025-latest ahead of time",
+        "learnLinks": [
+          {
+            "title": "Choosing a testing strategy",
+            "url": "https://learn.microsoft.com/ef/core/testing/choosing-a-testing-strategy"
+          },
+          {
+            "title": "Testing against your Production Database System",
+            "url": "https://learn.microsoft.com/ef/core/testing/testing-with-the-database"
+          },
+          {
+            "title": "Testing without your Production Database System",
+            "url": "https://learn.microsoft.com/ef/core/testing/testing-without-the-database"
+          }
+        ]
+      }
     }
   ]
 }

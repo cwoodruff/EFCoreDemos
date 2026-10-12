@@ -98,6 +98,28 @@ namespace DemoLauncher.Web
         public string? SpecialCase { get; set; }
         public int? WebServerPort { get; set; }
         public List<string>? WebServerEndpoints { get; set; }
+        public DemoInfo? Info { get; set; }
+    }
+
+    /// <summary>
+    /// The "about this demo" panel. Every demo fills in the same fields so every panel has the same sections;
+    /// the demo type, run commands and source link are derived from the fields above.
+    /// </summary>
+    public sealed class DemoInfo
+    {
+        public string Summary { get; set; } = "";
+        public List<string> Highlights { get; set; } = new();
+        public List<string> KeyApis { get; set; } = new();
+        public string Takeaway { get; set; } = "";
+        public string Database { get; set; } = "";
+        public string Setup { get; set; } = "";
+        public List<LearnLink> LearnLinks { get; set; } = new();
+    }
+
+    public sealed class LearnLink
+    {
+        public string Title { get; set; } = "";
+        public string Url { get; set; } = "";
     }
 
     public sealed class DemoRunner
@@ -191,6 +213,9 @@ namespace DemoLauncher.Web
                 WorkingDirectory = projectDir,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
+                // Demos must not read the launcher's own console: some end with Console.ReadLine(). Stdin is
+                // redirected and closed right after start, so ReadLine() returns null instead of waiting.
+                RedirectStandardInput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 Environment = { ["DOTNET_NOLOGO"] = "1" }
@@ -215,6 +240,7 @@ namespace DemoLauncher.Web
             try
             {
                 process.Start();
+                process.StandardInput.Close();
                 lock (_lock) { _current = process; }
             }
             catch (Exception ex)
@@ -264,6 +290,9 @@ namespace DemoLauncher.Web
                 WorkingDirectory = projectDir,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
+                // Demos must not read the launcher's own console: some end with Console.ReadLine(). Stdin is
+                // redirected and closed right after start, so ReadLine() returns null instead of waiting.
+                RedirectStandardInput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 Environment =
@@ -287,6 +316,7 @@ namespace DemoLauncher.Web
             try
             {
                 process.Start();
+                process.StandardInput.Close();
                 lock (_lock) { _current = process; }
                 _ = ForwardAsync(process.StandardError, response, "stderr", ct);
                 _ = ForwardAsync(process.StandardOutput, response, "stdout", ct);

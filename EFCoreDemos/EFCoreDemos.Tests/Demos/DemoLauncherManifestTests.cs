@@ -28,6 +28,24 @@ namespace EFCoreDemos.Tests.Demos
             public string? SpecialCase { get; set; }
             public int? WebServerPort { get; set; }
             public List<string>? WebServerEndpoints { get; set; }
+            public Info? Info { get; set; }
+        }
+
+        private sealed class Info
+        {
+            public string? Summary { get; set; }
+            public List<string>? Highlights { get; set; }
+            public List<string>? KeyApis { get; set; }
+            public string? Takeaway { get; set; }
+            public string? Database { get; set; }
+            public string? Setup { get; set; }
+            public List<LearnLink>? LearnLinks { get; set; }
+        }
+
+        private sealed class LearnLink
+        {
+            public string? Title { get; set; }
+            public string? Url { get; set; }
         }
 
         private static string RepoRoot()
@@ -113,6 +131,32 @@ namespace EFCoreDemos.Tests.Demos
                 .ToList();
 
             Assert.Empty(missing);
+        }
+
+        [Fact]
+        public void EveryDemo_HasTheSameInfoSections()
+        {
+            // The launcher's (i) panel shows the same sections for every demo, so every demo must fill them all.
+            foreach (var demo in LoadDemos())
+            {
+                var info = demo.Info;
+                Assert.True(info != null, $"{demo.Id}: info is missing");
+                Assert.False(string.IsNullOrWhiteSpace(info.Summary), $"{demo.Id}: info.summary is missing");
+                Assert.False(string.IsNullOrWhiteSpace(info.Takeaway), $"{demo.Id}: info.takeaway is missing");
+                Assert.False(string.IsNullOrWhiteSpace(info.Database), $"{demo.Id}: info.database is missing");
+                Assert.False(string.IsNullOrWhiteSpace(info.Setup), $"{demo.Id}: info.setup is missing (use \"None\")");
+                Assert.True(info.Highlights is { Count: >= 3 }, $"{demo.Id}: info.highlights needs at least 3 items");
+                Assert.All(info.Highlights, h => Assert.False(string.IsNullOrWhiteSpace(h), $"{demo.Id}: empty highlight"));
+                Assert.True(info.KeyApis is { Count: >= 1 }, $"{demo.Id}: info.keyApis is empty");
+                Assert.All(info.KeyApis, a => Assert.False(string.IsNullOrWhiteSpace(a), $"{demo.Id}: empty key API"));
+                Assert.True(info.LearnLinks is { Count: >= 1 }, $"{demo.Id}: info.learnLinks is empty");
+                Assert.All(info.LearnLinks, l =>
+                {
+                    Assert.False(string.IsNullOrWhiteSpace(l.Title), $"{demo.Id}: learn link without a title");
+                    Assert.True(l.Url != null && l.Url.StartsWith("https://learn.microsoft.com/", StringComparison.Ordinal),
+                        $"{demo.Id}: learn link '{l.Url}' is not a Microsoft Learn URL");
+                });
+            }
         }
 
         [Fact]
