@@ -299,6 +299,15 @@
       "blurb": "Chinook's org chart as hierarchyid paths: descendants, reports, chain of command, a recursive CTE for contrast, and a one-UPDATE subtree move.",
       "projectPath": "hierarchyid/hierarchyid.csproj",
       "supportsBenchmark": false
+    },
+    {
+      "id": "value-converters",
+      "insight": 7,
+      "block": "PowerTools",
+      "title": "Value Converters + the Filter Trap",
+      "blurb": "Enum-as-string, typed ids, encrypted and JSON columns - then watch ORDER BY, > and StartsWith go wrong on the stored values.",
+      "projectPath": "value-converters/value-converters.csproj",
+      "supportsBenchmark": false
     }
   ]
 }

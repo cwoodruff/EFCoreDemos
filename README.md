@@ -31,4 +31,5 @@
 * [Split Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/split-queries)
 * [Stored Procedure Mapping](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/sproc-mapping)
 * [SQL Server Temporal Tables](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/temporal-tables)
+* [Value Converters](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/value-converters)
 * [Vector Search with SqlVector and VectorDistance](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/vector-search) (EF Core 10, SQL Server 2025; downloads a ~90 MB embedding model on first run)
