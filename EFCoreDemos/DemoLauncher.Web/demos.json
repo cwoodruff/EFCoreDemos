@@ -272,6 +272,15 @@
       "blurb": "SqlVector<float> + EF.Functions.VectorDistance: semantic search over Chinook tracks inside SQL Server.",
       "projectPath": "vector-search/vector-search.csproj",
       "supportsBenchmark": true
+    },
+    {
+      "id": "contains-collection-translation",
+      "insight": 6,
+      "block": "PowerTools",
+      "title": "Contains Translation (EF.Constant / EF.Parameter)",
+      "blurb": "ids.Contains(x.Id) three ways - padded parameters, inlined constants, OPENJSON - and what each does to the plan cache.",
+      "projectPath": "contains-collection-translation/contains-collection-translation.csproj",
+      "supportsBenchmark": true
     }
   ]
 }
