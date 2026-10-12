@@ -24,6 +24,7 @@
 * [Query Tags](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/query-tags)
 * [Required 1-on-1 Dependents](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/required-1-on-1-dependants)
 * [Saved Changes Interception Auditing](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/savedchanges-interception-auditing)
+* [Shadow Properties, Backing Fields and Conventions](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/shadow-properties-backing-fields)
 * [Simple Logging Improved Diagnostics](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/simple-logging-improved-diagnostics)
 * [Spatial](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/spatial)
 * [Split Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/split-queries)

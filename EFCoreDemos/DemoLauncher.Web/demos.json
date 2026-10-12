@@ -281,6 +281,15 @@
       "blurb": "ids.Contains(x.Id) three ways - padded parameters, inlined constants, OPENJSON - and what each does to the plan cache.",
       "projectPath": "contains-collection-translation/contains-collection-translation.csproj",
       "supportsBenchmark": true
+    },
+    {
+      "id": "shadow-properties-backing-fields",
+      "insight": 7,
+      "block": "Architecture",
+      "title": "Shadow Properties, Backing Fields and Conventions",
+      "blurb": "Plain domain classes: private setters, a read-only track list over _tracks, audit columns EF owns, model-wide defaults.",
+      "projectPath": "shadow-properties-backing-fields/shadow-properties-backing-fields.csproj",
+      "supportsBenchmark": false
     }
   ]
 }
