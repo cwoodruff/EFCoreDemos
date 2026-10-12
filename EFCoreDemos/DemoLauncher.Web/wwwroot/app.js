@@ -120,7 +120,7 @@
         state.es.addEventListener('stdout', e => appendLine(e.data));
         state.es.addEventListener('stderr', e => appendLine(e.data, 'stderr'));
         state.es.addEventListener('info',   e => appendLine(e.data, 'info'));
-        state.es.addEventListener('exit',   e => onExit(parseInt(e.data, 10)));
+        state.es.addEventListener('exit',   e => onExit(parseInt(e.data, 10), demo));
 
         state.es.onerror = () => {
             if (state.running) {
@@ -144,7 +144,7 @@
         document.querySelectorAll('.tile').forEach(el => el.classList.remove('running'));
     }
 
-    function onExit(code) {
+    function onExit(code, demo) {
         if (state.es) {
             try { state.es.close(); } catch {}
             state.es = null;
@@ -153,14 +153,19 @@
         stopTimer();
 
         const ok = code === 0;
-        $pill.textContent = ok ? 'done' : 'error';
-        $pill.className = 'pill ' + (ok ? 'done' : 'error');
+        // dotnet test exits 1 when tests fail - for the testing-strategies demo, failing tests are the point.
+        const expected = !ok && code > 0 && demo && demo.specialCase === 'dotnet-test';
+        const status = ok ? 'done' : expected ? 'expected' : 'error';
+        $pill.textContent = status;
+        $pill.className = 'pill ' + status;
         $btnStop.disabled = true;
         document.querySelectorAll('.tile').forEach(el => el.classList.remove('running'));
 
         const line = document.createElement('span');
-        line.className = 'line line-exit' + (ok ? '' : ' fail');
-        line.textContent = ok ? '\n[done]' : `\n[exit ${code}]`;
+        line.className = 'line line-exit' + (ok ? '' : expected ? ' expected' : ' fail');
+        line.textContent = ok ? '\n[done]'
+            : expected ? `\n[exit ${code} - expected: provider gaps found, the failing tests are the demo]`
+            : `\n[exit ${code}]`;
         $term.appendChild(line);
         scrollTermToBottom();
     }

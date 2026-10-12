@@ -36,5 +36,23 @@
 * [Split Queries](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/split-queries)
 * [Stored Procedure Mapping](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/sproc-mapping)
 * [SQL Server Temporal Tables](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/temporal-tables)
+* [Testing Strategies](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/testing-strategies) (xUnit; in-memory vs SQLite vs Testcontainers SQL Server)
 * [Value Converters](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/value-converters)
 * [Vector Search with SqlVector and VectorDistance](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/vector-search) (EF Core 10, SQL Server 2025; downloads a ~90 MB embedding model on first run)
+
+## Running the tests
+
+`testing-strategies` deliberately contains failing tests: they show what the EF Core in-memory provider and
+SQLite miss compared to SQL Server, and they're tagged `Category=ProviderGap`. Leave them out to keep a
+solution-wide run green:
+
+```
+dotnet test EFCoreDemos.sln --filter "Category!=ProviderGap"
+```
+
+Its SQL Server tests start a Testcontainers container (and are skipped if Docker isn't running). Pull the
+image ahead of a talk so the first run doesn't wait on a download:
+
+```
+docker pull mcr.microsoft.com/mssql/server:2025-latest
+```

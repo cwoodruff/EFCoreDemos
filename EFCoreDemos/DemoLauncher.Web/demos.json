@@ -353,6 +353,16 @@
       "blurb": "EnableRetryOnFailure vs injected transient faults, why your own BeginTransaction breaks it, and a lost commit acknowledgement.",
       "projectPath": "connection-resiliency/connection-resiliency.csproj",
       "supportsBenchmark": false
+    },
+    {
+      "id": "testing-strategies",
+      "insight": 10,
+      "block": "Ops",
+      "title": "Testing Strategies",
+      "blurb": "One test suite, three databases: in-memory vs SQLite vs Testcontainers SQL Server. The failures are the demo.",
+      "projectPath": "testing-strategies/testing-strategies.csproj",
+      "supportsBenchmark": false,
+      "specialCase": "dotnet-test"
     }
   ]
 }
