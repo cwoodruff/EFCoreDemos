@@ -20,14 +20,14 @@ IterationCount=8  WarmupCount=2
 
 | Method  | Mean     | StdDev    | Ratio | Allocated | Alloc Ratio |
 |-------- |---------:|----------:|------:|----------:|------------:|
-| LINQ    | 7.667 ms | 0.1326 ms |  1.00 | 180.39 KB |        1.00 |
-| FromSql | 7.366 ms | 0.1017 ms |  0.96 | 137.82 KB |        0.76 |
+| LINQ    | 9.366 ms | 0.0796 ms |  1.00 | 181.13 KB |        1.00 |
+| FromSql | 9.060 ms | 0.1557 ms |  0.97 | 138.30 KB |        0.76 |
 
 // * Takeaway *
 //
-//   ~4% faster, ~24% less allocation. That's the whole prize.
+//   ~3% faster, ~24% less allocation. That's the whole prize.
 //
-//   The 7 ms is SQL Server doing the joins and aggregates - both paths
+//   The 9 ms is SQL Server doing the joins and aggregates - both paths
 //   send it essentially the same statement. What FromSql saves is EF's
 //   query-cache lookup and expression-tree work on the client, which is
 //   fixed overhead measured in microseconds, not milliseconds.

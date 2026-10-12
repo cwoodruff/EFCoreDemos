@@ -1,4 +1,6 @@
+using System.Data;
 using linq_query_vs_fromsql_perf.Chinook;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace linq_query_vs_fromsql_perf.Benchmarks;
@@ -40,9 +42,18 @@ public static class AlbumSalesQueries
         .ThenBy(s => s.AlbumId);
 
     // Interpolated values become DbParameters (@p0, @p1, @p2) - this is not string concatenation.
+    //
+    // A plain DateTime would be sent as datetime2, but Invoice.InvoiceDate is datetime. SQL Server
+    // then converts the column to datetime2 on every row (datetime2 has higher type precedence),
+    // which can turn an index seek into a scan. Passing SqlParameters typed as DateTime matches the
+    // column exactly - the same thing LINQ does automatically from the model's HasColumnType("datetime").
     public static IQueryable<AlbumSalesSummary> FromSql(
-        ChinookContext context, DateTime start, DateTime end, decimal minRevenue) =>
-        context.AlbumSalesSummaries.FromSql(
+        ChinookContext context, DateTime start, DateTime end, decimal minRevenue)
+    {
+        var startParam = new SqlParameter { SqlDbType = SqlDbType.DateTime, Value = start };
+        var endParam = new SqlParameter { SqlDbType = SqlDbType.DateTime, Value = end };
+
+        return context.AlbumSalesSummaries.FromSql(
             $"""
              SELECT
                  a.Id                            AS AlbumId,
@@ -57,10 +68,11 @@ public static class AlbumSalesQueries
              INNER JOIN dbo.InvoiceLine AS il ON il.InvoiceId = i.Id
              INNER JOIN dbo.Track       AS t  ON t.Id = il.TrackId
              INNER JOIN dbo.Album       AS a  ON a.Id = t.AlbumId
-             WHERE i.InvoiceDate >= {start}
-               AND i.InvoiceDate <  {end}
+             WHERE i.InvoiceDate >= {startParam}
+               AND i.InvoiceDate <  {endParam}
              GROUP BY a.Id, a.Title
              HAVING SUM(il.UnitPrice * il.Quantity) >= {minRevenue}
              ORDER BY Revenue DESC, AlbumTitle, AlbumId
              """);
+    }
 }
