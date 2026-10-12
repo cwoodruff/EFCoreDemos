@@ -11,6 +11,7 @@
 * [Filtered Include](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/filtered-include)
 * [Flexible Entity Mapping](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/flexible-entity-mapping)
 * [From SQL](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/from_sql)
+* [HierarchyId](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/hierarchyid) (SQL Server)
 * [Identity Resolution](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/identity-resolution)
 * [Interception DB Ops](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/interception-db-ops)
 * [JSON Columns](https://github.com/cwoodruff/EFCoreDemos/tree/main/EFCoreDemos/json-columns)
