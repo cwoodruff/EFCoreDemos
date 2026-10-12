@@ -326,6 +326,15 @@
       "blurb": "Per-row SaveChanges vs AddRange batching vs a bigger MaxBatchSize vs SqlBulkCopy - and why bigger batches can be slower.",
       "projectPath": "bulk-insert-perf/bulk-insert-perf.csproj",
       "supportsBenchmark": true
+    },
+    {
+      "id": "disconnected-graphs",
+      "insight": 2,
+      "block": "Tracking",
+      "title": "Saving Disconnected Graphs",
+      "blurb": "An API PUTs back a whole Album + Tracks graph: Update vs Attach vs TrackGraph vs load-then-diff, and the deleted child nobody notices.",
+      "projectPath": "disconnected-graphs/disconnected-graphs.csproj",
+      "supportsBenchmark": false
     }
   ]
 }
