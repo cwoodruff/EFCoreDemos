@@ -1,0 +1,54 @@
+// ***** BenchmarkRunner: Start *****
+// Validating 9 benchmark(s) - ContainsBenchmarks.Default / EF.Constant / EF.Parameter x Size 5, 50, 500
+// Building benchmark exe in Release...
+// Launch: 1 / 1
+// Warmup + actual run...
+//
+// Where(t => ids.Contains(t.Id)) against Chinook.Track (3,503 rows)
+// Every call draws a fresh random list - the realistic case, and the one that hurts EF.Constant
+//
+
+// * Summary *
+
+BenchmarkDotNet v0.15.8, macOS 27.2 (26B5101f) [Darwin 27.2.0]
+Apple M5 Pro, 1 CPU, 18 logical and 18 physical cores
+.NET SDK 10.0.401
+  [Host]     : .NET 10.0.12 (10.0.12, 10.0.1226.42308), Arm64 RyuJIT armv8.0-a
+  Job-YYPKTM : .NET 10.0.12 (10.0.12, 10.0.1226.42308), Arm64 RyuJIT armv8.0-a
+
+IterationCount=8  WarmupCount=2
+
+| Method                         | Size | Mean        | StdDev      | Ratio | Allocated  | Alloc Ratio |
+|------------------------------- |----- |------------:|------------:|------:|-----------:|------------:|
+| 'Default (MultipleParameters)' | 5    |    491.9 us |    50.06 us |  1.01 |  138.86 KB |        1.00 |
+| EF.Constant                    | 5    |  3,515.3 us |   615.70 us |  7.21 |  134.92 KB |        0.97 |
+| 'EF.Parameter (OPENJSON)'      | 5    |    755.4 us |   274.69 us |  1.55 |  128.13 KB |        0.92 |
+|                                |      |             |             |       |            |             |
+| 'Default (MultipleParameters)' | 50   |  1,126.0 us |   157.98 us |  1.02 |  215.78 KB |        1.00 |
+| EF.Constant                    | 50   |  5,366.5 us |   175.43 us |  4.85 |  161.97 KB |        0.75 |
+| 'EF.Parameter (OPENJSON)'      | 50   |    954.1 us |   434.90 us |  0.86 |  147.63 KB |        0.68 |
+|                                |      |             |             |       |            |             |
+| 'Default (MultipleParameters)' | 500  |  3,732.8 us |   185.32 us |  1.00 | 1034.51 KB |        1.00 |
+| EF.Constant                    | 500  | 41,837.7 us | 6,988.05 us | 11.23 |   483.7 KB |        0.47 |
+| 'EF.Parameter (OPENJSON)'      | 500  |  1,362.6 us |    72.16 us |  0.37 |  403.77 KB |        0.39 |
+
+// * Takeaway *
+//
+//   EF.Constant is 5-11x slower when the list keeps changing. The
+//   rows come back just as fast - the time is SQL Server compiling
+//   a brand-new plan for every distinct IN (1, 2, 3, ...) text, and
+//   each of those plans then sits in the cache, used once.
+//
+//   The EF 10 default (one parameter per value, padded to buckets)
+//   is the safe middle: a handful of reusable plans, and SQL Server
+//   still sees the real values when it builds each one.
+//
+//   EF.Parameter (one OPENJSON parameter) wins on big lists: one plan
+//   for every size and only one parameter to send. The catch is that
+//   the optimizer can't see inside the JSON, so it guesses the row
+//   count - fine on a primary key, worth checking on skewed columns.
+//
+//   Keep the default. Reach for EF.Parameter on large lists, and for
+//   EF.Constant only when a list is genuinely fixed (a few status codes).
+
+// ***** BenchmarkRunner: End *****
