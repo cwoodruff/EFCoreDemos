@@ -21,25 +21,25 @@ IterationCount=5  LaunchCount=1  WarmupCount=1
 
 | Method                         | RowCount | Mean        | StdDev     | Ratio | Allocated    | Alloc Ratio |
 |------------------------------- |--------- |------------:|-----------:|------:|-------------:|------------:|
-| 'Add + SaveChanges per row'    | 1000     |   989.18 ms |  17.468 ms | 18.75 | 253891.03 KB |       27.28 |
-| 'AddRange (default batch)'     | 1000     |    54.06 ms |   9.735 ms |  1.02 |   9306.79 KB |        1.00 |
-| 'AddRange + MaxBatchSize(400)' | 1000     |    77.26 ms |   3.584 ms |  1.46 |    9280.1 KB |        1.00 |
-| 'AutoDetectChanges off'        | 1000     |    54.17 ms |   7.844 ms |  1.03 |   8870.31 KB |        0.95 |
-| SqlBulkCopy                    | 1000     |    10.10 ms |   1.965 ms |  0.19 |    766.73 KB |        0.08 |
+| 'Add + SaveChanges per row'    | 1000     | 1,037.13 ms |   7.031 ms | 15.98 | 253897.1 KB  |       27.28 |
+| 'AddRange (default batch)'     | 1000     |    68.74 ms |  18.597 ms |  1.06 |   9307.08 KB |        1.00 |
+| 'AddRange + MaxBatchSize(400)' | 1000     |    78.59 ms |   5.776 ms |  1.21 |    9280.1 KB |        1.00 |
+| 'AutoDetectChanges off'        | 1000     |    48.53 ms |   3.432 ms |  0.75 |   8868.87 KB |        0.95 |
+| SqlBulkCopy                    | 1000     |     7.84 ms |   0.230 ms |  0.12 |    766.73 KB |        0.08 |
 |                                |          |             |            |       |              |             |
-| 'AddRange (default batch)'     | 10000    |   356.81 ms |  68.803 ms |  1.04 |  87504.52 KB |        1.00 |
-| 'AddRange + MaxBatchSize(400)' | 10000    |   611.36 ms |  19.480 ms |  1.78 |   87245.8 KB |        1.00 |
-| 'AutoDetectChanges off'        | 10000    |   446.02 ms | 103.919 ms |  1.30 |   82845.3 KB |        0.95 |
-| SqlBulkCopy                    | 10000    |    26.36 ms |   2.406 ms |  0.08 |   8140.04 KB |        0.09 |
+| 'AddRange (default batch)'     | 10000    |   320.30 ms |  11.590 ms |  1.00 |  87509.09 KB |        1.00 |
+| 'AddRange + MaxBatchSize(400)' | 10000    |   591.19 ms |  35.638 ms |  1.85 |   87245.8 KB |        1.00 |
+| 'AutoDetectChanges off'        | 10000    |   318.70 ms |  33.309 ms |  1.00 |  82846.52 KB |        0.95 |
+| SqlBulkCopy                    | 10000    |    24.55 ms |   0.166 ms |  0.08 |   8108.02 KB |        0.09 |
 |                                |          |             |            |       |              |             |
-| 'AddRange (default batch)'     | 100000   | 2,408.76 ms |  51.429 ms |  1.00 | 868178.51 KB |        1.00 |
-| 'AddRange + MaxBatchSize(400)' | 100000   | 5,980.63 ms |  42.659 ms |  2.48 | 865833.33 KB |        1.00 |
-| 'AutoDetectChanges off'        | 100000   | 2,288.05 ms |  43.554 ms |  0.95 | 821331.58 KB |        0.95 |
-| SqlBulkCopy                    | 100000   |   268.23 ms |  31.669 ms |  0.11 |     77489 KB |        0.09 |
+| 'AddRange (default batch)'     | 100000   | 2,498.42 ms | 158.784 ms |  1.00 | 868173.84 KB |        1.00 |
+| 'AddRange + MaxBatchSize(400)' | 100000   | 6,029.59 ms |  74.299 ms |  2.42 | 865852.63 KB |        1.00 |
+| 'AutoDetectChanges off'        | 100000   | 2,574.37 ms | 153.869 ms |  1.03 | 821327.05 KB |        0.95 |
+| SqlBulkCopy                    | 100000   |   251.04 ms |  24.430 ms |  0.10 |  77451.55 KB |        0.09 |
 
 // * Takeaway *
 //
-//   Per-row SaveChanges is ~18x slower than AddRange at just 1,000
+//   Per-row SaveChanges is ~16x slower than AddRange at just 1,000
 //   rows: one round trip and one transaction per row. Never save
 //   inside the loop.
 //
@@ -47,14 +47,14 @@ IterationCount=5  LaunchCount=1  WarmupCount=1
 //   batching (42 rows per MERGE) already does the work.
 //
 //   "Tune MaxBatchSize up" backfires: 400-row MERGE statements were
-//   1.5-2.5x SLOWER than 42-row ones, despite ~10x fewer round trips.
+//   1.2-2.4x SLOWER than 42-row ones, despite ~10x fewer round trips.
 //   On localhost a round trip is cheap; the big MERGE is not. Leave
 //   the default unless you've measured on your own network.
 //
 //   AutoDetectChanges off: noise. EF Core's Add doesn't rescan the
 //   change tracker the way EF6 did - that tip is a decade old.
 //
-//   SqlBulkCopy is ~9-13x faster than AddRange at 10k-100k rows and
+//   SqlBulkCopy is ~10-13x faster than AddRange at 10k-100k rows and
 //   allocates ~11x less. No change tracking, no Ids read back. It is
 //   the tool for imports and ETL, not for everyday saves.
 
