@@ -72,8 +72,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "transactions-and-savechange
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ef-vs-dapper-vs-ado", "ef-vs-dapper-vs-ado\ef-vs-dapper-vs-ado.csproj", "{28CD95A2-7174-4FD1-A228-373987851353}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoLauncher.Web", "DemoLauncher.Web\DemoLauncher.Web.csproj", "{6DEEBD69-A7EB-480F-9CD8-D553BBFE6BB3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "inheritance-mapping", "inheritance-mapping\inheritance-mapping.csproj", "{A091055E-A293-4E15-B900-4EBC95B25254}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "migrations-workflow", "migrations-workflow\migrations-workflow.csproj", "{DF5E3EED-EBAD-41FC-A6BE-617246F73275}"
@@ -109,6 +107,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "connection-resiliency", "connection-resiliency\connection-resiliency.csproj", "{380F54A6-7191-444F-B015-DE926820EFA7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testing-strategies", "testing-strategies\testing-strategies.csproj", "{3C77A516-C9B9-4B9E-8544-D322EF2A6E90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoLauncher.Web", "DemoLauncher.Web\DemoLauncher.Web.csproj", "{720A88F5-B650-4668-8237-6532A2CA95A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -768,6 +768,30 @@ Global
 		{3C77A516-C9B9-4B9E-8544-D322EF2A6E90}.Release|x64.Build.0 = Release|Any CPU
 		{3C77A516-C9B9-4B9E-8544-D322EF2A6E90}.Release|x86.ActiveCfg = Release|Any CPU
 		{3C77A516-C9B9-4B9E-8544-D322EF2A6E90}.Release|x86.Build.0 = Release|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Debug|x64.Build.0 = Debug|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Debug|x86.Build.0 = Debug|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Release|x64.ActiveCfg = Release|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Release|x64.Build.0 = Release|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Release|x86.ActiveCfg = Release|Any CPU
+		{DB6FE62E-EB83-4B8F-9F54-361DF317615B}.Release|x86.Build.0 = Release|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Debug|x64.Build.0 = Debug|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Debug|x86.Build.0 = Debug|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Release|x64.ActiveCfg = Release|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Release|x64.Build.0 = Release|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Release|x86.ActiveCfg = Release|Any CPU
+		{720A88F5-B650-4668-8237-6532A2CA95A8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

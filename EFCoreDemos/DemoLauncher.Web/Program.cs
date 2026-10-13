@@ -12,7 +12,11 @@ builder.Logging.AddConsole();
 
 var app = builder.Build();
 app.UseDefaultFiles();
-app.UseStaticFiles();
+// Always revalidate the UI assets so a rebuilt launcher never shows a stale app.js/style.css.
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "no-cache"
+});
 
 var demoRoot = ResolveDemoRoot();
 var manifestPath = Path.Combine(AppContext.BaseDirectory, "demos.json");
