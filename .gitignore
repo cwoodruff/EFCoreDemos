@@ -825,3 +825,6 @@ EFCoreDemos/package.json
 EFCoreDemos/package-lock.json
 EFCoreDemos/.idea/.idea.EFCoreDemos/.idea/dataSources.xml
 /EFCoreDemos/SpatialDemo.Api/.idea
+
+# Claude Code agent worktrees
+.claude/worktrees/
